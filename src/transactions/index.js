@@ -15,6 +15,62 @@ import {
 } from "../core/utils.js";
 
 export function createTransactionsModule(deps) {
+  function shouldUseExpenseOnlyFields(type) {
+    return type === "expense";
+  }
+
+  function defaultPaymentMethodForType(type) {
+    return type === "expense" ? "pix" : "transfer";
+  }
+
+  function syncTransactionTypeFields() {
+    const isExpense = shouldUseExpenseOnlyFields(state.activeType);
+    const paymentField = document.querySelector("#transaction-payment-row");
+    const recurrenceField = document.querySelector("#transaction-recurrence-row");
+    const repeatCountField = document.querySelector("#repeat-count-field");
+
+    updateSubcategoryOptions();
+
+    [paymentField, recurrenceField, repeatCountField].forEach((field) => {
+      if (!field) return;
+      field.classList.toggle("is-hidden", !isExpense);
+      field.hidden = !isExpense;
+    });
+
+    if (!isExpense) {
+      document.querySelector("#payment-method").value = defaultPaymentMethodForType(state.activeType);
+      document.querySelector("#credit-card").value = "";
+      document.querySelector("#installments").value = 1;
+      document.querySelector("#recurrence").value = "none";
+      document.querySelector("#repeat-count").value = 1;
+      const subcategory = document.querySelector("#subcategory");
+      if (subcategory) subcategory.value = "";
+    }
+
+    updateCreditPaymentFields();
+  }
+
+  function syncTransactionModalTypeFields() {
+    const isExpense = shouldUseExpenseOnlyFields(state.transactionModalType);
+    const paymentField = document.querySelector("#transaction-modal-payment-row");
+
+    updateTransactionModalSubcategoryOptions();
+
+    if (paymentField) {
+      paymentField.classList.toggle("is-hidden", !isExpense);
+      paymentField.hidden = !isExpense;
+    }
+
+    if (!isExpense) {
+      document.querySelector("#transaction-modal-payment-method").value = defaultPaymentMethodForType(state.transactionModalType);
+      const subcategory = document.querySelector("#transaction-modal-subcategory");
+      if (subcategory) subcategory.value = "";
+      document.querySelector("#transaction-modal-credit-card").value = "";
+    }
+
+    updateTransactionModalCreditFields();
+  }
+
   function setDefaultDate() {
     const today = new Date();
     const value = toDateInput(today);
@@ -48,6 +104,15 @@ export function createTransactionsModule(deps) {
   }
 
   function updateCreditPaymentFields() {
+    if (!shouldUseExpenseOnlyFields(state.activeType)) {
+      const cardField = document.querySelector("#credit-card-field");
+      const installmentsField = document.querySelector("#installments-field");
+      cardField.classList.add("is-hidden");
+      installmentsField.classList.add("is-hidden");
+      cardField.hidden = true;
+      installmentsField.hidden = true;
+      return;
+    }
     const isCredit = document.querySelector("#payment-method").value === "credit";
     const cardField = document.querySelector("#credit-card-field");
     const installmentsField = document.querySelector("#installments-field");
@@ -77,6 +142,13 @@ export function createTransactionsModule(deps) {
   }
 
   function updateTransactionModalCreditFields() {
+    if (!shouldUseExpenseOnlyFields(state.transactionModalType)) {
+      const cardField = document.querySelector("#transaction-modal-credit-card-field");
+      if (!cardField) return;
+      cardField.classList.add("is-hidden");
+      cardField.hidden = true;
+      return;
+    }
     const isCredit = document.querySelector("#transaction-modal-payment-method")?.value === "credit";
     const cardField = document.querySelector("#transaction-modal-credit-card-field");
     if (!cardField) return;
@@ -91,6 +163,13 @@ export function createTransactionsModule(deps) {
     const field = document.querySelector("#subcategory-field");
     const select = document.querySelector("#subcategory");
     if (!field || !select) return;
+    if (!shouldUseExpenseOnlyFields(state.activeType)) {
+      field.classList.add("is-hidden");
+      field.hidden = true;
+      select.innerHTML = "";
+      select.value = "";
+      return;
+    }
     const categoryKey = els.category.value;
     const items = getSubcategories(state.activeType, categoryKey);
     if (!items.length) {
@@ -113,6 +192,13 @@ export function createTransactionsModule(deps) {
     const select = document.querySelector("#transaction-modal-subcategory");
     const categoryKey = document.querySelector("#transaction-modal-category")?.value;
     if (!field || !select || !categoryKey) return;
+    if (!shouldUseExpenseOnlyFields(state.transactionModalType)) {
+      field.classList.add("is-hidden");
+      field.hidden = true;
+      select.innerHTML = "";
+      select.value = "";
+      return;
+    }
     const items = getSubcategories(state.transactionModalType, categoryKey);
     if (!items.length) {
       field.classList.add("is-hidden");
@@ -135,6 +221,7 @@ export function createTransactionsModule(deps) {
       button.classList.toggle("active", button.dataset.modalType === type);
     });
     updateTransactionModalCategories(type);
+    syncTransactionModalTypeFields();
   }
 
   function setActiveType(type) {
@@ -143,6 +230,7 @@ export function createTransactionsModule(deps) {
       button.classList.toggle("active", button.dataset.type === type);
     });
     updateCategoryOptions();
+    syncTransactionTypeFields();
   }
 
   function renderTable() {
@@ -199,15 +287,17 @@ export function createTransactionsModule(deps) {
       return;
     }
     const paymentMethod = formData.get("paymentMethod") || "pix";
-    const isCredit = paymentMethod === "credit";
+    const useExpenseFields = shouldUseExpenseOnlyFields(state.activeType);
+    const normalizedPaymentMethod = useExpenseFields ? paymentMethod : defaultPaymentMethodForType(state.activeType);
+    const isCredit = useExpenseFields && normalizedPaymentMethod === "credit";
     const installments = isCredit ? Math.max(1, Number(formData.get("installments") || 1)) : 1;
-    const repeatCount = Math.max(1, Number(formData.get("repeatCount") || 1));
-    const recurrence = formData.get("recurrence");
+    const repeatCount = useExpenseFields ? Math.max(1, Number(formData.get("repeatCount") || 1)) : 1;
+    const recurrence = useExpenseFields ? formData.get("recurrence") : "none";
     const totalItems = installments > 1 ? installments : recurrence === "monthly" ? repeatCount : 1;
     const groupId = totalItems > 1 ? createId() : null;
     const baseAmount = Number(formData.get("amount"));
     const perItemAmount = installments > 1 ? Number((baseAmount / installments).toFixed(2)) : baseAmount;
-    const subcategory = formData.get("subcategory") || null;
+    const subcategory = useExpenseFields ? formData.get("subcategory") || null : null;
     const transactions = Array.from({ length: totalItems }, (_, index) => {
       const date = addMonths(formData.get("date"), index);
       const dueDate = formData.get("dueDate") ? addMonths(formData.get("dueDate"), index) : date;
@@ -223,7 +313,7 @@ export function createTransactionsModule(deps) {
         date,
         dueDate,
         status: formData.get("status") || "paid",
-        paymentMethod,
+        paymentMethod: normalizedPaymentMethod,
         creditCardId: isCredit ? formData.get("creditCardId") || null : null,
         recurrence: recurrence || "none",
         recurrenceId: recurrence === "monthly" ? groupId : null,
@@ -246,19 +336,21 @@ export function createTransactionsModule(deps) {
   function updateTransaction(formData) {
     const item = state.transactions.find((transaction) => transaction.id === state.editingId);
     if (!item) return;
+    const paymentMethod = formData.get("paymentMethod") || "pix";
+    const useExpenseFields = shouldUseExpenseOnlyFields(state.activeType);
+    const normalizedPaymentMethod = useExpenseFields ? paymentMethod : defaultPaymentMethodForType(state.activeType);
     item.type = state.activeType;
     item.description = formData.get("description").trim();
     item.category = formData.get("category");
-    item.subcategory = formData.get("subcategory") || null;
+    item.subcategory = useExpenseFields ? formData.get("subcategory") || null : null;
     item.account = formData.get("account");
     item.amount = Number(formData.get("amount"));
     item.date = formData.get("date");
     item.dueDate = formData.get("dueDate") || formData.get("date");
     item.status = formData.get("status") || "paid";
-    const paymentMethod = formData.get("paymentMethod") || "pix";
-    item.paymentMethod = paymentMethod;
-    item.creditCardId = paymentMethod === "credit" ? formData.get("creditCardId") || null : null;
-    if (paymentMethod !== "credit") {
+    item.paymentMethod = normalizedPaymentMethod;
+    item.creditCardId = normalizedPaymentMethod === "credit" ? formData.get("creditCardId") || null : null;
+    if (normalizedPaymentMethod !== "credit") {
       item.installmentGroup = null;
       item.installmentNumber = null;
       item.installmentTotal = null;
@@ -285,7 +377,7 @@ export function createTransactionsModule(deps) {
     document.querySelector("#transaction-modal-due-date").value = item.dueDate || item.date;
     document.querySelector("#transaction-modal-status").value = item.status || "paid";
     document.querySelector("#transaction-modal-payment-method").value = item.paymentMethod || "pix";
-    updateTransactionModalCreditFields();
+    syncTransactionModalTypeFields();
     document.querySelector("#transaction-modal-credit-card").value = item.creditCardId || "";
     document.querySelector("#transaction-modal-overlay").classList.remove("is-hidden");
     document.body.classList.add("modal-open");
@@ -304,8 +396,7 @@ export function createTransactionsModule(deps) {
     document.querySelector("#transaction-form-title").textContent = "Novo lancamento";
     document.querySelector("#transaction-submit").textContent = "Salvar lancamento";
     document.querySelector("#cancel-edit").classList.add("is-hidden");
-    updateCreditPaymentFields();
-    updateSubcategoryOptions();
+    syncTransactionTypeFields();
   }
 
   function closeTransactionModal() {
@@ -320,18 +411,21 @@ export function createTransactionsModule(deps) {
     const item = state.transactions.find((transaction) => transaction.id === state.activeTransactionEditId);
     if (!item) return closeTransactionModal();
 
+    const paymentMethod = document.querySelector("#transaction-modal-payment-method").value || "pix";
+    const useExpenseFields = shouldUseExpenseOnlyFields(state.transactionModalType);
+    const normalizedPaymentMethod = useExpenseFields ? paymentMethod : defaultPaymentMethodForType(state.transactionModalType);
     item.type = state.transactionModalType;
     item.description = document.querySelector("#transaction-modal-description").value.trim();
     item.category = document.querySelector("#transaction-modal-category").value;
-    item.subcategory = document.querySelector("#transaction-modal-subcategory").value || null;
+    item.subcategory = useExpenseFields ? document.querySelector("#transaction-modal-subcategory").value || null : null;
     item.account = document.querySelector("#transaction-modal-account").value;
     item.amount = Number(document.querySelector("#transaction-modal-amount").value);
     item.date = document.querySelector("#transaction-modal-date").value;
     item.dueDate = document.querySelector("#transaction-modal-due-date").value || item.date;
     item.status = document.querySelector("#transaction-modal-status").value || "paid";
-    item.paymentMethod = document.querySelector("#transaction-modal-payment-method").value || "pix";
-    item.creditCardId = item.paymentMethod === "credit" ? document.querySelector("#transaction-modal-credit-card").value || null : null;
-    if (item.paymentMethod !== "credit") {
+    item.paymentMethod = normalizedPaymentMethod;
+    item.creditCardId = normalizedPaymentMethod === "credit" ? document.querySelector("#transaction-modal-credit-card").value || null : null;
+    if (normalizedPaymentMethod !== "credit") {
       item.installmentGroup = null;
       item.installmentNumber = null;
       item.installmentTotal = null;

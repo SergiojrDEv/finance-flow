@@ -288,7 +288,7 @@
             </label>
           </div>
 
-          <div class="field-row">
+          <div class="field-row" id="transaction-status-row">
             <label>
               Status
               <select id="status" name="status" required>
@@ -303,7 +303,7 @@
             </label>
           </div>
 
-          <div class="field-row">
+          <div class="field-row" id="transaction-payment-row">
             <label>
               Pagamento
               <select id="payment-method" name="paymentMethod" required>
@@ -320,7 +320,7 @@
             </label>
           </div>
 
-          <div class="field-row">
+          <div class="field-row" id="transaction-recurrence-row">
             <label id="installments-field" class="is-hidden" hidden>
               Parcelas
               <input id="installments" name="installments" type="number" min="1" max="48" value="1">
@@ -334,7 +334,7 @@
             </label>
           </div>
 
-          <label>
+          <label id="repeat-count-field">
             Repetir por
             <input id="repeat-count" name="repeatCount" type="number" min="1" max="60" value="1">
           </label>
@@ -790,7 +790,7 @@
           </label>
         </div>
 
-        <div class="field-row">
+        <div class="field-row" id="transaction-modal-status-row">
           <label>
             Status
             <select id="transaction-modal-status" name="status" required>
@@ -805,7 +805,7 @@
           </label>
         </div>
 
-        <div class="field-row">
+        <div class="field-row" id="transaction-modal-payment-row">
           <label>
             Pagamento
             <select id="transaction-modal-payment-method" name="paymentMethod" required>
