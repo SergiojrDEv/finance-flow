@@ -13,6 +13,8 @@ import {
   simplifyFieldName,
   toDateInput,
 } from "../core/utils.js";
+import { createTransaction as createTransactionRecord } from "../application/transactions/createTransaction.js";
+import { updateTransaction as updateTransactionRecord } from "../application/transactions/updateTransaction.js";
 
 export function createTransactionsModule(deps) {
   function setDefaultDate() {
@@ -208,19 +210,19 @@ export function createTransactionsModule(deps) {
     const baseAmount = Number(formData.get("amount"));
     const perItemAmount = installments > 1 ? Number((baseAmount / installments).toFixed(2)) : baseAmount;
     const subcategory = formData.get("subcategory") || null;
+    const nowIso = new Date().toISOString();
     const transactions = Array.from({ length: totalItems }, (_, index) => {
       const date = addMonths(formData.get("date"), index);
       const dueDate = formData.get("dueDate") ? addMonths(formData.get("dueDate"), index) : date;
       const suffix = installments > 1 ? ` (${index + 1}/${installments})` : recurrence === "monthly" && totalItems > 1 ? ` (${index + 1}/${totalItems})` : "";
-      return {
-        id: createId(),
-        type: state.activeType,
+      return createTransactionRecord({
+        kind: state.activeType,
         description: `${formData.get("description").trim()}${suffix}`,
         category: formData.get("category"),
         subcategory,
         account: formData.get("account"),
         amount: perItemAmount,
-        date,
+        transactionDate: date,
         dueDate,
         status: formData.get("status") || "paid",
         paymentMethod,
@@ -230,8 +232,7 @@ export function createTransactionsModule(deps) {
         installmentGroup: installments > 1 ? groupId : null,
         installmentNumber: installments > 1 ? index + 1 : null,
         installmentTotal: installments > 1 ? installments : null,
-        createdAt: new Date().toISOString(),
-      };
+      }, createId, nowIso);
     });
 
     state.transactions.push(...transactions);
@@ -244,25 +245,26 @@ export function createTransactionsModule(deps) {
   }
 
   function updateTransaction(formData) {
-    const item = state.transactions.find((transaction) => transaction.id === state.editingId);
+    const index = state.transactions.findIndex((transaction) => transaction.id === state.editingId);
+    const item = state.transactions[index];
     if (!item) return;
-    item.type = state.activeType;
-    item.description = formData.get("description").trim();
-    item.category = formData.get("category");
-    item.subcategory = formData.get("subcategory") || null;
-    item.account = formData.get("account");
-    item.amount = Number(formData.get("amount"));
-    item.date = formData.get("date");
-    item.dueDate = formData.get("dueDate") || formData.get("date");
-    item.status = formData.get("status") || "paid";
     const paymentMethod = formData.get("paymentMethod") || "pix";
-    item.paymentMethod = paymentMethod;
-    item.creditCardId = paymentMethod === "credit" ? formData.get("creditCardId") || null : null;
-    if (paymentMethod !== "credit") {
-      item.installmentGroup = null;
-      item.installmentNumber = null;
-      item.installmentTotal = null;
-    }
+    state.transactions[index] = updateTransactionRecord(item, {
+      type: state.activeType,
+      description: formData.get("description").trim(),
+      category: formData.get("category"),
+      subcategory: formData.get("subcategory") || null,
+      account: formData.get("account"),
+      amount: Number(formData.get("amount")),
+      date: formData.get("date"),
+      dueDate: formData.get("dueDate") || formData.get("date"),
+      status: formData.get("status") || "paid",
+      paymentMethod,
+      creditCardId: paymentMethod === "credit" ? formData.get("creditCardId") || null : null,
+      installmentGroup: paymentMethod === "credit" ? item.installmentGroup : null,
+      installmentNumber: paymentMethod === "credit" ? item.installmentNumber : null,
+      installmentTotal: paymentMethod === "credit" ? item.installmentTotal : null,
+    });
     deps.persist();
     resetTransactionForm();
     deps.renderAll();
@@ -317,30 +319,33 @@ export function createTransactionsModule(deps) {
 
   function saveTransactionFromModal(event) {
     event.preventDefault();
-    const item = state.transactions.find((transaction) => transaction.id === state.activeTransactionEditId);
+    const index = state.transactions.findIndex((transaction) => transaction.id === state.activeTransactionEditId);
+    const item = state.transactions[index];
     if (!item) return closeTransactionModal();
 
-    item.type = state.transactionModalType;
-    item.description = document.querySelector("#transaction-modal-description").value.trim();
-    item.category = document.querySelector("#transaction-modal-category").value;
-    item.subcategory = document.querySelector("#transaction-modal-subcategory").value || null;
-    item.account = document.querySelector("#transaction-modal-account").value;
-    item.amount = Number(document.querySelector("#transaction-modal-amount").value);
-    item.date = document.querySelector("#transaction-modal-date").value;
-    item.dueDate = document.querySelector("#transaction-modal-due-date").value || item.date;
-    item.status = document.querySelector("#transaction-modal-status").value || "paid";
-    item.paymentMethod = document.querySelector("#transaction-modal-payment-method").value || "pix";
-    item.creditCardId = item.paymentMethod === "credit" ? document.querySelector("#transaction-modal-credit-card").value || null : null;
-    if (item.paymentMethod !== "credit") {
-      item.installmentGroup = null;
-      item.installmentNumber = null;
-      item.installmentTotal = null;
-    }
+    const paymentMethod = document.querySelector("#transaction-modal-payment-method").value || "pix";
+    const next = updateTransactionRecord(item, {
+      type: state.transactionModalType,
+      description: document.querySelector("#transaction-modal-description").value.trim(),
+      category: document.querySelector("#transaction-modal-category").value,
+      subcategory: document.querySelector("#transaction-modal-subcategory").value || null,
+      account: document.querySelector("#transaction-modal-account").value,
+      amount: Number(document.querySelector("#transaction-modal-amount").value),
+      date: document.querySelector("#transaction-modal-date").value,
+      dueDate: document.querySelector("#transaction-modal-due-date").value || document.querySelector("#transaction-modal-date").value,
+      status: document.querySelector("#transaction-modal-status").value || "paid",
+      paymentMethod,
+      creditCardId: paymentMethod === "credit" ? document.querySelector("#transaction-modal-credit-card").value || null : null,
+      installmentGroup: paymentMethod === "credit" ? item.installmentGroup : null,
+      installmentNumber: paymentMethod === "credit" ? item.installmentNumber : null,
+      installmentTotal: paymentMethod === "credit" ? item.installmentTotal : null,
+    });
 
-    if (!item.description || !item.category || !item.account || !item.amount || !item.date) {
+    if (!next.description || !next.category || !next.account || !next.amount || !next.date) {
       return deps.notify("Preencha os dados do lancamento corretamente.");
     }
 
+    state.transactions[index] = next;
     deps.persist();
     deps.renderAll();
     closeTransactionModal();
@@ -424,15 +429,15 @@ export function createTransactionsModule(deps) {
     const paymentMethod = normalizePaymentMethod(getImportedField(row, "payment"));
     const isCredit = paymentMethod === "credit";
 
-    return {
-      id: row.id || createId(),
-      type,
+    const createdAt = row.createdAt || row.created_at || new Date().toISOString();
+    return createTransactionRecord({
+      kind: type,
       description,
       category,
       subcategory,
       account: row.account || "Conta corrente",
       amount,
-      date,
+      transactionDate: date,
       dueDate: normalizeImportedDate(row.dueDate || row.due_date) || date,
       status: row.status || "paid",
       paymentMethod,
@@ -442,8 +447,7 @@ export function createTransactionsModule(deps) {
       installmentGroup: isCredit ? row.installmentGroup || row.installment_group || null : null,
       installmentNumber: isCredit ? row.installmentNumber || row.installment_number || null : null,
       installmentTotal: isCredit ? row.installmentTotal || row.installment_total || null : null,
-      createdAt: row.createdAt || row.created_at || new Date().toISOString(),
-    };
+    }, () => row.id || createId(), createdAt);
   }
 
   function normalizeImportedBackup(imported) {
@@ -565,15 +569,15 @@ export function createTransactionsModule(deps) {
       ["income", "Projeto freelance", "freelance", "Conta corrente", 1300, 24],
     ];
 
-    state.transactions = samples.map(([type, description, category, account, amount, day]) => ({
-      id: createId(),
-      type,
+    const nowIso = new Date().toISOString();
+    state.transactions = samples.map(([type, description, category, account, amount, day]) => createTransactionRecord({
+      kind: type,
       description,
       category,
       subcategory: description === "Supermercado" ? "mercado" : description === "Uber e metro" ? "app-mobilidade" : type === "income" && category === "salario" ? "fixo" : type === "investment" && category === "renda-fixa" ? "tesouro" : null,
       account,
       amount,
-      date: new Date(current.getFullYear(), current.getMonth(), day).toISOString().slice(0, 10),
+      transactionDate: new Date(current.getFullYear(), current.getMonth(), day).toISOString().slice(0, 10),
       dueDate: new Date(current.getFullYear(), current.getMonth(), day).toISOString().slice(0, 10),
       status: day > new Date().getDate() ? "pending" : "paid",
       paymentMethod: type === "income" ? "transfer" : "credit",
@@ -583,8 +587,7 @@ export function createTransactionsModule(deps) {
       installmentGroup: null,
       installmentNumber: null,
       installmentTotal: null,
-      createdAt: new Date().toISOString(),
-    }));
+    }, createId, nowIso));
     deps.persist();
     deps.renderAll();
     deps.notify("Dados de exemplo carregados.");
