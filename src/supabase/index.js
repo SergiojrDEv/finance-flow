@@ -3,6 +3,7 @@ import { ensureCatalogCoversTransactions } from "../core/catalog.js";
 import { createSupabaseShadowFacade } from "../infrastructure/facades/supabaseShadowFacade.js";
 import { createV2SyncFacade } from "../infrastructure/facades/v2SyncFacade.js";
 import { createV2SupabaseRuntimeFacade } from "../infrastructure/facades/v2SupabaseRuntimeFacade.js";
+import { createSupabaseCatalogRepository } from "../infrastructure/repositories/supabaseCatalogRepository.js";
 import { createSupabaseTransactionRepository } from "../infrastructure/repositories/supabaseTransactionRepository.js";
 
 export function createSupabaseModule(deps) {
@@ -196,6 +197,7 @@ export function createSupabaseModule(deps) {
     fromV2Transaction,
     handleCloudError,
     renderCloudStatus,
+    createCatalogRepository: () => createSupabaseCatalogRepository(state.supabaseClient),
     createTransactionRepository: () => createSupabaseTransactionRepository(state.supabaseClient),
   });
 

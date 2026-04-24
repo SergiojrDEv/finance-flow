@@ -8,42 +8,37 @@ export function createV2SupabaseRuntimeFacade({
   handleCloudError,
   renderCloudStatus,
   createTransactionRepository,
+  createCatalogRepository,
 }) {
   function getTransactionRepository() {
     return createTransactionRepository();
   }
 
+  function getCatalogRepository() {
+    return createCatalogRepository();
+  }
+
   async function pull({ options = {} }) {
-    const client = state.supabaseClient;
     const userId = state.currentUser.id;
     const transactionRepository = getTransactionRepository();
+    const catalogRepository = getCatalogRepository();
     const [
-      accountsResult,
-      cardsResult,
-      categoriesResult,
-      tagsResult,
-      budgetsResult,
-      goalsResult,
+      runtimeResources,
       txRows,
-      legacyTransactionsResult,
+      legacyTransactionsResult
     ] = await Promise.all([
-      client.from("accounts").select("*").eq("user_id", userId).eq("is_archived", false).order("created_at", { ascending: true }),
-      client.from("credit_cards").select("*").eq("user_id", userId).eq("is_archived", false).order("created_at", { ascending: true }),
-      client.from("categories").select("*").eq("user_id", userId).eq("is_archived", false).order("created_at", { ascending: true }),
-      client.from("category_tags").select("*").eq("user_id", userId).eq("is_archived", false).order("created_at", { ascending: true }),
-      client.from("budgets").select("*").eq("user_id", userId).order("created_at", { ascending: true }),
-      client.from("goals").select("*").eq("user_id", userId).eq("is_archived", false).order("created_at", { ascending: true }),
+      catalogRepository.listRuntimeResources(userId),
       transactionRepository.listAllRows(userId),
-      client.from("transactions").select("id,cat,subcat,type").eq("user_id", userId),
+      state.supabaseClient.from("transactions").select("id,cat,subcat,type").eq("user_id", userId),
     ]);
 
     const firstError = [
-      accountsResult.error,
-      cardsResult.error,
-      categoriesResult.error,
-      tagsResult.error,
-      budgetsResult.error,
-      goalsResult.error,
+      runtimeResources.accountsResult.error,
+      runtimeResources.creditCardsResult.error,
+      runtimeResources.categoriesResult.error,
+      runtimeResources.categoryTagsResult.error,
+      runtimeResources.budgetsResult.error,
+      runtimeResources.goalsResult.error,
       legacyTransactionsResult.error && !String(legacyTransactionsResult.error?.message || "").toLowerCase().includes("does not exist")
         && !String(legacyTransactionsResult.error?.message || "").toLowerCase().includes("could not find")
         && legacyTransactionsResult.error?.code !== "PGRST205"
@@ -52,12 +47,12 @@ export function createV2SupabaseRuntimeFacade({
     ].find(Boolean);
     if (firstError) return handleCloudError(firstError);
 
-    const accounts = accountsResult.data || [];
-    const creditCards = cardsResult.data || [];
-    const categories = categoriesResult.data || [];
-    const categoryTags = tagsResult.data || [];
-    const budgets = budgetsResult.data || [];
-    const goals = goalsResult.data || [];
+    const accounts = runtimeResources.accountsResult.data || [];
+    const creditCards = runtimeResources.creditCardsResult.data || [];
+    const categories = runtimeResources.categoriesResult.data || [];
+    const categoryTags = runtimeResources.categoryTagsResult.data || [];
+    const budgets = runtimeResources.budgetsResult.data || [];
+    const goals = runtimeResources.goalsResult.data || [];
     const legacyRows = legacyTransactionsResult.data || [];
 
     if (options.silent && !txRows.length && !categories.length && state.transactions.length) {
@@ -105,6 +100,7 @@ export function createV2SupabaseRuntimeFacade({
 
   async function syncSettings(userId) {
     const client = state.supabaseClient;
+    const catalogRepository = getCatalogRepository();
     const catalog = ensureCatalogCoversTransactions(
       state.catalog || deps.hydrateCatalog(state.settings, state.catalog),
       state.transactions
@@ -130,11 +126,7 @@ export function createV2SupabaseRuntimeFacade({
       if (error) throw error;
     }
 
-    const { data: existingAccounts, error: accountsFetchError } = await client
-      .from("accounts")
-      .select("id,name,is_archived")
-      .eq("user_id", userId);
-    if (accountsFetchError) throw accountsFetchError;
+    const existingAccounts = await catalogRepository.listAccountRefs(userId);
 
     const activeAccountNames = new Set(catalog.accounts.map((item) => item.name.toLowerCase()));
     const staleAccountIds = (existingAccounts || [])
@@ -151,11 +143,7 @@ export function createV2SupabaseRuntimeFacade({
       if (error) throw error;
     }
 
-    const { data: existingCategories, error: categoriesFetchError } = await client
-      .from("categories")
-      .select("id,kind,slug")
-      .eq("user_id", userId);
-    if (categoriesFetchError) throw categoriesFetchError;
+    const existingCategories = await catalogRepository.listCategoryRefs(userId);
 
     const activeCategoryKeys = new Set(categoryRows.map((item) => `${item.kind}:${item.slug}`));
     const staleCategoryIds = (existingCategories || [])
@@ -166,12 +154,7 @@ export function createV2SupabaseRuntimeFacade({
       if (error) throw error;
     }
 
-    const { data: freshCategories, error: freshCategoriesError } = await client
-      .from("categories")
-      .select("id,kind,slug,color")
-      .eq("user_id", userId)
-      .eq("is_archived", false);
-    if (freshCategoriesError) throw freshCategoriesError;
+    const freshCategories = await catalogRepository.listActiveCategoryRefs(userId);
     const categoryKeyToId = new Map((freshCategories || []).map((item) => [`${item.kind}:${item.slug}`, item]));
 
     const {
@@ -193,11 +176,7 @@ export function createV2SupabaseRuntimeFacade({
       if (error) throw error;
     }
 
-    const { data: existingTags, error: tagsFetchError } = await client
-      .from("category_tags")
-      .select("id,category_id,slug")
-      .eq("user_id", userId);
-    if (tagsFetchError) throw tagsFetchError;
+    const existingTags = await catalogRepository.listTagRefs(userId);
     const activeTagKeys = new Set(tagRows.map((item) => `${item.category_id}:${item.slug}`));
     const staleTagIds = (existingTags || [])
       .filter((item) => !activeTagKeys.has(`${item.category_id}:${item.slug}`))
@@ -214,11 +193,7 @@ export function createV2SupabaseRuntimeFacade({
     }
 
     const activeCardIds = new Set(catalog.creditCards.map((item) => item.id));
-    const { data: existingCards, error: cardsFetchError } = await client
-      .from("credit_cards")
-      .select("id")
-      .eq("user_id", userId);
-    if (cardsFetchError) throw cardsFetchError;
+    const existingCards = await catalogRepository.listCardRefs(userId);
     const staleCardIds = (existingCards || []).map((item) => item.id).filter((id) => !activeCardIds.has(id));
     if (staleCardIds.length) {
       const { error } = await client.from("credit_cards").update({ is_archived: true, updated_at: new Date().toISOString() }).in("id", staleCardIds);
