@@ -16,6 +16,19 @@ import {
 } from "../core/utils.js";
 
 export function createDashboardModule(deps) {
+  const shadowWarnings = new Set();
+
+  function reportShadowMismatch(scope, payload) {
+    const signature = `${scope}:${JSON.stringify(payload)}`;
+    if (shadowWarnings.has(signature)) return;
+    shadowWarnings.add(signature);
+    console.warn(`[shadow-mode] Divergencia detectada em ${scope}`, payload);
+  }
+
+  function nearlyEqual(left, right, epsilon = 0.01) {
+    return Math.abs(Number(left || 0) - Number(right || 0)) <= epsilon;
+  }
+
   function toDomainTransactions(items) {
     return items.map((item) => ({
       kind: item.type,
@@ -58,9 +71,78 @@ export function createDashboardModule(deps) {
     };
   }
 
+  function compareSummaryShadow(legacy, next) {
+    const normalizedLegacy = {
+      income: Number(legacy.income || 0),
+      expense: Number(legacy.expense || 0),
+      investment: Number(legacy.investment || 0),
+      availableBalance: Number(legacy.income || 0) - Number(legacy.expense || 0) - Number(legacy.investment || 0),
+    };
+
+    const normalizedNext = {
+      income: Number(next.income || 0),
+      expense: Number(next.expense || 0),
+      investment: Number(next.investment || 0),
+      availableBalance: Number(next.availableBalance || 0),
+    };
+
+    if (
+      !nearlyEqual(normalizedLegacy.income, normalizedNext.income) ||
+      !nearlyEqual(normalizedLegacy.expense, normalizedNext.expense) ||
+      !nearlyEqual(normalizedLegacy.investment, normalizedNext.investment) ||
+      !nearlyEqual(normalizedLegacy.availableBalance, normalizedNext.availableBalance)
+    ) {
+      reportShadowMismatch("dashboard.summary", {
+        legacy: normalizedLegacy,
+        next: normalizedNext,
+      });
+    }
+  }
+
+  function buildLegacyCategoryBreakdown(expenses) {
+    const grouped = new Map();
+    expenses.forEach((item) => {
+      const [slug, label, color] = getCategory("expense", item.category);
+      const key = slug || item.category || "outros";
+      const current = grouped.get(key);
+      grouped.set(key, {
+        categorySlug: key,
+        categoryName: label || "Outros",
+        color: color || "#667085",
+        total: (current?.total || 0) + Number(item.amount || 0),
+      });
+    });
+    return Array.from(grouped.values()).sort((left, right) => right.total - left.total);
+  }
+
+  function compareCategoryBreakdownShadow(legacyRows, nextRows) {
+    const legacy = legacyRows.map((item) => ({
+      slug: item.categorySlug,
+      total: Number(item.total || 0),
+    }));
+    const next = nextRows.map((item) => ({
+      slug: item.categorySlug,
+      total: Number(item.total || 0),
+    }));
+
+    if (legacy.length !== next.length) {
+      reportShadowMismatch("dashboard.categoryBreakdown", { legacy, next });
+      return;
+    }
+
+    for (let index = 0; index < legacy.length; index += 1) {
+      if (legacy[index].slug !== next[index].slug || !nearlyEqual(legacy[index].total, next[index].total)) {
+        reportShadowMismatch("dashboard.categoryBreakdown", { legacy, next });
+        return;
+      }
+    }
+  }
+
   function renderSummary() {
     const transactions = getMonthTransactions();
+    const legacyTotals = summarize(transactions);
     const summary = buildDashboardSummary(toDomainTransactions(transactions));
+    compareSummaryShadow(legacyTotals, summary);
     const totals = {
       income: summary.income,
       expense: summary.expense,
@@ -205,6 +287,7 @@ export function createDashboardModule(deps) {
 
   function renderCategoryBreakdown() {
     const expenses = getMonthTransactions().filter((item) => item.type === "expense");
+    const legacyRows = buildLegacyCategoryBreakdown(expenses);
     const rows = buildCategoryBreakdown(
       expenses.map((item) => ({
         kind: item.type,
@@ -215,6 +298,7 @@ export function createDashboardModule(deps) {
       })),
       toDomainCategories()
     );
+    compareCategoryBreakdownShadow(legacyRows, rows);
     const max = Math.max(...rows.map((item) => item.total), 0);
     const target = document.querySelector("#category-breakdown");
 
