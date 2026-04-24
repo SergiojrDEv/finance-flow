@@ -1,9 +1,12 @@
 import { state } from "../core/state.js";
+import { buildCategoryBreakdown } from "../application/dashboard/buildCategoryBreakdown.js";
+import { buildDashboardSummary } from "../application/dashboard/buildDashboardSummary.js";
 import {
   categoryDisplayLabel,
   esc,
   getBudgetRule,
   getCategory,
+  getCategoriesByType,
   getMonthTransactions,
   money,
   monthKey,
@@ -13,6 +16,28 @@ import {
 } from "../core/utils.js";
 
 export function createDashboardModule(deps) {
+  function toDomainTransactions(items) {
+    return items.map((item) => ({
+      kind: item.type,
+      status: item.status || "paid",
+      amount: Number(item.amount || 0),
+      categorySlug: item.category,
+      categoryName: getCategory(item.type, item.category)[1],
+      paymentMethod: item.paymentMethod || "pix",
+      description: item.description,
+      dueDate: item.dueDate || null,
+      date: item.date,
+    }));
+  }
+
+  function toDomainCategories() {
+    return getCategoriesByType("expense").map((item) => ({
+      slug: item.slug,
+      name: item.name,
+      color: item.color,
+    }));
+  }
+
   function renderMonthLabel() {
     deps.els.currentMonth.textContent = state.currentDate.toLocaleDateString("pt-BR", {
       month: "long",
@@ -35,13 +60,18 @@ export function createDashboardModule(deps) {
 
   function renderSummary() {
     const transactions = getMonthTransactions();
-    const totals = summarize(transactions);
-    const free = totals.income - totals.expense - totals.investment;
+    const summary = buildDashboardSummary(toDomainTransactions(transactions));
+    const totals = {
+      income: summary.income,
+      expense: summary.expense,
+      investment: summary.investment,
+    };
+    const free = summary.availableBalance;
     const expenseCategories = new Set(
       transactions.filter((item) => item.type === "expense").map((item) => item.category)
     );
-    const investRate = totals.income ? (totals.investment / totals.income) * 100 : 0;
-    const commitment = totals.income ? ((totals.expense + totals.investment) / totals.income) * 100 : 0;
+    const investRate = summary.investmentRate;
+    const commitment = summary.commitmentRate;
     const hasTransactions = transactions.length > 0;
     let health = 0;
     if (totals.income) {
@@ -175,12 +205,17 @@ export function createDashboardModule(deps) {
 
   function renderCategoryBreakdown() {
     const expenses = getMonthTransactions().filter((item) => item.type === "expense");
-    const totals = expenses.reduce((acc, item) => {
-      acc[item.category] = (acc[item.category] || 0) + Number(item.amount);
-      return acc;
-    }, {});
-    const rows = Object.entries(totals).sort((a, b) => b[1] - a[1]);
-    const max = Math.max(...rows.map(([, value]) => value), 0);
+    const rows = buildCategoryBreakdown(
+      expenses.map((item) => ({
+        kind: item.type,
+        amount: Number(item.amount),
+        categorySlug: item.category,
+        categoryName: getCategory("expense", item.category)[1],
+        color: getCategory("expense", item.category)[2],
+      })),
+      toDomainCategories()
+    );
+    const max = Math.max(...rows.map((item) => item.total), 0);
     const target = document.querySelector("#category-breakdown");
 
     if (!rows.length) {
@@ -189,14 +224,13 @@ export function createDashboardModule(deps) {
     }
 
     target.innerHTML = rows
-      .map(([key, value]) => {
-        const [, label, color] = getCategory("expense", key);
-        const width = max ? (value / max) * 100 : 0;
+      .map((row) => {
+        const width = max ? (row.total / max) * 100 : 0;
         return `
           <div class="category-row">
-            <strong>${esc(label)}</strong>
-            <span class="money negative">${money(value)}</span>
-            <div class="bar"><span style="--value:${width}%;--color:${color}"></span></div>
+            <strong>${esc(row.categoryName)}</strong>
+            <span class="money negative">${money(row.total)}</span>
+            <div class="bar"><span style="--value:${width}%;--color:${row.color}"></span></div>
           </div>
         `;
       })
