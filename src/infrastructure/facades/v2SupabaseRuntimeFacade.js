@@ -7,10 +7,16 @@ export function createV2SupabaseRuntimeFacade({
   fromV2Transaction,
   handleCloudError,
   renderCloudStatus,
+  createTransactionRepository,
 }) {
+  function getTransactionRepository() {
+    return createTransactionRepository();
+  }
+
   async function pull({ options = {} }) {
     const client = state.supabaseClient;
     const userId = state.currentUser.id;
+    const transactionRepository = getTransactionRepository();
     const [
       accountsResult,
       cardsResult,
@@ -18,7 +24,7 @@ export function createV2SupabaseRuntimeFacade({
       tagsResult,
       budgetsResult,
       goalsResult,
-      transactionsResult,
+      txRows,
       legacyTransactionsResult,
     ] = await Promise.all([
       client.from("accounts").select("*").eq("user_id", userId).eq("is_archived", false).order("created_at", { ascending: true }),
@@ -27,7 +33,7 @@ export function createV2SupabaseRuntimeFacade({
       client.from("category_tags").select("*").eq("user_id", userId).eq("is_archived", false).order("created_at", { ascending: true }),
       client.from("budgets").select("*").eq("user_id", userId).order("created_at", { ascending: true }),
       client.from("goals").select("*").eq("user_id", userId).eq("is_archived", false).order("created_at", { ascending: true }),
-      client.from("transactions_v2").select("*").eq("user_id", userId).order("created_at", { ascending: true }),
+      transactionRepository.listAllRows(userId),
       client.from("transactions").select("id,cat,subcat,type").eq("user_id", userId),
     ]);
 
@@ -38,7 +44,6 @@ export function createV2SupabaseRuntimeFacade({
       tagsResult.error,
       budgetsResult.error,
       goalsResult.error,
-      transactionsResult.error,
       legacyTransactionsResult.error && !String(legacyTransactionsResult.error?.message || "").toLowerCase().includes("does not exist")
         && !String(legacyTransactionsResult.error?.message || "").toLowerCase().includes("could not find")
         && legacyTransactionsResult.error?.code !== "PGRST205"
@@ -53,7 +58,6 @@ export function createV2SupabaseRuntimeFacade({
     const categoryTags = tagsResult.data || [];
     const budgets = budgetsResult.data || [];
     const goals = goalsResult.data || [];
-    const txRows = transactionsResult.data || [];
     const legacyRows = legacyTransactionsResult.data || [];
 
     if (options.silent && !txRows.length && !categories.length && state.transactions.length) {
@@ -246,6 +250,7 @@ export function createV2SupabaseRuntimeFacade({
 
   async function syncTransactions(userId, refs) {
     const client = state.supabaseClient;
+    const transactionRepository = getTransactionRepository();
     const categoryRecords = refs.categories;
     const accountNameToId = refs.accounts;
 
@@ -270,22 +275,13 @@ export function createV2SupabaseRuntimeFacade({
     });
     supabaseShadow.compareTransactionWrite(legacyRows, rows);
 
-    if (rows.length) {
-      const { error } = await client.from("transactions_v2").upsert(rows, { onConflict: "id" });
-      if (error) throw error;
-    }
+    await transactionRepository.upsertRows(rows);
 
-    const { data: remoteRows, error: remoteRowsError } = await client
-      .from("transactions_v2")
-      .select("id")
-      .eq("user_id", userId);
-    if (remoteRowsError) throw remoteRowsError;
-
+    const remoteRows = await transactionRepository.listIds(userId);
     const localIds = new Set(state.transactions.map((item) => item.id));
     const idsToDelete = (remoteRows || []).map((item) => item.id).filter((id) => !localIds.has(id));
     if (idsToDelete.length) {
-      const { error } = await client.from("transactions_v2").delete().eq("user_id", userId).in("id", idsToDelete);
-      if (error) throw error;
+      await transactionRepository.removeMissing(userId, Array.from(localIds));
     }
   }
 

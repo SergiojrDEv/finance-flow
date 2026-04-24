@@ -1,6 +1,27 @@
 import { mapTransactionToV2Row, mapV2RowToTransaction } from "../mappers/transactionMapper.js";
 
 export function createSupabaseTransactionRepository(client) {
+  async function listAllRows(userId) {
+    const result = await client
+      .from("transactions_v2")
+      .select("*")
+      .eq("user_id", userId)
+      .order("created_at", { ascending: true });
+
+    if (result.error) throw result.error;
+    return result.data || [];
+  }
+
+  async function listIds(userId) {
+    const result = await client
+      .from("transactions_v2")
+      .select("id")
+      .eq("user_id", userId);
+
+    if (result.error) throw result.error;
+    return result.data || [];
+  }
+
   async function listByMonth(userId, year, month) {
     const start = `${year}-${String(month).padStart(2, "0")}-01`;
     const endDate = new Date(year, month, 0);
@@ -25,6 +46,12 @@ export function createSupabaseTransactionRepository(client) {
     if (result.error) throw result.error;
   }
 
+  async function upsertRows(rows) {
+    if (!rows.length) return;
+    const result = await client.from("transactions_v2").upsert(rows, { onConflict: "id" });
+    if (result.error) throw result.error;
+  }
+
   async function removeMissing(userId, keepIds) {
     let query = client.from("transactions_v2").delete().eq("user_id", userId);
     if (keepIds.length) {
@@ -36,8 +63,11 @@ export function createSupabaseTransactionRepository(client) {
   }
 
   return {
+    listAllRows,
+    listIds,
     listByMonth,
     saveMany,
+    upsertRows,
     removeMissing,
   };
 }
