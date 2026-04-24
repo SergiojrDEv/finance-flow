@@ -1,6 +1,8 @@
 import { state } from "../core/state.js";
 import { buildCategoryBreakdown } from "../application/dashboard/buildCategoryBreakdown.js";
 import { buildDashboardSummary } from "../application/dashboard/buildDashboardSummary.js";
+import { buildFinancialHealth } from "../application/dashboard/buildFinancialHealth.js";
+import { buildInsights as buildInsightsProjection } from "../application/dashboard/buildInsights.js";
 import {
   categoryDisplayLabel,
   esc,
@@ -138,6 +140,28 @@ export function createDashboardModule(deps) {
     }
   }
 
+  function compareHealthShadow(legacy, next) {
+    if (
+      !nearlyEqual(legacy.score, next.score, 1) ||
+      !nearlyEqual(legacy.availableBalance, next.availableBalance) ||
+      !nearlyEqual(legacy.commitmentRate, next.commitmentRate) ||
+      !nearlyEqual(legacy.investmentRate, next.investmentRate)
+    ) {
+      reportShadowMismatch("dashboard.health", { legacy, next });
+    }
+  }
+
+  function compareInsightsShadow(legacy, next) {
+    const normalizedLegacy = legacy.map((item) => ({ label: item.label, text: item.text }));
+    const normalizedNext = next.map((item) => ({ label: item.label, text: item.text }));
+    if (JSON.stringify(normalizedLegacy) !== JSON.stringify(normalizedNext)) {
+      reportShadowMismatch("dashboard.insights", {
+        legacy: normalizedLegacy,
+        next: normalizedNext,
+      });
+    }
+  }
+
   function renderSummary() {
     const transactions = getMonthTransactions();
     const legacyTotals = summarize(transactions);
@@ -176,6 +200,18 @@ export function createDashboardModule(deps) {
         Math.min(58, totals.investment > 0 ? 36 + Math.min(22, totals.investment / 100) : 18 - Math.min(8, totals.expense / 500))
       );
     }
+
+    compareHealthShadow({
+      score: Math.round(health),
+      availableBalance: free,
+      commitmentRate: commitment,
+      investmentRate: investRate,
+    }, buildFinancialHealth({
+      income: totals.income,
+      expense: totals.expense,
+      investment: totals.investment,
+      hasTransactions,
+    }));
 
     document.querySelector("#income-total").textContent = money(totals.income);
     document.querySelector("#expense-total").textContent = money(totals.expense);
@@ -271,6 +307,21 @@ export function createDashboardModule(deps) {
     if (totals.income && totals.investment / totals.income >= 0.1) {
       insights.push({ label: "Boa disciplina", text: `Voce investiu ${((totals.investment / totals.income) * 100).toFixed(1)}% da renda.` });
     }
+
+    compareInsightsShadow(
+      insights.slice(0, 5),
+      buildInsightsProjection({
+        transactions,
+        expenseBudgets: state.settings.categories.expense.map(([slug, name, , limit]) => ({
+          slug,
+          name,
+          limit: Number(getBudgetRule(slug).monthly || limit || 0),
+        })),
+        income: totals.income,
+        investment: totals.investment,
+        formatAmount: money,
+      })
+    );
 
     if (!insights.length) {
       target.innerHTML = '<div class="empty-state">Sem alertas por enquanto.</div>';
