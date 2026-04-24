@@ -2,10 +2,12 @@ import { SUPABASE_FALLBACK_CONFIG, state } from "../core/state.js";
 import { buildCatalogFromV2, ensureCatalogCoversTransactions } from "../core/catalog.js";
 import { buildSettingsOverview } from "../application/catalog/buildSettingsOverview.js";
 import { createV2CatalogReadAdapter } from "../infrastructure/adapters/v2CatalogReadAdapter.js";
+import { createV2CatalogWriteAdapter } from "../infrastructure/adapters/v2CatalogWriteAdapter.js";
 import { createV2TransactionWriteAdapter } from "../infrastructure/adapters/v2TransactionWriteAdapter.js";
 
 export function createSupabaseModule(deps) {
   const v2CatalogReadAdapter = createV2CatalogReadAdapter();
+  const v2CatalogWriteAdapter = createV2CatalogWriteAdapter();
   const v2TransactionWriteAdapter = createV2TransactionWriteAdapter();
   const shadowWarnings = new Set();
 
@@ -50,6 +52,18 @@ export function createSupabaseModule(deps) {
     const next = normalize(nextRows);
     if (JSON.stringify(current) !== JSON.stringify(next)) {
       reportShadowMismatch("supabase.v2TransactionWrite", { current, next });
+    }
+  }
+
+  function compareCatalogWriteShadow(scope, currentRows, nextRows, fields) {
+    const normalize = (rows) => rows
+      .map((item) => Object.fromEntries(fields.map((field) => [field, item[field] ?? null])))
+      .sort((left, right) => JSON.stringify(left).localeCompare(JSON.stringify(right)));
+
+    const current = normalize(currentRows);
+    const next = normalize(nextRows);
+    if (JSON.stringify(current) !== JSON.stringify(next)) {
+      reportShadowMismatch(scope, { current, next });
     }
   }
 
@@ -330,15 +344,47 @@ export function createSupabaseModule(deps) {
       state.transactions
     );
     state.catalog = catalog;
+    const nowIso = new Date().toISOString();
 
-    const accountRows = catalog.accounts.map((account) => ({
+    const legacyAccountRows = catalog.accounts.map((account) => ({
       user_id: userId,
       name: account.name,
       kind: account.kind || inferAccountKind(account.name),
       color: account.color || "#0b7285",
       is_archived: false,
-      updated_at: new Date().toISOString(),
+      updated_at: nowIso,
     }));
+    const legacyCategoryRows = catalog.categories.map((item) => ({
+      user_id: userId,
+      kind: item.kind,
+      slug: item.slug,
+      name: item.name,
+      color: item.color || "#667085",
+      monthly_limit: item.kind === "expense" ? Number(item.monthlyLimit || 0) : null,
+      is_archived: false,
+      updated_at: nowIso,
+    }));
+    const legacyCreditCardRows = catalog.creditCards.map((card) => ({
+      id: card.id,
+      user_id: userId,
+      name: card.name,
+      color: card.color || "#635bff",
+      closing_day: Number(card.closingDay || 25),
+      due_day: Number(card.dueDay || 10),
+      is_archived: false,
+      updated_at: nowIso,
+    }));
+    const basePayloads = v2CatalogWriteAdapter.buildBasePayloads({
+      userId,
+      catalog,
+      nowIso,
+      inferAccountKind,
+    });
+    compareCatalogWriteShadow("supabase.v2CatalogWrite.accounts", legacyAccountRows, basePayloads.accountRows, ["user_id", "name", "kind", "color", "is_archived"]);
+    compareCatalogWriteShadow("supabase.v2CatalogWrite.categories", legacyCategoryRows, basePayloads.categoryRows, ["user_id", "kind", "slug", "name", "color", "monthly_limit", "is_archived"]);
+    compareCatalogWriteShadow("supabase.v2CatalogWrite.creditCards", legacyCreditCardRows, basePayloads.creditCardRows, ["id", "user_id", "name", "color", "closing_day", "due_day", "is_archived"]);
+
+    const accountRows = basePayloads.accountRows;
     if (accountRows.length) {
       const { error } = await client.from("accounts").upsert(accountRows, { onConflict: "user_id,name" });
       if (error) throw error;
@@ -359,16 +405,7 @@ export function createSupabaseModule(deps) {
       if (error) throw error;
     }
 
-    const categoryRows = catalog.categories.map((item) => ({
-        user_id: userId,
-        kind: item.kind,
-        slug: item.slug,
-        name: item.name,
-        color: item.color || "#667085",
-        monthly_limit: item.kind === "expense" ? Number(item.monthlyLimit || 0) : null,
-        is_archived: false,
-        updated_at: new Date().toISOString(),
-      }));
+    const categoryRows = basePayloads.categoryRows;
     if (categoryRows.length) {
       const { error } = await client.from("categories").upsert(categoryRows, { onConflict: "user_id,kind,slug" });
       if (error) throw error;
@@ -397,7 +434,7 @@ export function createSupabaseModule(deps) {
     if (freshCategoriesError) throw freshCategoriesError;
     const categoryKeyToId = new Map((freshCategories || []).map((item) => [`${item.kind}:${item.slug}`, item]));
 
-    const tagRows = catalog.tags.flatMap((item) => {
+    const legacyTagRows = catalog.tags.flatMap((item) => {
       const category = categoryKeyToId.get(`${item.kind}:${item.categorySlug}`);
       if (!category) return [];
       return [{
@@ -407,9 +444,41 @@ export function createSupabaseModule(deps) {
         name: item.name,
         color: item.color || category.color || "#667085",
         is_archived: false,
-        updated_at: new Date().toISOString(),
+        updated_at: nowIso,
       }];
     });
+    const legacyBudgetRows = catalog.budgets.flatMap((item) => {
+      const category = categoryKeyToId.get(`expense:${item.categorySlug}`);
+      if (!category) return [];
+      return [{
+        user_id: userId,
+        category_id: category.id,
+        period_kind: item.periodKind,
+        amount: Number(item.amount || 0),
+        starts_on: nowIso.slice(0, 10),
+        updated_at: nowIso,
+      }];
+    });
+    const legacyGoalRows = catalog.goals.map((goal) => ({
+      user_id: userId,
+      name: goal.name,
+      target_amount: Number(goal.target || 0),
+      current_amount: Number(goal.currentAmount || 0),
+      linked_category_id: categoryKeyToId.get(`investment:${goal.key}`)?.id || null,
+      color: goal.color || "#635bff",
+      updated_at: nowIso,
+    }));
+    const dependentPayloads = v2CatalogWriteAdapter.buildDependentPayloads({
+      userId,
+      catalog,
+      categoryKeyToId,
+      nowIso,
+    });
+    compareCatalogWriteShadow("supabase.v2CatalogWrite.tags", legacyTagRows, dependentPayloads.tagRows, ["user_id", "category_id", "slug", "name", "color", "is_archived"]);
+    compareCatalogWriteShadow("supabase.v2CatalogWrite.budgets", legacyBudgetRows, dependentPayloads.budgetRows, ["user_id", "category_id", "period_kind", "amount", "starts_on"]);
+    compareCatalogWriteShadow("supabase.v2CatalogWrite.goals", legacyGoalRows, dependentPayloads.goalRows, ["user_id", "name", "target_amount", "current_amount", "linked_category_id", "color"]);
+
+    const tagRows = dependentPayloads.tagRows;
     if (tagRows.length) {
       const { error } = await client.from("category_tags").upsert(tagRows, { onConflict: "user_id,category_id,slug" });
       if (error) throw error;
@@ -429,16 +498,7 @@ export function createSupabaseModule(deps) {
       if (error) throw error;
     }
 
-    const creditCardRows = catalog.creditCards.map((card) => ({
-      id: card.id,
-      user_id: userId,
-      name: card.name,
-      color: card.color || "#635bff",
-      closing_day: Number(card.closingDay || 25),
-      due_day: Number(card.dueDay || 10),
-      is_archived: false,
-      updated_at: new Date().toISOString(),
-    }));
+    const creditCardRows = basePayloads.creditCardRows;
     if (creditCardRows.length) {
       const { error } = await client.from("credit_cards").upsert(creditCardRows, { onConflict: "id" });
       if (error) throw error;
@@ -456,18 +516,7 @@ export function createSupabaseModule(deps) {
       if (error) throw error;
     }
 
-    const budgetRows = catalog.budgets.flatMap((item) => {
-      const category = categoryKeyToId.get(`expense:${item.categorySlug}`);
-      if (!category) return [];
-      return [{
-        user_id: userId,
-        category_id: category.id,
-        period_kind: item.periodKind,
-        amount: Number(item.amount || 0),
-        starts_on: new Date().toISOString().slice(0, 10),
-        updated_at: new Date().toISOString(),
-      }];
-    });
+    const budgetRows = dependentPayloads.budgetRows;
     const { error: deleteBudgetsError } = await client.from("budgets").delete().eq("user_id", userId);
     if (deleteBudgetsError) throw deleteBudgetsError;
     if (budgetRows.length) {
@@ -475,15 +524,7 @@ export function createSupabaseModule(deps) {
       if (error) throw error;
     }
 
-    const goalRows = catalog.goals.map((goal) => ({
-      user_id: userId,
-      name: goal.name,
-      target_amount: Number(goal.target || 0),
-      current_amount: Number(goal.currentAmount || 0),
-      linked_category_id: categoryKeyToId.get(`investment:${goal.key}`)?.id || null,
-      color: goal.color || "#635bff",
-      updated_at: new Date().toISOString(),
-    }));
+    const goalRows = dependentPayloads.goalRows;
     const { error: deleteGoalsError } = await client.from("goals").delete().eq("user_id", userId);
     if (deleteGoalsError) throw deleteGoalsError;
     if (goalRows.length) {
