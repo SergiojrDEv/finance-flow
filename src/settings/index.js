@@ -1,4 +1,6 @@
 import { state } from "../core/state.js";
+import { createCatalogSnapshotAdapter } from "../infrastructure/adapters/catalogSnapshotAdapter.js";
+import { buildSettingsOverview } from "../application/catalog/buildSettingsOverview.js";
 import {
   createId,
   esc,
@@ -9,8 +11,93 @@ import {
 } from "../core/utils.js";
 
 export function createSettingsModule(deps) {
+  const catalogSnapshotAdapter = createCatalogSnapshotAdapter();
+  const shadowWarnings = new Set();
+  let lastShadowSignature = "";
+
+  function reportShadowMismatch(scope, payload) {
+    const signature = `${scope}:${JSON.stringify(payload)}`;
+    if (shadowWarnings.has(signature)) return;
+    shadowWarnings.add(signature);
+    console.warn(`[shadow-mode] Divergencia detectada em ${scope}`, payload);
+  }
+
+  function compareCatalogOverviewShadow(currentCatalog, nextCatalog) {
+    const current = buildSettingsOverview(currentCatalog);
+    const next = buildSettingsOverview(nextCatalog);
+    if (JSON.stringify(current) !== JSON.stringify(next)) {
+      reportShadowMismatch("settings.catalogOverview", { current, next });
+    }
+  }
+
+  function compareSettingsRoundTripShadow(settings, catalog) {
+    const nextSettings = catalogSnapshotAdapter.toLegacySettings(catalog);
+    const current = {
+      accounts: [...(settings.accounts || [])].sort(),
+      creditCards: (settings.creditCards || []).map((item) => ({
+        id: item.id,
+        name: item.name,
+        closingDay: Number(item.closingDay || 25),
+        dueDay: Number(item.dueDay || 10),
+      })).sort((left, right) => left.id.localeCompare(right.id)),
+      categoryCounts: Object.fromEntries(
+        Object.entries(settings.categories || {}).map(([kind, items]) => [kind, (items || []).length])
+      ),
+      tagCounts: Object.fromEntries(
+        Object.entries(settings.subcategories || {}).map(([kind, groups]) => [
+          kind,
+          Object.values(groups || {}).reduce((sum, items) => sum + (items || []).length, 0),
+        ])
+      ),
+      goalCount: (settings.goals || []).length,
+    };
+    const next = {
+      accounts: [...(nextSettings.accounts || [])].sort(),
+      creditCards: (nextSettings.creditCards || []).map((item) => ({
+        id: item.id,
+        name: item.name,
+        closingDay: Number(item.closingDay || 25),
+        dueDay: Number(item.dueDay || 10),
+      })).sort((left, right) => left.id.localeCompare(right.id)),
+      categoryCounts: Object.fromEntries(
+        Object.entries(nextSettings.categories || {}).map(([kind, items]) => [kind, (items || []).length])
+      ),
+      tagCounts: Object.fromEntries(
+        Object.entries(nextSettings.subcategories || {}).map(([kind, groups]) => [
+          kind,
+          Object.values(groups || {}).reduce((sum, items) => sum + (items || []).length, 0),
+        ])
+      ),
+      goalCount: (nextSettings.goals || []).length,
+    };
+
+    if (JSON.stringify(current) !== JSON.stringify(next)) {
+      reportShadowMismatch("settings.roundTrip", { current, next });
+    }
+  }
+
+  function runCatalogShadowChecks(currentCatalog) {
+    const signature = JSON.stringify({
+      settingsUpdatedAt: state.settings?.updatedAt || null,
+      source: currentCatalog?.source || "legacy",
+      accountCount: currentCatalog?.accounts?.length || 0,
+      categoryCount: currentCatalog?.categories?.length || 0,
+      tagCount: currentCatalog?.tags?.length || 0,
+      goalCount: currentCatalog?.goals?.length || 0,
+      budgetCount: currentCatalog?.budgets?.length || 0,
+    });
+    if (signature === lastShadowSignature) return;
+    lastShadowSignature = signature;
+
+    const projectedCatalog = catalogSnapshotAdapter.fromSettings(state.settings, currentCatalog);
+    compareCatalogOverviewShadow(currentCatalog, projectedCatalog);
+    compareSettingsRoundTripShadow(state.settings, projectedCatalog);
+  }
+
   function getCatalog() {
-    return state.catalog || deps.hydrateCatalog(state.settings, state.catalog);
+    const currentCatalog = state.catalog || deps.hydrateCatalog(state.settings, state.catalog);
+    runCatalogShadowChecks(currentCatalog);
+    return currentCatalog;
   }
 
   function getCategoriesByType(type) {
