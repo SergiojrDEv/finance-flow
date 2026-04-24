@@ -2,9 +2,11 @@ import { SUPABASE_FALLBACK_CONFIG, state } from "../core/state.js";
 import { buildCatalogFromV2, ensureCatalogCoversTransactions } from "../core/catalog.js";
 import { buildSettingsOverview } from "../application/catalog/buildSettingsOverview.js";
 import { createV2CatalogReadAdapter } from "../infrastructure/adapters/v2CatalogReadAdapter.js";
+import { createV2TransactionWriteAdapter } from "../infrastructure/adapters/v2TransactionWriteAdapter.js";
 
 export function createSupabaseModule(deps) {
   const v2CatalogReadAdapter = createV2CatalogReadAdapter();
+  const v2TransactionWriteAdapter = createV2TransactionWriteAdapter();
   const shadowWarnings = new Set();
 
   function reportShadowMismatch(scope, payload) {
@@ -19,6 +21,35 @@ export function createSupabaseModule(deps) {
     const next = buildSettingsOverview(nextCatalog);
     if (JSON.stringify(current) !== JSON.stringify(next)) {
       reportShadowMismatch("supabase.v2CatalogRead", { current, next });
+    }
+  }
+
+  function compareTransactionWriteShadow(currentRows, nextRows) {
+    const normalize = (rows) => rows
+      .map((item) => ({
+        id: item.id,
+        transaction_kind: item.transaction_kind,
+        status: item.status,
+        description: item.description,
+        amount: Number(item.amount || 0),
+        transaction_date: item.transaction_date,
+        due_date: item.due_date || null,
+        category_id: item.category_id || null,
+        category_tag_id: item.category_tag_id || null,
+        account_id: item.account_id || null,
+        credit_card_id: item.credit_card_id || null,
+        payment_method: item.payment_method,
+        recurring_rule_id: item.recurring_rule_id || null,
+        installment_group_id: item.installment_group_id || null,
+        installment_number: item.installment_number || null,
+        installment_total: item.installment_total || null,
+      }))
+      .sort((left, right) => left.id.localeCompare(right.id));
+
+    const current = normalize(currentRows);
+    const next = normalize(nextRows);
+    if (JSON.stringify(current) !== JSON.stringify(next)) {
+      reportShadowMismatch("supabase.v2TransactionWrite", { current, next });
     }
   }
 
@@ -480,6 +511,7 @@ export function createSupabaseModule(deps) {
     if (currentTagsError) throw currentTagsError;
     const tagKeyToId = new Map((currentTags || []).map((item) => [`${item.category_id}:${item.slug}`, item.id]));
 
+    const nowIso = new Date().toISOString();
     const rows = state.transactions.map((item) => {
       const category = categoryRecords.get(`${item.type}:${item.category}`);
       const categoryId = category?.id || null;
@@ -502,10 +534,21 @@ export function createSupabaseModule(deps) {
         installment_group_id: item.installmentGroup || null,
         installment_number: item.installmentNumber || null,
         installment_total: item.installmentTotal || null,
-        created_at: item.createdAt || new Date().toISOString(),
-        updated_at: new Date().toISOString(),
+        created_at: item.createdAt || nowIso,
+        updated_at: nowIso,
       };
     });
+    const adapterRows = v2TransactionWriteAdapter.fromLegacyTransactions({
+      userId,
+      transactions: state.transactions,
+      refs: {
+        categories: categoryRecords,
+        tags: tagKeyToId,
+        accounts: accountNameToId,
+      },
+      nowIso,
+    });
+    compareTransactionWriteShadow(rows, adapterRows);
 
     if (rows.length) {
       const { error } = await client.from("transactions_v2").upsert(rows, { onConflict: "id" });
