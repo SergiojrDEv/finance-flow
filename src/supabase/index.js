@@ -1,7 +1,27 @@
 import { SUPABASE_FALLBACK_CONFIG, state } from "../core/state.js";
 import { buildCatalogFromV2, ensureCatalogCoversTransactions } from "../core/catalog.js";
+import { buildSettingsOverview } from "../application/catalog/buildSettingsOverview.js";
+import { createV2CatalogReadAdapter } from "../infrastructure/adapters/v2CatalogReadAdapter.js";
 
 export function createSupabaseModule(deps) {
+  const v2CatalogReadAdapter = createV2CatalogReadAdapter();
+  const shadowWarnings = new Set();
+
+  function reportShadowMismatch(scope, payload) {
+    const signature = `${scope}:${JSON.stringify(payload)}`;
+    if (shadowWarnings.has(signature)) return;
+    shadowWarnings.add(signature);
+    console.warn(`[shadow-mode] Divergencia detectada em ${scope}`, payload);
+  }
+
+  function compareCatalogReadShadow(currentCatalog, nextCatalog) {
+    const current = buildSettingsOverview(currentCatalog);
+    const next = buildSettingsOverview(nextCatalog);
+    if (JSON.stringify(current) !== JSON.stringify(next)) {
+      reportShadowMismatch("supabase.v2CatalogRead", { current, next });
+    }
+  }
+
   function isMissingRelationError(error) {
     const message = String(error?.message || "").toLowerCase();
     return message.includes("does not exist") || message.includes("could not find") || error?.code === "PGRST205";
@@ -236,10 +256,22 @@ export function createSupabaseModule(deps) {
       tagById: new Map(categoryTags.map((item) => [item.id, item])),
     };
 
-    state.catalog = ensureCatalogCoversTransactions(
+    const currentReadCatalog = ensureCatalogCoversTransactions(
       buildCatalogFromV2({ accounts, creditCards, categories, categoryTags, budgets, goals }),
       legacyRows
     );
+    const adapterReadCatalog = v2CatalogReadAdapter.fromSupabasePayload({
+      accounts,
+      creditCards,
+      categories,
+      categoryTags,
+      budgets,
+      goals,
+      legacyTransactions: legacyRows,
+    });
+    compareCatalogReadShadow(currentReadCatalog, adapterReadCatalog);
+
+    state.catalog = currentReadCatalog;
     state.dataMode = "v2";
     deps.syncSettingsFromCatalog();
     const legacyById = new Map(legacyRows.map((item) => [item.id, item]));
