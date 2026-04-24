@@ -15,6 +15,40 @@ import {
 } from "../core/utils.js";
 
 export function createTransactionsModule(deps) {
+  function getTypeExperience(type) {
+    if (type === "income") {
+      return {
+        heroTitle: "Registre uma entrada de forma simples",
+        heroCopy: "Use esta tela para cadastrar salarios, freelas, bonus e outras entradas sem carregar campos que so fazem sentido para despesas.",
+        formTitle: "Nova receita",
+        formCopy: "Informe a origem da entrada, a conta de destino e o valor recebido.",
+        submitLabel: "Salvar receita",
+        modalTitle: "Editar receita",
+        modalCopy: "Atualize os dados principais desta entrada.",
+      };
+    }
+    if (type === "investment") {
+      return {
+        heroTitle: "Registre um investimento com foco no aporte",
+        heroCopy: "Aqui voce registra aportes e movimentacoes de investimento de forma direta, sem campos de pagamento ou repeticao desnecessarios.",
+        formTitle: "Novo investimento",
+        formCopy: "Informe a categoria de investimento, a conta de origem e o valor aplicado.",
+        submitLabel: "Salvar investimento",
+        modalTitle: "Editar investimento",
+        modalCopy: "Atualize os dados principais deste aporte.",
+      };
+    }
+    return {
+      heroTitle: "Cadastre uma despesa em uma tela dedicada",
+      heroCopy: "Use esta area para registrar despesas com pagamento, parcelas, recorrencia e os detalhes que ajudam no controle do mes.",
+      formTitle: "Nova despesa",
+      formCopy: "Preencha os dados da despesa, incluindo vencimento, forma de pagamento e repeticao quando precisar.",
+      submitLabel: "Salvar despesa",
+      modalTitle: "Editar despesa",
+      modalCopy: "Ajuste pagamento, vencimento e demais dados desta despesa.",
+    };
+  }
+
   function shouldUseExpenseOnlyFields(type) {
     return type === "expense";
   }
@@ -25,11 +59,23 @@ export function createTransactionsModule(deps) {
 
   function syncTransactionTypeFields() {
     const isExpense = shouldUseExpenseOnlyFields(state.activeType);
+    const experience = getTypeExperience(state.activeType);
     const paymentField = document.querySelector("#transaction-payment-row");
     const recurrenceField = document.querySelector("#transaction-recurrence-row");
     const repeatCountField = document.querySelector("#repeat-count-field");
+    const formTitle = document.querySelector("#transaction-form-title");
+    const formCopy = document.querySelector("#transaction-form-copy");
+    const heroTitle = document.querySelector("#transaction-hero-title");
+    const heroCopy = document.querySelector("#transaction-hero-copy");
+    const submit = document.querySelector("#transaction-submit");
 
     updateSubcategoryOptions();
+
+    if (formTitle) formTitle.textContent = experience.formTitle;
+    if (formCopy) formCopy.textContent = experience.formCopy;
+    if (heroTitle) heroTitle.textContent = experience.heroTitle;
+    if (heroCopy) heroCopy.textContent = experience.heroCopy;
+    if (submit) submit.textContent = experience.submitLabel;
 
     [paymentField, recurrenceField, repeatCountField].forEach((field) => {
       if (!field) return;
@@ -52,9 +98,15 @@ export function createTransactionsModule(deps) {
 
   function syncTransactionModalTypeFields() {
     const isExpense = shouldUseExpenseOnlyFields(state.transactionModalType);
+    const experience = getTypeExperience(state.transactionModalType);
     const paymentField = document.querySelector("#transaction-modal-payment-row");
+    const modalTitle = document.querySelector("#transaction-modal-title");
+    const modalCopy = document.querySelector("#transaction-modal-copy");
 
     updateTransactionModalSubcategoryOptions();
+
+    if (modalTitle) modalTitle.textContent = experience.modalTitle;
+    if (modalCopy) modalCopy.textContent = experience.modalCopy;
 
     if (paymentField) {
       paymentField.classList.toggle("is-hidden", !isExpense);
@@ -393,8 +445,6 @@ export function createTransactionsModule(deps) {
     document.querySelector("#installments").disabled = false;
     document.querySelector("#recurrence").disabled = false;
     document.querySelector("#repeat-count").disabled = false;
-    document.querySelector("#transaction-form-title").textContent = "Novo lancamento";
-    document.querySelector("#transaction-submit").textContent = "Salvar lancamento";
     document.querySelector("#cancel-edit").classList.add("is-hidden");
     syncTransactionTypeFields();
   }
