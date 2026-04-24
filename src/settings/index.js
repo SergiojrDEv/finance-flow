@@ -95,7 +95,9 @@ export function createSettingsModule(deps) {
   }
 
   function getCatalog() {
-    const currentCatalog = state.catalog || deps.hydrateCatalog(state.settings, state.catalog);
+    const legacyCatalog = deps.hydrateCatalog(state.settings, state.catalog);
+    const currentCatalog = state.catalog || catalogSnapshotAdapter.fromSettings(state.settings, state.catalog);
+    compareCatalogOverviewShadow(legacyCatalog, currentCatalog);
     runCatalogShadowChecks(currentCatalog);
     return currentCatalog;
   }
