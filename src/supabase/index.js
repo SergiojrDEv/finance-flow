@@ -1,67 +1,11 @@
 import { SUPABASE_FALLBACK_CONFIG, state } from "../core/state.js";
 import { ensureCatalogCoversTransactions } from "../core/catalog.js";
-import { buildSettingsOverview } from "../application/catalog/buildSettingsOverview.js";
+import { createSupabaseShadowFacade } from "../infrastructure/facades/supabaseShadowFacade.js";
 import { createV2SyncFacade } from "../infrastructure/facades/v2SyncFacade.js";
 
 export function createSupabaseModule(deps) {
   const v2SyncFacade = createV2SyncFacade({ inferAccountKind });
-  const shadowWarnings = new Set();
-
-  function reportShadowMismatch(scope, payload) {
-    const signature = `${scope}:${JSON.stringify(payload)}`;
-    if (shadowWarnings.has(signature)) return;
-    shadowWarnings.add(signature);
-    console.warn(`[shadow-mode] Divergencia detectada em ${scope}`, payload);
-  }
-
-  function compareCatalogReadShadow(currentCatalog, nextCatalog) {
-    const current = buildSettingsOverview(currentCatalog);
-    const next = buildSettingsOverview(nextCatalog);
-    if (JSON.stringify(current) !== JSON.stringify(next)) {
-      reportShadowMismatch("supabase.v2CatalogRead", { current, next });
-    }
-  }
-
-  function compareTransactionWriteShadow(currentRows, nextRows) {
-    const normalize = (rows) => rows
-      .map((item) => ({
-        id: item.id,
-        transaction_kind: item.transaction_kind,
-        status: item.status,
-        description: item.description,
-        amount: Number(item.amount || 0),
-        transaction_date: item.transaction_date,
-        due_date: item.due_date || null,
-        category_id: item.category_id || null,
-        category_tag_id: item.category_tag_id || null,
-        account_id: item.account_id || null,
-        credit_card_id: item.credit_card_id || null,
-        payment_method: item.payment_method,
-        recurring_rule_id: item.recurring_rule_id || null,
-        installment_group_id: item.installment_group_id || null,
-        installment_number: item.installment_number || null,
-        installment_total: item.installment_total || null,
-      }))
-      .sort((left, right) => left.id.localeCompare(right.id));
-
-    const current = normalize(currentRows);
-    const next = normalize(nextRows);
-    if (JSON.stringify(current) !== JSON.stringify(next)) {
-      reportShadowMismatch("supabase.v2TransactionWrite", { current, next });
-    }
-  }
-
-  function compareCatalogWriteShadow(scope, currentRows, nextRows, fields) {
-    const normalize = (rows) => rows
-      .map((item) => Object.fromEntries(fields.map((field) => [field, item[field] ?? null])))
-      .sort((left, right) => JSON.stringify(left).localeCompare(JSON.stringify(right)));
-
-    const current = normalize(currentRows);
-    const next = normalize(nextRows);
-    if (JSON.stringify(current) !== JSON.stringify(next)) {
-      reportShadowMismatch(scope, { current, next });
-    }
-  }
+  const supabaseShadow = createSupabaseShadowFacade();
 
   function isMissingRelationError(error) {
     const message = String(error?.message || "").toLowerCase();
@@ -306,7 +250,7 @@ export function createSupabaseModule(deps) {
       goals,
       legacyTransactions: legacyRows,
     });
-    compareCatalogReadShadow(legacyReadCatalog, adapterReadCatalog);
+    supabaseShadow.compareCatalogRead(legacyReadCatalog, adapterReadCatalog);
 
     state.catalog = adapterReadCatalog;
     state.dataMode = "v2";
@@ -346,9 +290,9 @@ export function createSupabaseModule(deps) {
       catalog,
       nowIso,
     });
-    compareCatalogWriteShadow("supabase.v2CatalogWrite.accounts", legacyAccountRows, basePayloads.accountRows, ["user_id", "name", "kind", "color", "is_archived"]);
-    compareCatalogWriteShadow("supabase.v2CatalogWrite.categories", legacyCategoryRows, basePayloads.categoryRows, ["user_id", "kind", "slug", "name", "color", "monthly_limit", "is_archived"]);
-    compareCatalogWriteShadow("supabase.v2CatalogWrite.creditCards", legacyCreditCardRows, basePayloads.creditCardRows, ["id", "user_id", "name", "color", "closing_day", "due_day", "is_archived"]);
+    supabaseShadow.compareCatalogWrite("supabase.v2CatalogWrite.accounts", legacyAccountRows, basePayloads.accountRows, ["user_id", "name", "kind", "color", "is_archived"]);
+    supabaseShadow.compareCatalogWrite("supabase.v2CatalogWrite.categories", legacyCategoryRows, basePayloads.categoryRows, ["user_id", "kind", "slug", "name", "color", "monthly_limit", "is_archived"]);
+    supabaseShadow.compareCatalogWrite("supabase.v2CatalogWrite.creditCards", legacyCreditCardRows, basePayloads.creditCardRows, ["id", "user_id", "name", "color", "closing_day", "due_day", "is_archived"]);
 
     const accountRows = basePayloads.accountRows;
     if (accountRows.length) {
@@ -409,9 +353,9 @@ export function createSupabaseModule(deps) {
       categoryKeyToId,
       nowIso,
     });
-    compareCatalogWriteShadow("supabase.v2CatalogWrite.tags", legacyTagRows, dependentPayloads.tagRows, ["user_id", "category_id", "slug", "name", "color", "is_archived"]);
-    compareCatalogWriteShadow("supabase.v2CatalogWrite.budgets", legacyBudgetRows, dependentPayloads.budgetRows, ["user_id", "category_id", "period_kind", "amount", "starts_on"]);
-    compareCatalogWriteShadow("supabase.v2CatalogWrite.goals", legacyGoalRows, dependentPayloads.goalRows, ["user_id", "name", "target_amount", "current_amount", "linked_category_id", "color"]);
+    supabaseShadow.compareCatalogWrite("supabase.v2CatalogWrite.tags", legacyTagRows, dependentPayloads.tagRows, ["user_id", "category_id", "slug", "name", "color", "is_archived"]);
+    supabaseShadow.compareCatalogWrite("supabase.v2CatalogWrite.budgets", legacyBudgetRows, dependentPayloads.budgetRows, ["user_id", "category_id", "period_kind", "amount", "starts_on"]);
+    supabaseShadow.compareCatalogWrite("supabase.v2CatalogWrite.goals", legacyGoalRows, dependentPayloads.goalRows, ["user_id", "name", "target_amount", "current_amount", "linked_category_id", "color"]);
 
     const tagRows = dependentPayloads.tagRows;
     if (tagRows.length) {
@@ -498,7 +442,7 @@ export function createSupabaseModule(deps) {
       },
       nowIso,
     });
-    compareTransactionWriteShadow(legacyRows, rows);
+    supabaseShadow.compareTransactionWrite(legacyRows, rows);
 
     if (rows.length) {
       const { error } = await client.from("transactions_v2").upsert(rows, { onConflict: "id" });
