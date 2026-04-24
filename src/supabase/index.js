@@ -1,14 +1,10 @@
 import { SUPABASE_FALLBACK_CONFIG, state } from "../core/state.js";
-import { buildCatalogFromV2, ensureCatalogCoversTransactions } from "../core/catalog.js";
+import { ensureCatalogCoversTransactions } from "../core/catalog.js";
 import { buildSettingsOverview } from "../application/catalog/buildSettingsOverview.js";
-import { createV2CatalogReadAdapter } from "../infrastructure/adapters/v2CatalogReadAdapter.js";
-import { createV2CatalogWriteAdapter } from "../infrastructure/adapters/v2CatalogWriteAdapter.js";
-import { createV2TransactionWriteAdapter } from "../infrastructure/adapters/v2TransactionWriteAdapter.js";
+import { createV2SyncFacade } from "../infrastructure/facades/v2SyncFacade.js";
 
 export function createSupabaseModule(deps) {
-  const v2CatalogReadAdapter = createV2CatalogReadAdapter();
-  const v2CatalogWriteAdapter = createV2CatalogWriteAdapter();
-  const v2TransactionWriteAdapter = createV2TransactionWriteAdapter();
+  const v2SyncFacade = createV2SyncFacade({ inferAccountKind });
   const shadowWarnings = new Set();
 
   function reportShadowMismatch(scope, payload) {
@@ -301,11 +297,7 @@ export function createSupabaseModule(deps) {
       tagById: new Map(categoryTags.map((item) => [item.id, item])),
     };
 
-    const legacyReadCatalog = ensureCatalogCoversTransactions(
-      buildCatalogFromV2({ accounts, creditCards, categories, categoryTags, budgets, goals }),
-      legacyRows
-    );
-    const adapterReadCatalog = v2CatalogReadAdapter.fromSupabasePayload({
+    const { legacyCatalog: legacyReadCatalog, primaryCatalog: adapterReadCatalog } = v2SyncFacade.buildCatalogReadState({
       accounts,
       creditCards,
       categories,
@@ -346,39 +338,13 @@ export function createSupabaseModule(deps) {
     state.catalog = catalog;
     const nowIso = new Date().toISOString();
 
-    const legacyAccountRows = catalog.accounts.map((account) => ({
-      user_id: userId,
-      name: account.name,
-      kind: account.kind || inferAccountKind(account.name),
-      color: account.color || "#0b7285",
-      is_archived: false,
-      updated_at: nowIso,
-    }));
-    const legacyCategoryRows = catalog.categories.map((item) => ({
-      user_id: userId,
-      kind: item.kind,
-      slug: item.slug,
-      name: item.name,
-      color: item.color || "#667085",
-      monthly_limit: item.kind === "expense" ? Number(item.monthlyLimit || 0) : null,
-      is_archived: false,
-      updated_at: nowIso,
-    }));
-    const legacyCreditCardRows = catalog.creditCards.map((card) => ({
-      id: card.id,
-      user_id: userId,
-      name: card.name,
-      color: card.color || "#635bff",
-      closing_day: Number(card.closingDay || 25),
-      due_day: Number(card.dueDay || 10),
-      is_archived: false,
-      updated_at: nowIso,
-    }));
-    const basePayloads = v2CatalogWriteAdapter.buildBasePayloads({
+    const {
+      legacy: { accountRows: legacyAccountRows, categoryRows: legacyCategoryRows, creditCardRows: legacyCreditCardRows },
+      basePayloads,
+    } = v2SyncFacade.buildCatalogWriteState({
       userId,
       catalog,
       nowIso,
-      inferAccountKind,
     });
     compareCatalogWriteShadow("supabase.v2CatalogWrite.accounts", legacyAccountRows, basePayloads.accountRows, ["user_id", "name", "kind", "color", "is_archived"]);
     compareCatalogWriteShadow("supabase.v2CatalogWrite.categories", legacyCategoryRows, basePayloads.categoryRows, ["user_id", "kind", "slug", "name", "color", "monthly_limit", "is_archived"]);
@@ -434,41 +400,10 @@ export function createSupabaseModule(deps) {
     if (freshCategoriesError) throw freshCategoriesError;
     const categoryKeyToId = new Map((freshCategories || []).map((item) => [`${item.kind}:${item.slug}`, item]));
 
-    const legacyTagRows = catalog.tags.flatMap((item) => {
-      const category = categoryKeyToId.get(`${item.kind}:${item.categorySlug}`);
-      if (!category) return [];
-      return [{
-        user_id: userId,
-        category_id: category.id,
-        slug: item.slug,
-        name: item.name,
-        color: item.color || category.color || "#667085",
-        is_archived: false,
-        updated_at: nowIso,
-      }];
-    });
-    const legacyBudgetRows = catalog.budgets.flatMap((item) => {
-      const category = categoryKeyToId.get(`expense:${item.categorySlug}`);
-      if (!category) return [];
-      return [{
-        user_id: userId,
-        category_id: category.id,
-        period_kind: item.periodKind,
-        amount: Number(item.amount || 0),
-        starts_on: nowIso.slice(0, 10),
-        updated_at: nowIso,
-      }];
-    });
-    const legacyGoalRows = catalog.goals.map((goal) => ({
-      user_id: userId,
-      name: goal.name,
-      target_amount: Number(goal.target || 0),
-      current_amount: Number(goal.currentAmount || 0),
-      linked_category_id: categoryKeyToId.get(`investment:${goal.key}`)?.id || null,
-      color: goal.color || "#635bff",
-      updated_at: nowIso,
-    }));
-    const dependentPayloads = v2CatalogWriteAdapter.buildDependentPayloads({
+    const {
+      legacy: { tagRows: legacyTagRows, budgetRows: legacyBudgetRows, goalRows: legacyGoalRows },
+      dependentPayloads,
+    } = v2SyncFacade.buildCatalogWriteState({
       userId,
       catalog,
       categoryKeyToId,
@@ -553,33 +488,7 @@ export function createSupabaseModule(deps) {
     const tagKeyToId = new Map((currentTags || []).map((item) => [`${item.category_id}:${item.slug}`, item.id]));
 
     const nowIso = new Date().toISOString();
-    const legacyRows = state.transactions.map((item) => {
-      const category = categoryRecords.get(`${item.type}:${item.category}`);
-      const categoryId = category?.id || null;
-      const categoryTagId = categoryId && item.subcategory ? tagKeyToId.get(`${categoryId}:${item.subcategory}`) || null : null;
-      return {
-        id: item.id,
-        user_id: userId,
-        transaction_kind: item.type,
-        status: item.status || "paid",
-        description: item.description,
-        amount: Number(item.amount),
-        transaction_date: item.date,
-        due_date: item.dueDate || item.date,
-        category_id: categoryId,
-        category_tag_id: categoryTagId,
-        account_id: accountNameToId.get(String(item.account || "Conta corrente").toLowerCase()) || null,
-        credit_card_id: item.creditCardId || null,
-        payment_method: item.paymentMethod || "pix",
-        recurring_rule_id: item.recurrenceId || null,
-        installment_group_id: item.installmentGroup || null,
-        installment_number: item.installmentNumber || null,
-        installment_total: item.installmentTotal || null,
-        created_at: item.createdAt || nowIso,
-        updated_at: nowIso,
-      };
-    });
-    const rows = v2TransactionWriteAdapter.fromLegacyTransactions({
+    const { legacyRows, rows } = v2SyncFacade.buildTransactionWriteState({
       userId,
       transactions: state.transactions,
       refs: {
