@@ -256,7 +256,7 @@ export function createSupabaseModule(deps) {
       tagById: new Map(categoryTags.map((item) => [item.id, item])),
     };
 
-    const currentReadCatalog = ensureCatalogCoversTransactions(
+    const legacyReadCatalog = ensureCatalogCoversTransactions(
       buildCatalogFromV2({ accounts, creditCards, categories, categoryTags, budgets, goals }),
       legacyRows
     );
@@ -269,9 +269,9 @@ export function createSupabaseModule(deps) {
       goals,
       legacyTransactions: legacyRows,
     });
-    compareCatalogReadShadow(currentReadCatalog, adapterReadCatalog);
+    compareCatalogReadShadow(legacyReadCatalog, adapterReadCatalog);
 
-    state.catalog = currentReadCatalog;
+    state.catalog = adapterReadCatalog;
     state.dataMode = "v2";
     deps.syncSettingsFromCatalog();
     const legacyById = new Map(legacyRows.map((item) => [item.id, item]));
