@@ -1,0 +1,51 @@
+export function mapV2RowToTransaction(row) {
+  return {
+    id: row.id,
+    userId: row.user_id,
+    kind: row.transaction_kind,
+    status: row.status,
+    description: row.description,
+    notes: row.notes || null,
+    amount: Number(row.amount || 0),
+    transactionDate: row.transaction_date,
+    dueDate: row.due_date || null,
+    paidAt: row.paid_at || null,
+    categoryId: row.category_id || null,
+    categoryTagId: row.category_tag_id || null,
+    accountId: row.account_id || null,
+    creditCardId: row.credit_card_id || null,
+    paymentMethod: row.payment_method,
+    recurringRuleId: row.recurring_rule_id || null,
+    installmentGroupId: row.installment_group_id || null,
+    installmentNumber: row.installment_number || null,
+    installmentTotal: row.installment_total || null,
+    createdAt: row.created_at,
+    updatedAt: row.updated_at || null,
+  };
+}
+
+export function mapTransactionToV2Row(transaction) {
+  return {
+    id: transaction.id,
+    user_id: transaction.userId,
+    transaction_kind: transaction.kind,
+    status: transaction.status,
+    description: transaction.description,
+    notes: transaction.notes || null,
+    amount: transaction.amount,
+    transaction_date: transaction.transactionDate,
+    due_date: transaction.dueDate || null,
+    paid_at: transaction.paidAt || null,
+    category_id: transaction.categoryId || null,
+    category_tag_id: transaction.categoryTagId || null,
+    account_id: transaction.accountId || null,
+    credit_card_id: transaction.creditCardId || null,
+    payment_method: transaction.paymentMethod,
+    recurring_rule_id: transaction.recurringRuleId || null,
+    installment_group_id: transaction.installmentGroupId || null,
+    installment_number: transaction.installmentNumber || null,
+    installment_total: transaction.installmentTotal || null,
+    created_at: transaction.createdAt,
+    updated_at: transaction.updatedAt || null,
+  };
+}
