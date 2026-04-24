@@ -512,7 +512,7 @@ export function createSupabaseModule(deps) {
     const tagKeyToId = new Map((currentTags || []).map((item) => [`${item.category_id}:${item.slug}`, item.id]));
 
     const nowIso = new Date().toISOString();
-    const rows = state.transactions.map((item) => {
+    const legacyRows = state.transactions.map((item) => {
       const category = categoryRecords.get(`${item.type}:${item.category}`);
       const categoryId = category?.id || null;
       const categoryTagId = categoryId && item.subcategory ? tagKeyToId.get(`${categoryId}:${item.subcategory}`) || null : null;
@@ -538,7 +538,7 @@ export function createSupabaseModule(deps) {
         updated_at: nowIso,
       };
     });
-    const adapterRows = v2TransactionWriteAdapter.fromLegacyTransactions({
+    const rows = v2TransactionWriteAdapter.fromLegacyTransactions({
       userId,
       transactions: state.transactions,
       refs: {
@@ -548,7 +548,7 @@ export function createSupabaseModule(deps) {
       },
       nowIso,
     });
-    compareTransactionWriteShadow(rows, adapterRows);
+    compareTransactionWriteShadow(legacyRows, rows);
 
     if (rows.length) {
       const { error } = await client.from("transactions_v2").upsert(rows, { onConflict: "id" });
