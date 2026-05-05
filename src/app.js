@@ -61,12 +61,6 @@ function bindEvents() {
     state.currentDate = new Date(state.currentDate.getFullYear(), state.currentDate.getMonth() + 1, 1);
     deps.renderAll();
   });
-  document.querySelector("#open-transaction").addEventListener("click", () => {
-    location.hash = "novo-lancamento";
-    setTransactionView("compose");
-    setSectionFromHash();
-    document.querySelector("#description").focus();
-  });
   document.querySelector("#go-to-new-transaction").addEventListener("click", () => {
     location.hash = "novo-lancamento";
     setTransactionView("compose");

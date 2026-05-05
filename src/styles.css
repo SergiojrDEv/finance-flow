@@ -1112,10 +1112,6 @@ td {
   max-width: 920px;
 }
 
-body[data-section="relatorios"] #open-transaction {
-  display: none;
-}
-
 .settings-grid {
   margin-bottom: 18px;
 }
