@@ -79,7 +79,6 @@ function bindEvents() {
     setTransactionView("month");
     setSectionFromHash();
   });
-  document.querySelector("#seed-data").addEventListener("click", deps.seedData);
   document.querySelector("#install-app").addEventListener("click", deps.promptInstallApp);
   document.querySelectorAll(".segment").forEach((button) =>
     button.addEventListener("click", () => deps.setActiveType(button.dataset.type))
