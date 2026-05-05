@@ -15,8 +15,13 @@ function pickExpenseFields(draft) {
   return {
     subcategory: normalizeText(draft.subcategory),
     paymentMethod: normalizeText(draft.paymentMethod),
+    creditCardId: normalizeText(draft.creditCardId),
     dueDate: normalizeText(draft.dueDate),
     recurrence: normalizeText(draft.recurrence || "none"),
+    recurrenceId: normalizeText(draft.recurrenceId),
+    installmentGroup: normalizeText(draft.installmentGroup),
+    installmentNumber: draft.installmentNumber ? Number(draft.installmentNumber) : null,
+    installmentTotal: draft.installmentTotal ? Number(draft.installmentTotal) : null,
     repeatCount: Number(draft.repeatCount || 1),
   };
 }
@@ -38,8 +43,13 @@ export class Transaction {
     if (props.type === "expense") {
       this.subcategory = props.subcategory || "";
       this.paymentMethod = props.paymentMethod || "";
+      this.creditCardId = props.creditCardId || null;
       this.dueDate = props.dueDate || "";
       this.recurrence = props.recurrence || "none";
+      this.recurrenceId = props.recurrenceId || null;
+      this.installmentGroup = props.installmentGroup || null;
+      this.installmentNumber = props.installmentNumber || null;
+      this.installmentTotal = props.installmentTotal || null;
       this.repeatCount = props.repeatCount || 1;
     }
 

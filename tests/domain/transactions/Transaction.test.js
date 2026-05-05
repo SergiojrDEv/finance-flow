@@ -15,8 +15,13 @@ test("cria uma transacao de despesa valida e imutavel", () => {
     date: "2026-04-24",
     status: "paid",
     paymentMethod: "pix",
+    creditCardId: "card-1",
     dueDate: "2026-04-30",
     recurrence: "none",
+    recurrenceId: "rec-1",
+    installmentGroup: "group-1",
+    installmentNumber: 2,
+    installmentTotal: 4,
     repeatCount: 1,
   });
 
@@ -24,6 +29,9 @@ test("cria uma transacao de despesa valida e imutavel", () => {
   assert.equal(result.value.description, "Supermercado");
   assert.equal(result.value.amount, 120.51);
   assert.equal(result.value.paymentMethod, "pix");
+  assert.equal(result.value.creditCardId, "card-1");
+  assert.equal(result.value.installmentNumber, 2);
+  assert.equal(result.value.installmentTotal, 4);
   assert.equal(Object.isFrozen(result.value), true);
 });
 
@@ -41,6 +49,7 @@ test("cria receita sem campos exclusivos de despesa", () => {
 
   assert.equal(result.ok, true);
   assert.equal("paymentMethod" in result.value, false);
+  assert.equal("creditCardId" in result.value, false);
   assert.equal("dueDate" in result.value, false);
   assert.equal(result.value.amount, 5000);
 });

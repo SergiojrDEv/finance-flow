@@ -33,10 +33,12 @@ test("bloqueia receita com campo exclusivo de despesa", () => {
     description: "Salario",
     category: "salario",
     paymentMethod: "pix",
+    creditCardId: "card-1",
   });
 
   assert.equal(result.valid, false);
   assert.equal(result.errors.paymentMethod, "Campo permitido apenas para despesas.");
+  assert.equal(result.errors.creditCardId, "Campo permitido apenas para despesas.");
 });
 
 test("bloqueia investimento com vencimento e recorrencia", () => {

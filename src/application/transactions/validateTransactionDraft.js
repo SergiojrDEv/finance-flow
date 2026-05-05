@@ -55,7 +55,16 @@ export function validateTransactionDraft(draft = {}) {
   }
 
   if (type && type !== TRANSACTION_TYPES.expense) {
-    ["paymentMethod", "dueDate", "recurrence", "repeatCount"].forEach((field) => {
+    [
+      "paymentMethod",
+      "dueDate",
+      "recurrence",
+      "repeatCount",
+      "creditCardId",
+      "installmentGroup",
+      "installmentNumber",
+      "installmentTotal",
+    ].forEach((field) => {
       if (isNonEmpty(draft[field])) {
         errors[field] = "Campo permitido apenas para despesas.";
       }
