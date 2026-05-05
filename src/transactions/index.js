@@ -13,8 +13,61 @@ import {
   simplifyFieldName,
   toDateInput,
 } from "../core/utils.js";
+import { isFeatureEnabled } from "../core/featureFlags.js";
+import { createTransactionServices } from "../infrastructure/composition/createTransactionServices.js";
+import { runTransactionCreationShadow } from "../infrastructure/shadow/runTransactionCreationShadow.js";
 
 export function createTransactionsModule(deps) {
+  let shadowServices = null;
+  let shadowTransactions = [];
+
+  function getShadowServices() {
+    if (shadowServices) return shadowServices;
+    shadowServices = createTransactionServices({
+      readTransactions: () => shadowTransactions,
+      writeTransactions: (nextTransactions) => {
+        shadowTransactions = nextTransactions;
+      },
+      createId,
+    });
+    return shadowServices;
+  }
+
+  function toShadowDraft(transaction) {
+    const draft = {
+      userId: state.currentUser?.id || "",
+      id: transaction.id,
+      type: transaction.type,
+      description: transaction.description,
+      category: transaction.category,
+      account: transaction.account,
+      amount: transaction.amount,
+      date: transaction.date,
+      status: transaction.status || "paid",
+      createdAt: transaction.createdAt,
+    };
+
+    if (transaction.type === "expense") {
+      draft.subcategory = transaction.subcategory || "";
+      draft.paymentMethod = transaction.paymentMethod || "pix";
+      draft.dueDate = transaction.dueDate || transaction.date;
+      draft.recurrence = transaction.recurrence || "none";
+      draft.repeatCount = 1;
+    }
+
+    return draft;
+  }
+
+  async function compareTransactionsInShadow(transactions) {
+    const services = getShadowServices();
+    await runTransactionCreationShadow({
+      enabled: isFeatureEnabled("transactionShadow"),
+      transactions,
+      toDraft: toShadowDraft,
+      createTransaction: services.createTransaction,
+    });
+  }
+
   function getTypeExperience(type) {
     if (type === "income") {
       return {
@@ -376,6 +429,7 @@ export function createTransactionsModule(deps) {
       };
     });
 
+    compareTransactionsInShadow(transactions);
     state.transactions.push(...transactions);
     deps.persist();
     event.currentTarget.reset();

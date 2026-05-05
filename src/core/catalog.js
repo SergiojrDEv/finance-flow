@@ -106,10 +106,10 @@ export function buildCatalogFromSettings(settings = {}, existingCatalog = {}) {
       id: previous?.id || localId("goal", goal.key, index, goal.name),
       name: goal.name,
       target: Number(goal.target || 0),
-      currentAmount: Number(previous?.currentAmount || 0),
+      currentAmount: Number(goal.currentAmount ?? previous?.currentAmount ?? 0),
       key: goal.key,
-      color: previous?.color || "#635bff",
-      isArchived: false,
+      color: goal.color || previous?.color || "#635bff",
+      isArchived: Boolean(goal.isArchived),
     };
   });
 
@@ -160,7 +160,10 @@ export function buildSettingsFromCatalog(catalog = {}) {
     goals: (catalog.goals || []).map((item) => ({
       name: item.name,
       target: Number(item.target || 0),
+      currentAmount: Number(item.currentAmount || 0),
       key: item.key,
+      color: item.color || "#635bff",
+      isArchived: Boolean(item.isArchived),
     })),
     budgetRules,
   };

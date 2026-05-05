@@ -1,0 +1,24 @@
+# Matriz de Rastreabilidade SDD
+
+Esta matriz liga especificacao, implementacao e validacao.
+
+| Spec | Dominio | Codigo atual | Teste/validacao | Status |
+| --- | --- | --- | --- | --- |
+| `domains/transactions/create-transaction.spec.md` | Lancamentos | `src/application/transactions/transactionFormRules.js`, `src/application/transactions/validateTransactionDraft.js`, `src/application/transactions/CreateTransactionUseCase.js`, `src/application/transactions/ports/TransactionRepository.js`, `src/domain/transactions/Transaction.js`, `src/infrastructure/transactions/LocalTransactionRepository.js`, `src/infrastructure/composition/createTransactionServices.js`, `src/infrastructure/shadow/compareTransactionCreation.js`, `src/infrastructure/shadow/runTransactionCreationShadow.js`, `src/infrastructure/diagnostics/shadowDiagnostics.js`, `src/infrastructure/diagnostics/installDiagnosticsApi.js`, `src/core/featureFlags.js`, `src/transactions/index.js`, `src/app.js` | `tests/transactions/*.test.js`, `tests/domain/transactions/Transaction.test.js`, `tests/application/transactions/CreateTransactionUseCase.test.js`, `tests/infrastructure/transactions/*.test.js`, `tests/infrastructure/composition/createTransactionServices.test.js`, `tests/infrastructure/shadow/*.test.js`, `tests/infrastructure/diagnostics/*.test.js`, `tests/core/featureFlags.test.js`, `domains/transactions/shadow-create-transaction-plan.md`, `domains/transactions/manual-shadow-test.md` | Shadow pronto para validacao manual |
+| `domains/transactions/update-transaction.spec.md` | Lancamentos | `src/application/transactions/UpdateTransactionUseCase.js`, `src/application/transactions/ports/TransactionRepository.js`, `src/domain/transactions/Transaction.js`, `src/infrastructure/transactions/LocalTransactionRepository.js` | `tests/application/transactions/UpdateTransactionUseCase.test.js`, `tests/infrastructure/transactions/LocalTransactionRepository.test.js` | Validacao inicial |
+| `domains/transactions/delete-transaction.spec.md` | Lancamentos | `src/application/transactions/DeleteTransactionUseCase.js`, `src/application/transactions/ports/TransactionRepository.js`, `src/infrastructure/transactions/LocalTransactionRepository.js` | `tests/application/transactions/DeleteTransactionUseCase.test.js`, `tests/infrastructure/transactions/LocalTransactionRepository.test.js` | Validacao inicial |
+| `domains/dashboard/financial-summary.spec.md` | Dashboard | `src/application/dashboard/buildFinancialSummary.js` | `tests/dashboard/buildFinancialSummary.test.js` | Validacao inicial |
+| `domains/catalog/categories-and-tags.spec.md` | Catalogo | `src/application/catalog/validateCategoryDraft.js`, `src/application/catalog/validateCategoryTagDraft.js`, `src/domain/catalog/Category.js`, `src/domain/catalog/CategoryTag.js`, `src/application/catalog/*Category*UseCase.js`, `src/application/catalog/ports/CategoryRepository.js`, `src/application/catalog/ports/CategoryTagRepository.js`, `src/infrastructure/catalog/LocalCategoryRepository.js`, `src/infrastructure/catalog/LocalCategoryTagRepository.js`, `src/infrastructure/composition/createCatalogServices.js`, `src/infrastructure/shadow/compareCatalogSnapshot.js`, `src/infrastructure/shadow/runCatalogShadow.js`, `src/core/storage.js`, `src/core/featureFlags.js` | `tests/catalog/*.test.js`, `tests/domain/catalog/*.test.js`, `tests/application/catalog/*.test.js`, `tests/infrastructure/catalog/*.test.js`, `tests/infrastructure/composition/createCatalogServices.test.js`, `tests/infrastructure/shadow/*Catalog*.test.js`, `domains/catalog/manual-catalog-shadow-test.md` | Catalogo pronto para validacao manual |
+| `domains/budget/category-budget.spec.md` | Orcamento | `src/application/budget/validateCategoryBudgetDraft.js`, `src/domain/budget/CategoryBudget.js`, `src/application/budget/UpsertCategoryBudgetUseCase.js`, `src/application/budget/ports/CategoryBudgetRepository.js` | `tests/budget/*.test.js`, `tests/domain/budget/*.test.js`, `tests/application/budget/*.test.js` | Validacao inicial |
+| `domains/sync/cloud-sync-safety.spec.md` | Sincronizacao | `src/core/catalog.js`, `src/supabase/index.js` | `tests/core/catalog.test.js` | Correcao inicial aplicada |
+| `domains/auth/login-reset-signup.spec.md` | Autenticacao | `src/auth/index.js`, `src/supabase/index.js` | Pendente | Rascunho |
+
+## Definicao de pronto
+
+Uma linha so pode mudar para `Pronto` quando:
+
+- a especificacao estiver clara;
+- a implementacao estiver ligada a ela;
+- houver teste automatico ou roteiro manual verificavel;
+- a mudanca nao quebrar o app estavel;
+- se houver risco, a integracao tiver shadow mode ou feature flag.

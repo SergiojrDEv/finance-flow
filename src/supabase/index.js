@@ -2,6 +2,10 @@ import { SUPABASE_FALLBACK_CONFIG, state } from "../core/state.js";
 import { buildCatalogFromV2, ensureCatalogCoversTransactions } from "../core/catalog.js";
 
 export function createSupabaseModule(deps) {
+  function isUuid(value) {
+    return /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(String(value || ""));
+  }
+
   function isMissingRelationError(error) {
     const message = String(error?.message || "").toLowerCase();
     return message.includes("does not exist") || message.includes("could not find") || error?.code === "PGRST205";
@@ -405,26 +409,106 @@ export function createSupabaseModule(deps) {
         updated_at: new Date().toISOString(),
       }];
     });
-    const { error: deleteBudgetsError } = await client.from("budgets").delete().eq("user_id", userId);
-    if (deleteBudgetsError) throw deleteBudgetsError;
-    if (budgetRows.length) {
-      const { error } = await client.from("budgets").insert(budgetRows);
+
+    const { data: existingBudgets, error: existingBudgetsError } = await client
+      .from("budgets")
+      .select("id,category_id,period_kind")
+      .eq("user_id", userId);
+    if (existingBudgetsError) throw existingBudgetsError;
+
+    const existingBudgetByKey = new Map((existingBudgets || []).map((item) => [`${item.category_id}:${item.period_kind}`, item]));
+    const activeBudgetIds = new Set();
+    for (const row of budgetRows) {
+      const existing = existingBudgetByKey.get(`${row.category_id}:${row.period_kind}`);
+      if (existing?.id) {
+        const { error } = await client
+          .from("budgets")
+          .update({
+            amount: row.amount,
+            starts_on: row.starts_on,
+            ends_on: null,
+            updated_at: row.updated_at,
+          })
+          .eq("id", existing.id)
+          .eq("user_id", userId);
+        if (error) throw error;
+        activeBudgetIds.add(existing.id);
+        continue;
+      }
+
+      const { data, error } = await client
+        .from("budgets")
+        .insert(row)
+        .select("id")
+        .single();
+      if (error) throw error;
+      if (data?.id) activeBudgetIds.add(data.id);
+    }
+
+    const staleBudgetIds = (existingBudgets || []).map((item) => item.id).filter((id) => !activeBudgetIds.has(id));
+    if (staleBudgetIds.length) {
+      const { error } = await client.from("budgets").delete().eq("user_id", userId).in("id", staleBudgetIds);
       if (error) throw error;
     }
 
     const goalRows = catalog.goals.map((goal) => ({
+      id: isUuid(goal.id) ? goal.id : undefined,
       user_id: userId,
       name: goal.name,
       target_amount: Number(goal.target || 0),
       current_amount: Number(goal.currentAmount || 0),
       linked_category_id: categoryKeyToId.get(`investment:${goal.key}`)?.id || null,
       color: goal.color || "#635bff",
+      is_archived: Boolean(goal.isArchived),
       updated_at: new Date().toISOString(),
     }));
-    const { error: deleteGoalsError } = await client.from("goals").delete().eq("user_id", userId);
-    if (deleteGoalsError) throw deleteGoalsError;
-    if (goalRows.length) {
-      const { error } = await client.from("goals").insert(goalRows);
+
+    const { data: existingGoals, error: existingGoalsError } = await client
+      .from("goals")
+      .select("id,name,linked_category_id")
+      .eq("user_id", userId);
+    if (existingGoalsError) throw existingGoalsError;
+
+    const existingGoalById = new Map((existingGoals || []).map((item) => [item.id, item]));
+    const existingGoalByNaturalKey = new Map((existingGoals || []).map((item) => [
+      `${String(item.name || "").trim().toLowerCase()}:${item.linked_category_id || ""}`,
+      item,
+    ]));
+    const activeGoalIds = new Set();
+    for (const row of goalRows) {
+      const naturalKey = `${String(row.name || "").trim().toLowerCase()}:${row.linked_category_id || ""}`;
+      const existing = row.id ? existingGoalById.get(row.id) : existingGoalByNaturalKey.get(naturalKey);
+
+      if (existing?.id) {
+        const { id: _ignoredId, ...payload } = row;
+        const { error } = await client
+          .from("goals")
+          .update(payload)
+          .eq("id", existing.id)
+          .eq("user_id", userId);
+        if (error) throw error;
+        activeGoalIds.add(existing.id);
+        continue;
+      }
+
+      const payload = { ...row };
+      if (!payload.id) delete payload.id;
+      const { data, error } = await client
+        .from("goals")
+        .insert(payload)
+        .select("id")
+        .single();
+      if (error) throw error;
+      if (data?.id) activeGoalIds.add(data.id);
+    }
+
+    const staleGoalIds = (existingGoals || []).map((item) => item.id).filter((id) => !activeGoalIds.has(id));
+    if (staleGoalIds.length) {
+      const { error } = await client
+        .from("goals")
+        .update({ is_archived: true, updated_at: new Date().toISOString() })
+        .eq("user_id", userId)
+        .in("id", staleGoalIds);
       if (error) throw error;
     }
 

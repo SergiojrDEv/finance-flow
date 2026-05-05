@@ -1,6 +1,9 @@
 import { APP_STORAGE_KEY, STORAGE_KEY, defaultSettings, state } from "./state.js";
 import { buildCatalogFromSettings, buildSettingsFromCatalog } from "./catalog.js";
+import { isFeatureEnabled } from "./featureFlags.js";
 import { clone, mergeBudgetRules, mergeSubcategories } from "./utils.js";
+import { createCatalogServices } from "../infrastructure/composition/createCatalogServices.js";
+import { runCatalogShadow } from "../infrastructure/shadow/runCatalogShadow.js";
 
 export function createStorageModule(deps) {
   function save() {
@@ -51,6 +54,20 @@ export function createStorageModule(deps) {
 
   function hydrateCatalog(settings = state.settings, existingCatalog = state.catalog) {
     state.catalog = buildCatalogFromSettings(settings, existingCatalog || {});
+    runCatalogShadow({
+      enabled: isFeatureEnabled("catalogShadow"),
+      catalog: state.catalog,
+      catalogServices: createCatalogServices({
+        readCategories: () => state.catalog.categories || [],
+        writeCategories: (categories) => {
+          state.catalog.categories = categories;
+        },
+        readTags: () => state.catalog.tags || [],
+        writeTags: (tags) => {
+          state.catalog.tags = tags;
+        },
+      }),
+    });
     return state.catalog;
   }
 

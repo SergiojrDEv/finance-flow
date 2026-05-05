@@ -22,6 +22,7 @@ import { createTransactionsModule } from "./transactions/index.js";
 import { createSettingsModule } from "./settings/index.js";
 import { createAuthModule } from "./auth/index.js";
 import { createSupabaseModule } from "./supabase/index.js";
+import { installDiagnosticsApi } from "./infrastructure/diagnostics/installDiagnosticsApi.js";
 
 const deps = {
   els,
@@ -49,6 +50,7 @@ Object.assign(deps, createSettingsModule(deps));
 Object.assign(deps, createDashboardModule(deps));
 Object.assign(deps, createAuthModule(deps));
 Object.assign(deps, createSupabaseModule(deps));
+installDiagnosticsApi(window);
 
 function bindEvents() {
   document.querySelector("#prev-month").addEventListener("click", () => {
