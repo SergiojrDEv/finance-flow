@@ -1,6 +1,7 @@
 import { state } from "../core/state.js";
 import { buildCategoryBreakdown as buildCategoryBreakdownRows } from "../application/dashboard/buildCategoryBreakdown.js";
 import { buildDashboardInsights } from "../application/dashboard/buildDashboardInsights.js";
+import { buildFinancialSummary } from "../application/dashboard/buildFinancialSummary.js";
 import {
   categoryDisplayLabel,
   esc,
@@ -22,70 +23,28 @@ export function createDashboardModule(deps) {
     });
   }
 
-  function summarize(transactions) {
-    const sumByType = (type) =>
-      transactions
-        .filter((item) => item.type === type)
-        .reduce((sum, item) => sum + Number(item.amount), 0);
-
-    return {
-      income: sumByType("income"),
-      expense: sumByType("expense"),
-      investment: sumByType("investment"),
-    };
-  }
-
   function renderSummary() {
     const transactions = getMonthTransactions();
-    const totals = summarize(transactions);
-    const free = totals.income - totals.expense - totals.investment;
-    const expenseCategories = new Set(
-      transactions.filter((item) => item.type === "expense").map((item) => item.category)
-    );
-    const investRate = totals.income ? (totals.investment / totals.income) * 100 : 0;
-    const commitment = totals.income ? ((totals.expense + totals.investment) / totals.income) * 100 : 0;
-    const hasTransactions = transactions.length > 0;
-    let health = 0;
-    if (totals.income) {
-      const commitmentGap = commitment - 100;
-      const healthyHeadroom = Math.max(0, 100 - commitment);
-      health = 58 + Math.min(22, healthyHeadroom * 0.3) + Math.min(12, investRate * 0.45);
-      if (commitment > 78) health -= (commitment - 78) * 0.45;
-      if (commitment > 92) health -= (commitment - 92) * 0.4;
-      if (commitmentGap > 0) health -= Math.min(18, commitmentGap * 0.42);
-      if (free >= 0) {
-        health += Math.min(8, free / Math.max(180, totals.income * 0.05));
-      } else {
-        const negativeRatio = Math.abs(free) / Math.max(1, totals.income);
-        health -= Math.min(16, negativeRatio * 42);
-      }
-      health = Math.max(commitmentGap > 0 ? 12 : 18, Math.min(96, health));
-    } else if (hasTransactions) {
-      health = Math.max(
-        12,
-        Math.min(58, totals.investment > 0 ? 36 + Math.min(22, totals.investment / 100) : 18 - Math.min(8, totals.expense / 500))
-      );
-    }
+    const summary = buildFinancialSummary(transactions);
+    const totals = {
+      income: summary.totals.income,
+      expense: summary.totals.expenses,
+      investment: summary.totals.investments,
+    };
+    const free = summary.totals.available;
 
-    document.querySelector("#income-total").textContent = money(totals.income);
-    document.querySelector("#expense-total").textContent = money(totals.expense);
-    document.querySelector("#invest-total").textContent = money(totals.investment);
-    document.querySelector("#free-balance").textContent = money(free);
-    document.querySelector("#income-count").textContent = `${transactions.filter((item) => item.type === "income").length} lancamentos`;
-    document.querySelector("#expense-count").textContent = `${expenseCategories.size} categorias`;
-    document.querySelector("#invest-rate").textContent = `${investRate.toFixed(1)}% da receita direcionado para investimento`;
-    document.querySelector("#commitment-rate").textContent = `${commitment.toFixed(1)}% da receita ja foi comprometida`;
-    document.querySelector("#health-score").textContent = `${Math.round(health)}%`;
-    document.querySelector("#health-copy").textContent =
-      !hasTransactions
-        ? "Adicione receitas, despesas e investimentos para medir o saldo disponivel do mes."
-        : !totals.income
-          ? "Ja da para ler os movimentos do mes, mas registrar receitas deixa o saldo disponivel mais preciso."
-          : free < 0
-            ? `Mes no vermelho: depois de despesas e investimentos, faltam ${money(Math.abs(free))} para o disponivel imediato fechar positivo.`
-            : health >= 70
-              ? "Bom equilibrio entre gastos, reserva e disponivel para movimentacao."
-              : "Revise os maiores gastos e proteja o valor ainda disponivel para movimentacao.";
+    document.querySelector("#income-total").textContent = money(summary.totals.income);
+    document.querySelector("#expense-total").textContent = money(summary.totals.expenses);
+    document.querySelector("#invest-total").textContent = money(summary.totals.investments);
+    document.querySelector("#free-balance").textContent = money(summary.totals.available);
+    document.querySelector("#income-count").textContent = `${summary.counts.income} lancamentos`;
+    document.querySelector("#expense-count").textContent = `${summary.counts.expenseCategories} categorias`;
+    document.querySelector("#invest-rate").textContent = `${summary.rates.investmentRate.toFixed(1)}% da receita direcionado para investimento`;
+    document.querySelector("#commitment-rate").textContent = `${summary.rates.commitmentRate.toFixed(1)}% da receita ja foi comprometida`;
+    document.querySelector("#health-score").textContent = `${summary.health.score}%`;
+    document.querySelector("#health-copy").textContent = summary.health.status === "negative"
+      ? `Mes no vermelho: depois de despesas e investimentos, faltam ${money(Math.abs(free))} para o disponivel imediato fechar positivo.`
+      : summary.health.copy;
     renderSmartDashboard(transactions, totals, free);
   }
 
@@ -97,8 +56,13 @@ export function createDashboardModule(deps) {
     const remainingDays = Math.max(1, daysInMonth - dayRef + 1);
     const dailySafe = Math.max(0, free / remainingDays);
     const previousDate = new Date(state.currentDate.getFullYear(), state.currentDate.getMonth() - 1, 1);
-    const previousTotals = summarize(getMonthTransactions(previousDate));
-    const previousFree = previousTotals.income - previousTotals.expense - previousTotals.investment;
+    const previousSummary = buildFinancialSummary(getMonthTransactions(previousDate));
+    const previousTotals = {
+      income: previousSummary.totals.income,
+      expense: previousSummary.totals.expenses,
+      investment: previousSummary.totals.investments,
+    };
+    const previousFree = previousSummary.totals.available;
     const freeDelta = free - previousFree;
     const commitment = totals.income ? ((totals.expense + totals.investment) / totals.income) * 100 : 0;
     const investRate = totals.income ? (totals.investment / totals.income) * 100 : 0;
