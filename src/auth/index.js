@@ -1,5 +1,6 @@
 import { els, state } from "../core/state.js";
-import { formatCpf, formatPhone, isAdult, isValidCpf, onlyDigits } from "../core/utils.js";
+import { formatCpf, formatPhone } from "../core/utils.js";
+import { onlyDigits, validateAuthInput, validateSignupProfile } from "../application/auth/validateAuth.js";
 
 export function createAuthModule(deps) {
   function renderAuthGate(message) {
@@ -58,22 +59,6 @@ export function createAuthModule(deps) {
       email: document.querySelector("#signup-email").value.trim(),
       password: document.querySelector("#signup-password").value,
     };
-  }
-
-  function validateAuthInput(email, password) {
-    if (!email || !password) return "Informe e-mail e senha.";
-    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return "Informe um e-mail valido.";
-    if (password.length < 6) return "A senha deve ter pelo menos 6 caracteres.";
-    return "";
-  }
-
-  function validateSignupProfile(profile) {
-    if (!profile.fullName || profile.fullName.split(" ").length < 2) return "Informe seu nome completo.";
-    if (!isValidCpf(profile.cpf)) return "Informe um CPF valido.";
-    if (onlyDigits(profile.phone).length < 10) return "Informe um telefone valido.";
-    if (!profile.birthdate) return "Informe sua data de nascimento.";
-    if (!isAdult(profile.birthdate)) return "Cadastro permitido apenas para maiores de 18 anos.";
-    return validateAuthInput(profile.email, profile.password);
   }
 
   async function requestPasswordReset(event) {
