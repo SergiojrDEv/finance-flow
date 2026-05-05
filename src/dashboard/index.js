@@ -1,5 +1,6 @@
 import { state } from "../core/state.js";
 import { buildCategoryBreakdown as buildCategoryBreakdownRows } from "../application/dashboard/buildCategoryBreakdown.js";
+import { buildCashflowSeries } from "../application/dashboard/buildCashflowSeries.js";
 import { buildDashboardInsights } from "../application/dashboard/buildDashboardInsights.js";
 import { buildFinancialSummary } from "../application/dashboard/buildFinancialSummary.js";
 import {
@@ -310,16 +311,9 @@ export function createDashboardModule(deps) {
       return;
     }
 
-    const months = Array.from({ length: 6 }, (_, index) => {
-      const date = new Date(state.currentDate.getFullYear(), state.currentDate.getMonth() - (5 - index), 1);
-      const totals = summarize(getMonthTransactions(date));
-      return {
-        label: date.toLocaleDateString("pt-BR", { month: "short" }),
-        income: totals.income,
-        expense: totals.expense,
-        investment: totals.investment,
-        free: totals.income - totals.expense - totals.investment,
-      };
+    const months = buildCashflowSeries({
+      transactions: state.transactions,
+      currentDate: state.currentDate,
     });
 
     const last = months.at(-1);
@@ -365,7 +359,6 @@ export function createDashboardModule(deps) {
 
   return {
     renderMonthLabel,
-    summarize,
     renderSummary,
     renderSmartDashboard,
     renderInsights,
