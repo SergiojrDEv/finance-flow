@@ -33,6 +33,7 @@ Evoluir o Finance Flow sem repetir o erro de acoplar arquitetura nova diretament
 - Migrar dashboard inteiro para selectors/application services puros.
   - Parcialmente feito: resumo financeiro, maiores despesas, alertas/insights e fluxo mensal ja estao fora da UI.
 - Criar testes de integracao de auth com mocks do Supabase.
+  - Feito: `AuthSessionService` cobre login, cadastro, recuperacao e troca de senha com cliente mockavel.
 - Converter arquivos da camada DDD para `.ts` por modulo.
 - Separar backend real apenas quando os contratos estiverem maduros.
 - Decidir backend futuro:
