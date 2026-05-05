@@ -1,4 +1,5 @@
 import { state } from "../core/state.js";
+import { buildCategoryBreakdown as buildCategoryBreakdownRows } from "../application/dashboard/buildCategoryBreakdown.js";
 import {
   categoryDisplayLabel,
   esc,
@@ -175,13 +176,10 @@ export function createDashboardModule(deps) {
   }
 
   function renderCategoryBreakdown() {
-    const expenses = getMonthTransactions().filter((item) => item.type === "expense");
-    const totals = expenses.reduce((acc, item) => {
-      acc[item.category] = (acc[item.category] || 0) + Number(item.amount);
-      return acc;
-    }, {});
-    const rows = Object.entries(totals).sort((a, b) => b[1] - a[1]);
-    const max = Math.max(...rows.map(([, value]) => value), 0);
+    const rows = buildCategoryBreakdownRows({
+      transactions: getMonthTransactions(),
+      categories: state.settings.categories.expense,
+    });
     const target = document.querySelector("#category-breakdown");
 
     if (!rows.length) {
@@ -190,17 +188,13 @@ export function createDashboardModule(deps) {
     }
 
     target.innerHTML = rows
-      .map(([key, value]) => {
-        const [, label, color] = getCategory("expense", key);
-        const width = max ? (value / max) * 100 : 0;
-        return `
+      .map((item) => `
           <div class="category-row">
-            <strong>${esc(label)}</strong>
-            <span class="money negative">${money(value)}</span>
-            <div class="bar"><span style="--value:${width}%;--color:${safeCssColor(color)}"></span></div>
+            <strong>${esc(item.label)}</strong>
+            <span class="money negative">${money(item.value)}</span>
+            <div class="bar"><span style="--value:${item.width}%;--color:${safeCssColor(item.color)}"></span></div>
           </div>
-        `;
-      })
+        `)
       .join("");
   }
 
