@@ -1,5 +1,6 @@
 import { SUPABASE_FALLBACK_CONFIG, state } from "../core/state.js";
 import { buildCatalogFromV2, ensureCatalogCoversTransactions } from "../core/catalog.js";
+import { mapV2TransactionsWithLegacyFallback } from "../application/sync/mapCloudSnapshot.js";
 import { createSyncServices } from "../infrastructure/composition/createSyncServices.js";
 
 export function createSupabaseModule(deps) {
@@ -163,32 +164,6 @@ export function createSupabaseModule(deps) {
     throw error;
   }
 
-  function fromV2Transaction(row, refs) {
-    const category = refs.categoryById.get(row.category_id);
-    const tag = refs.tagById.get(row.category_tag_id);
-    const account = refs.accountById.get(row.account_id);
-
-    return {
-      id: row.id,
-      type: row.transaction_kind,
-      description: row.description || "",
-      category: category?.slug || "outros",
-      subcategory: tag?.slug || null,
-      account: account?.name || "Conta corrente",
-      amount: Number(row.amount || 0),
-      date: row.transaction_date,
-      dueDate: row.due_date || row.transaction_date,
-      status: row.status || "paid",
-      paymentMethod: row.payment_method || "pix",
-      creditCardId: row.credit_card_id || null,
-      recurrenceId: row.recurring_rule_id || null,
-      installmentGroup: row.installment_group_id || null,
-      installmentNumber: row.installment_number || null,
-      installmentTotal: row.installment_total || null,
-      createdAt: row.created_at || new Date().toISOString(),
-    };
-  }
-
   async function pullFromSupabaseV2(options = {}) {
     const client = state.supabaseClient;
     const userId = state.currentUser.id;
@@ -257,14 +232,10 @@ export function createSupabaseModule(deps) {
     );
     state.dataMode = "v2";
     deps.syncSettingsFromCatalog();
-    const legacyById = new Map(legacyRows.map((item) => [item.id, item]));
-    state.transactions = txRows.map((row) => fromV2Transaction(row, refs));
-    state.transactions.forEach((item) => {
-      const legacy = legacyById.get(item.id);
-      if (!legacy) return;
-      if ((item.category === "outros" || !item.category) && legacy.cat) item.category = legacy.cat;
-      if (!item.subcategory && legacy.subcat) item.subcategory = legacy.subcat;
-      if (!item.type && legacy.type) item.type = legacy.type;
+    state.transactions = mapV2TransactionsWithLegacyFallback({
+      rows: txRows,
+      legacyRows,
+      refs,
     });
     deps.save();
     deps.updateCategoryOptions();
