@@ -174,46 +174,24 @@ export function createSupabaseModule(deps) {
       return;
     }
 
-    const [
-      accountsResult,
-      cardsResult,
-      categoriesResult,
-      tagsResult,
-      budgetsResult,
-      goalsResult,
-      transactionsResult,
-      legacyTransactionsResult,
-    ] = await Promise.all([
-      client.from("accounts").select("*").eq("user_id", userId).eq("is_archived", false).order("created_at", { ascending: true }),
-      client.from("credit_cards").select("*").eq("user_id", userId).eq("is_archived", false).order("created_at", { ascending: true }),
-      client.from("categories").select("*").eq("user_id", userId).eq("is_archived", false).order("created_at", { ascending: true }),
-      client.from("category_tags").select("*").eq("user_id", userId).eq("is_archived", false).order("created_at", { ascending: true }),
-      client.from("budgets").select("*").eq("user_id", userId).order("created_at", { ascending: true }),
-      client.from("goals").select("*").eq("user_id", userId).eq("is_archived", false).order("created_at", { ascending: true }),
-      client.from("transactions_v2").select("*").eq("user_id", userId).order("created_at", { ascending: true }),
-      client.from("transactions").select("id,cat,subcat,type").eq("user_id", userId),
-    ]);
+    let snapshot;
+    try {
+      const services = createSyncServices({ client, inferAccountKind, isMissingRelationError });
+      snapshot = await services.cloudSnapshotRepository.fetchV2({ userId });
+    } catch (error) {
+      return handleCloudError(error);
+    }
 
-    const firstError = [
-      accountsResult.error,
-      cardsResult.error,
-      categoriesResult.error,
-      tagsResult.error,
-      budgetsResult.error,
-      goalsResult.error,
-      transactionsResult.error,
-      legacyTransactionsResult.error && !isMissingRelationError(legacyTransactionsResult.error) ? legacyTransactionsResult.error : null,
-    ].find(Boolean);
-    if (firstError) return handleCloudError(firstError);
-
-    const accounts = accountsResult.data || [];
-    const creditCards = cardsResult.data || [];
-    const categories = categoriesResult.data || [];
-    const categoryTags = tagsResult.data || [];
-    const budgets = budgetsResult.data || [];
-    const goals = goalsResult.data || [];
-    const txRows = transactionsResult.data || [];
-    const legacyRows = legacyTransactionsResult.data || [];
+    const {
+      accounts,
+      creditCards,
+      categories,
+      categoryTags,
+      budgets,
+      goals,
+      transactions: txRows,
+      legacyTransactions: legacyRows,
+    } = snapshot;
 
     if (options.silent && !txRows.length && !categories.length && state.transactions.length) {
       renderCloudStatus();
