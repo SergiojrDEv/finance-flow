@@ -1,8 +1,10 @@
 import { state } from "../core/state.js";
 import { buildCategoryBreakdown as buildCategoryBreakdownRows } from "../application/dashboard/buildCategoryBreakdown.js";
 import { buildCashflowSeries } from "../application/dashboard/buildCashflowSeries.js";
+import { buildDailyHistory } from "../application/dashboard/buildDailyHistory.js";
 import { buildDashboardInsights } from "../application/dashboard/buildDashboardInsights.js";
 import { buildFinancialSummary } from "../application/dashboard/buildFinancialSummary.js";
+import { buildTransactionHighlights } from "../application/dashboard/buildTransactionHighlights.js";
 import {
   categoryDisplayLabel,
   esc,
@@ -151,34 +153,24 @@ export function createDashboardModule(deps) {
     const target = document.querySelector("#transaction-highlights");
     if (!target) return;
 
-    const monthTransactions = getMonthTransactions();
-    const paidCount = monthTransactions.filter((item) => item.status === "paid").length;
-    const pendingCount = monthTransactions.filter((item) => item.status !== "paid").length;
-    const pixCount = monthTransactions.filter((item) => item.paymentMethod === "pix").length;
-    const creditCount = monthTransactions.filter((item) => item.paymentMethod === "credit").length;
-    const totalIncome = monthTransactions
-      .filter((item) => item.type === "income")
-      .reduce((sum, item) => sum + Number(item.amount || 0), 0);
-    const totalOutflow = monthTransactions
-      .filter((item) => item.type !== "income")
-      .reduce((sum, item) => sum + Number(item.amount || 0), 0);
+    const highlights = buildTransactionHighlights(getMonthTransactions());
 
     target.innerHTML = `
       <article class="mini-stat-card">
         <span>No mes</span>
-        <strong>${monthTransactions.length} lancamentos</strong>
-        <small>Entradas: ${money(totalIncome)}</small>
-        <small>Saidas: ${money(totalOutflow)}</small>
+        <strong>${highlights.count} lancamentos</strong>
+        <small>Entradas: ${money(highlights.totals.income)}</small>
+        <small>Saidas: ${money(highlights.totals.outflow)}</small>
       </article>
       <article class="mini-stat-card">
         <span>Status</span>
-        <strong>${paidCount} pagos</strong>
-        <small>${pendingCount} pendentes ou previstos</small>
+        <strong>${highlights.status.paid} pagos</strong>
+        <small>${highlights.status.pending} pendentes ou previstos</small>
       </article>
       <article class="mini-stat-card">
         <span>Pagamento</span>
-        <strong>${pixCount} no Pix</strong>
-        <small>${creditCount} no credito</small>
+        <strong>${highlights.payments.pix} no Pix</strong>
+        <small>${highlights.payments.credit} no credito</small>
       </article>
     `;
   }
@@ -254,41 +246,29 @@ export function createDashboardModule(deps) {
     const target = document.querySelector("#daily-history-list");
     if (!target) return;
 
-    const grouped = new Map();
-    getMonthTransactions()
-      .slice()
-      .sort((a, b) => b.date.localeCompare(a.date) || (b.createdAt || "").localeCompare(a.createdAt || ""))
-      .forEach((item) => {
-        grouped.set(item.date, [...(grouped.get(item.date) || []), item]);
-      });
+    const history = buildDailyHistory(getMonthTransactions());
 
-    if (!grouped.size) {
+    if (!history.length) {
       target.innerHTML = '<div class="empty-state">Nenhum lancamento registrado neste mes ainda.</div>';
       return;
     }
 
-    target.innerHTML = Array.from(grouped.entries())
-      .map(([date, items]) => {
-        const income = items
-          .filter((item) => item.type === "income")
-          .reduce((sum, item) => sum + Number(item.amount || 0), 0);
-        const outflow = items
-          .filter((item) => item.type !== "income")
-          .reduce((sum, item) => sum + Number(item.amount || 0), 0);
+    target.innerHTML = history
+      .map((day) => {
         return `
           <article class="history-day-card">
             <header class="history-day-header">
               <div>
-                <strong>${parseLocalDate(date).toLocaleDateString("pt-BR", { weekday: "long", day: "2-digit", month: "long" })}</strong>
-                <small>${items.length} lancamento${items.length === 1 ? "" : "s"}</small>
+                <strong>${parseLocalDate(day.date).toLocaleDateString("pt-BR", { weekday: "long", day: "2-digit", month: "long" })}</strong>
+                <small>${day.count} lancamento${day.count === 1 ? "" : "s"}</small>
               </div>
               <div class="history-day-totals">
-                <small>Entradas: <span class="money positive">${money(income)}</span></small>
-                <small>Saidas: <span class="money negative">${money(outflow)}</span></small>
+                <small>Entradas: <span class="money positive">${money(day.totals.income)}</span></small>
+                <small>Saidas: <span class="money negative">${money(day.totals.outflow)}</span></small>
               </div>
             </header>
             <div class="history-day-items">
-              ${items.map((item) => `
+              ${day.items.map((item) => `
                 <div class="history-row">
                   <div>
                     <strong>${esc(item.description)}</strong>

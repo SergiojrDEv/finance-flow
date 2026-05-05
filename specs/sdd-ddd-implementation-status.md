@@ -31,7 +31,7 @@ Evoluir o Finance Flow sem repetir o erro de acoplar arquitetura nova diretament
 - Migrar edicao/exclusao de lancamentos da UI para os casos de uso, com shadow mode ou comparacao.
   - Feito: edicao e exclusao da UI passam por `UpdateTransactionUseCase` e `DeleteTransactionUseCase`.
 - Migrar dashboard inteiro para selectors/application services puros.
-  - Parcialmente feito: resumo financeiro, maiores despesas, alertas/insights e fluxo mensal ja estao fora da UI.
+  - Parcialmente feito: resumo financeiro, maiores despesas, alertas/insights, fluxo mensal, destaques do mes e historico diario ja estao fora da UI.
 - Criar testes de integracao de auth com mocks do Supabase.
   - Feito: `AuthSessionService` cobre login, cadastro, recuperacao e troca de senha com cliente mockavel.
 - Converter arquivos da camada DDD para `.ts` por modulo.
