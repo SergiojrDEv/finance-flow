@@ -123,6 +123,54 @@ export function createTransactionsModule(deps) {
     return type === "expense" ? "pix" : "transfer";
   }
 
+  function buildTransactionDraftFromValues({
+    type,
+    description,
+    category,
+    subcategory,
+    account,
+    amount,
+    date,
+    dueDate,
+    status,
+    paymentMethod,
+    creditCardId,
+    recurrence,
+    recurrenceId,
+    installmentGroup,
+    installmentNumber,
+    installmentTotal,
+  }) {
+    const useExpenseFields = shouldUseExpenseOnlyFields(type);
+    const normalizedPaymentMethod = useExpenseFields ? paymentMethod || "pix" : defaultPaymentMethodForType(type);
+    const isCredit = useExpenseFields && normalizedPaymentMethod === "credit";
+    const draft = {
+      userId: state.currentUser?.id || "",
+      type,
+      description: String(description || "").trim(),
+      category,
+      account,
+      amount: Number(amount),
+      date,
+      status: status || "paid",
+    };
+
+    if (useExpenseFields) {
+      draft.subcategory = subcategory || "";
+      draft.paymentMethod = normalizedPaymentMethod;
+      draft.dueDate = dueDate || date;
+      draft.recurrence = recurrence || "none";
+      draft.recurrenceId = recurrenceId || null;
+      draft.creditCardId = isCredit ? creditCardId || null : null;
+      draft.installmentGroup = isCredit ? installmentGroup || null : null;
+      draft.installmentNumber = isCredit ? installmentNumber || null : null;
+      draft.installmentTotal = isCredit ? installmentTotal || null : null;
+      draft.repeatCount = 1;
+    }
+
+    return draft;
+  }
+
   function syncTransactionTypeFields() {
     const isExpense = shouldUseExpenseOnlyFields(state.activeType);
     const experience = getTypeExperience(state.activeType);
@@ -452,28 +500,35 @@ export function createTransactionsModule(deps) {
     deps.notify(totalItems > 1 ? `${totalItems} lancamentos criados.` : "Lancamento salvo.");
   }
 
-  function updateTransaction(formData) {
+  async function updateTransaction(formData) {
     const item = state.transactions.find((transaction) => transaction.id === state.editingId);
     if (!item) return;
-    const paymentMethod = formData.get("paymentMethod") || "pix";
-    const useExpenseFields = shouldUseExpenseOnlyFields(state.activeType);
-    const normalizedPaymentMethod = useExpenseFields ? paymentMethod : defaultPaymentMethodForType(state.activeType);
-    item.type = state.activeType;
-    item.description = formData.get("description").trim();
-    item.category = formData.get("category");
-    item.subcategory = useExpenseFields ? formData.get("subcategory") || null : null;
-    item.account = formData.get("account");
-    item.amount = Number(formData.get("amount"));
-    item.date = formData.get("date");
-    item.dueDate = formData.get("dueDate") || formData.get("date");
-    item.status = formData.get("status") || "paid";
-    item.paymentMethod = normalizedPaymentMethod;
-    item.creditCardId = normalizedPaymentMethod === "credit" ? formData.get("creditCardId") || null : null;
-    if (normalizedPaymentMethod !== "credit") {
-      item.installmentGroup = null;
-      item.installmentNumber = null;
-      item.installmentTotal = null;
+
+    const draft = buildTransactionDraftFromValues({
+      type: state.activeType,
+      description: formData.get("description"),
+      category: formData.get("category"),
+      subcategory: formData.get("subcategory"),
+      account: formData.get("account"),
+      amount: formData.get("amount"),
+      date: formData.get("date"),
+      dueDate: formData.get("dueDate"),
+      status: formData.get("status"),
+      paymentMethod: formData.get("paymentMethod"),
+      creditCardId: formData.get("creditCardId"),
+      recurrence: item.recurrence,
+      recurrenceId: item.recurrenceId,
+      installmentGroup: item.installmentGroup,
+      installmentNumber: item.installmentNumber,
+      installmentTotal: item.installmentTotal,
+    });
+    const result = await getTransactionServices().updateTransaction.execute(item.id, draft);
+
+    if (!result.ok) {
+      deps.notify(Object.values(result.errors || {})[0] || "Nao foi possivel atualizar o lancamento.");
+      return;
     }
+
     deps.persist();
     resetTransactionForm();
     deps.renderAll();
@@ -523,33 +578,34 @@ export function createTransactionsModule(deps) {
     document.body.classList.remove("modal-open");
   }
 
-  function saveTransactionFromModal(event) {
+  async function saveTransactionFromModal(event) {
     event.preventDefault();
     const item = state.transactions.find((transaction) => transaction.id === state.activeTransactionEditId);
     if (!item) return closeTransactionModal();
 
-    const paymentMethod = document.querySelector("#transaction-modal-payment-method").value || "pix";
-    const useExpenseFields = shouldUseExpenseOnlyFields(state.transactionModalType);
-    const normalizedPaymentMethod = useExpenseFields ? paymentMethod : defaultPaymentMethodForType(state.transactionModalType);
-    item.type = state.transactionModalType;
-    item.description = document.querySelector("#transaction-modal-description").value.trim();
-    item.category = document.querySelector("#transaction-modal-category").value;
-    item.subcategory = useExpenseFields ? document.querySelector("#transaction-modal-subcategory").value || null : null;
-    item.account = document.querySelector("#transaction-modal-account").value;
-    item.amount = Number(document.querySelector("#transaction-modal-amount").value);
-    item.date = document.querySelector("#transaction-modal-date").value;
-    item.dueDate = document.querySelector("#transaction-modal-due-date").value || item.date;
-    item.status = document.querySelector("#transaction-modal-status").value || "paid";
-    item.paymentMethod = normalizedPaymentMethod;
-    item.creditCardId = normalizedPaymentMethod === "credit" ? document.querySelector("#transaction-modal-credit-card").value || null : null;
-    if (normalizedPaymentMethod !== "credit") {
-      item.installmentGroup = null;
-      item.installmentNumber = null;
-      item.installmentTotal = null;
-    }
+    const draft = buildTransactionDraftFromValues({
+      type: state.transactionModalType,
+      description: document.querySelector("#transaction-modal-description").value,
+      category: document.querySelector("#transaction-modal-category").value,
+      subcategory: document.querySelector("#transaction-modal-subcategory").value,
+      account: document.querySelector("#transaction-modal-account").value,
+      amount: document.querySelector("#transaction-modal-amount").value,
+      date: document.querySelector("#transaction-modal-date").value,
+      dueDate: document.querySelector("#transaction-modal-due-date").value,
+      status: document.querySelector("#transaction-modal-status").value,
+      paymentMethod: document.querySelector("#transaction-modal-payment-method").value,
+      creditCardId: document.querySelector("#transaction-modal-credit-card").value,
+      recurrence: item.recurrence,
+      recurrenceId: item.recurrenceId,
+      installmentGroup: item.installmentGroup,
+      installmentNumber: item.installmentNumber,
+      installmentTotal: item.installmentTotal,
+    });
+    const result = await getTransactionServices().updateTransaction.execute(item.id, draft);
 
-    if (!item.description || !item.category || !item.account || !item.amount || !item.date) {
-      return deps.notify("Preencha os dados do lancamento corretamente.");
+    if (!result.ok) {
+      deps.notify(Object.values(result.errors || {})[0] || "Preencha os dados do lancamento corretamente.");
+      return;
     }
 
     deps.persist();

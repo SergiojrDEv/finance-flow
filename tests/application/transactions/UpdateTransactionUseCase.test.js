@@ -47,6 +47,49 @@ test("atualiza lancamento existente preservando createdAt", async () => {
   assert.equal(result.value.updatedAt, "2026-04-25T10:00:00.000Z");
 });
 
+test("limpa campos de despesa ao trocar lancamento para receita", async () => {
+  const repository = new InMemoryTransactionRepository([{
+    id: "tx-1",
+    userId: "user-1",
+    type: "expense",
+    description: "Mercado",
+    category: "alimentacao",
+    subcategory: "mercado",
+    account: "Carteira",
+    amount: 80,
+    date: "2026-04-24",
+    paymentMethod: "credit",
+    creditCardId: "card-1",
+    dueDate: "2026-04-30",
+    installmentGroup: "group-1",
+    installmentNumber: 1,
+    installmentTotal: 3,
+    recurrence: "none",
+    createdAt: "2026-04-20T10:00:00.000Z",
+  }]);
+  const useCase = new UpdateTransactionUseCase({
+    transactionRepository: repository,
+    clock: () => new Date("2026-04-24T12:00:00.000Z"),
+  });
+
+  const result = await useCase.execute("tx-1", {
+    userId: "user-1",
+    type: "income",
+    description: "Reembolso",
+    category: "outros",
+    account: "Carteira",
+    amount: 80,
+    date: "2026-04-24",
+    status: "paid",
+  });
+
+  assert.equal(result.ok, true);
+  assert.equal(result.value.type, "income");
+  assert.equal("paymentMethod" in result.value, false);
+  assert.equal("creditCardId" in result.value, false);
+  assert.equal("dueDate" in result.value, false);
+});
+
 test("recusa editar lancamento inexistente", async () => {
   const repository = new InMemoryTransactionRepository([]);
   const useCase = new UpdateTransactionUseCase({ transactionRepository: repository, clock: fixedClock });
