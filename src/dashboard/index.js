@@ -1,5 +1,6 @@
 import { state } from "../core/state.js";
 import { buildCategoryBreakdown as buildCategoryBreakdownRows } from "../application/dashboard/buildCategoryBreakdown.js";
+import { buildDashboardInsights } from "../application/dashboard/buildDashboardInsights.js";
 import {
   categoryDisplayLabel,
   esc,
@@ -8,7 +9,6 @@ import {
   getMonthTransactions,
   money,
   monthKey,
-  parseLocalDate,
   paymentMethodLabel,
   safeCssColor,
   toDateInput,
@@ -129,38 +129,15 @@ export function createDashboardModule(deps) {
 
   function renderInsights(transactions, totals) {
     const target = document.querySelector("#insight-list");
-    const insights = [];
-    const pending = transactions
-      .filter((item) => item.status !== "paid" && item.dueDate)
-      .sort((a, b) => a.dueDate.localeCompare(b.dueDate))
-      .slice(0, 3);
-
-    pending.forEach((item) => {
-      const due = parseLocalDate(item.dueDate);
-      const diff = Math.ceil((due - new Date()) / 86400000);
-      insights.push({
-        label: diff < 0 ? "Vencido" : diff === 0 ? "Vence hoje" : `Vence em ${diff} dia${diff === 1 ? "" : "s"}`,
-        text: `${item.description}: ${money(Number(item.amount))}`,
-      });
+    const budgetRules = Object.fromEntries(
+      state.settings.categories.expense.map(([key]) => [key, getBudgetRule(key)])
+    );
+    const insights = buildDashboardInsights({
+      transactions,
+      expenseCategories: state.settings.categories.expense,
+      budgetRules,
+      totals,
     });
-
-    state.settings.categories.expense.forEach(([key, label, , limit]) => {
-      const threshold = Number(getBudgetRule(key).monthly || limit || 0);
-      if (!threshold) return;
-      const used = transactions
-        .filter((item) => item.type === "expense" && item.category === key)
-        .reduce((sum, item) => sum + Number(item.amount), 0);
-      if (used >= threshold * 0.8) {
-        insights.push({
-          label: used > threshold ? "Orcamento estourado" : "Perto do limite",
-          text: `${label}: ${money(used)} de ${money(threshold)}`,
-        });
-      }
-    });
-
-    if (totals.income && totals.investment / totals.income >= 0.1) {
-      insights.push({ label: "Boa disciplina", text: `Voce investiu ${((totals.investment / totals.income) * 100).toFixed(1)}% da renda.` });
-    }
 
     if (!insights.length) {
       target.innerHTML = '<div class="empty-state">Sem alertas por enquanto.</div>';
@@ -170,9 +147,16 @@ export function createDashboardModule(deps) {
     target.innerHTML = insights.slice(0, 5).map((item) => `
       <div class="insight-item">
         <span>${esc(item.label)}</span>
-        <strong>${esc(item.text)}</strong>
+        <strong>${esc(formatInsightText(item))}</strong>
       </div>
     `).join("");
+  }
+
+  function formatInsightText(item) {
+    if (item.kind === "due") return `${item.description}: ${money(item.amount)}`;
+    if (item.kind === "budget") return `${item.description}: ${money(item.amount)} de ${money(item.threshold)}`;
+    if (item.kind === "investment") return `Voce investiu ${item.investmentRate.toFixed(1)}% da renda.`;
+    return item.description || "";
   }
 
   function renderCategoryBreakdown() {
