@@ -1,7 +1,6 @@
 import { SUPABASE_FALLBACK_CONFIG, state } from "../core/state.js";
 import { buildCatalogFromV2, ensureCatalogCoversTransactions } from "../core/catalog.js";
-import { SupabaseCatalogV2SyncRepository } from "../infrastructure/sync/SupabaseCatalogV2SyncRepository.js";
-import { SupabaseTransactionV2SyncRepository } from "../infrastructure/sync/SupabaseTransactionV2SyncRepository.js";
+import { createSyncServices } from "../infrastructure/composition/createSyncServices.js";
 
 export function createSupabaseModule(deps) {
   function isMissingRelationError(error) {
@@ -284,11 +283,11 @@ export function createSupabaseModule(deps) {
     );
     state.catalog = catalog;
 
-    const repository = new SupabaseCatalogV2SyncRepository({
+    const services = createSyncServices({
       client,
       inferAccountKind,
     });
-    return repository.sync({
+    return services.catalogV2SyncRepository.sync({
       userId,
       catalog,
     });
@@ -296,8 +295,11 @@ export function createSupabaseModule(deps) {
 
   async function syncTransactionsToV2(userId, refs) {
     const client = state.supabaseClient;
-    const repository = new SupabaseTransactionV2SyncRepository({ client });
-    await repository.sync({
+    const services = createSyncServices({
+      client,
+      inferAccountKind,
+    });
+    await services.transactionV2SyncRepository.sync({
       userId,
       transactions: state.transactions,
       refs,
