@@ -1,4 +1,5 @@
 import { state } from "../core/state.js";
+import { buildBudgetOverview } from "../application/dashboard/buildBudgetOverview.js";
 import { buildCategoryBreakdown as buildCategoryBreakdownRows } from "../application/dashboard/buildCategoryBreakdown.js";
 import { buildCashflowSeries } from "../application/dashboard/buildCashflowSeries.js";
 import { buildDailyHistory } from "../application/dashboard/buildDailyHistory.js";
@@ -12,10 +13,8 @@ import {
   getCategory,
   getMonthTransactions,
   money,
-  monthKey,
   paymentMethodLabel,
   safeCssColor,
-  toDateInput,
 } from "../core/utils.js";
 
 export function createDashboardModule(deps) {
@@ -176,63 +175,49 @@ export function createDashboardModule(deps) {
   }
 
   function renderBudgets() {
-    const expenses = getMonthTransactions().filter((item) => item.type === "expense");
     const target = document.querySelector("#budget-list");
-    const today = new Date();
-    const referenceDate = monthKey(state.currentDate) === monthKey(today)
-      ? today
-      : new Date(state.currentDate.getFullYear(), state.currentDate.getMonth(), 1);
-    const weekday = (referenceDate.getDay() + 6) % 7;
-    const weekStart = new Date(referenceDate);
-    weekStart.setDate(referenceDate.getDate() - weekday);
-    const weekEnd = new Date(weekStart);
-    weekEnd.setDate(weekStart.getDate() + 6);
-    const weekStartKey = toDateInput(weekStart);
-    const weekEndKey = toDateInput(weekEnd);
-    target.innerHTML = state.settings.categories.expense
-      .map(([key, label, color]) => {
-        const rule = getBudgetRule(key);
-        const monthlyUsed = expenses
-          .filter((item) => item.category === key)
-          .reduce((sum, item) => sum + Number(item.amount), 0);
-        const weeklyUsed = expenses
-          .filter((item) => item.category === key && item.date >= weekStartKey && item.date <= weekEndKey)
-          .reduce((sum, item) => sum + Number(item.amount), 0);
-        const monthlyPct = rule.monthly ? Math.min((monthlyUsed / rule.monthly) * 100, 100) : 0;
-        const weeklyPct = rule.weekly ? Math.min((weeklyUsed / rule.weekly) * 100, 100) : 0;
-        const weeklyStatus = weeklyPct >= 100 ? "Limite semanal" : `${weeklyPct.toFixed(0)}%`;
-        const monthlyStatus = monthlyPct >= 100 ? "Limite mensal" : `${monthlyPct.toFixed(0)}%`;
+    const budgetRules = Object.fromEntries(
+      state.settings.categories.expense.map(([key]) => [key, getBudgetRule(key)])
+    );
+    const rows = buildBudgetOverview({
+      transactions: getMonthTransactions(),
+      categories: state.settings.categories.expense,
+      budgetRules,
+      currentDate: state.currentDate,
+    });
+    target.innerHTML = rows
+      .map((item) => {
         return `
           <article class="budget-card">
             <header class="budget-card-header">
-              <strong>${esc(label)}</strong>
+              <strong>${esc(item.label)}</strong>
               <div class="budget-badges">
-                <span class="budget-badge">Sem ${weeklyStatus}</span>
-                <span class="budget-badge">Mes ${monthlyStatus}</span>
+                <span class="budget-badge">Sem ${item.status.weekly}</span>
+                <span class="budget-badge">Mes ${item.status.monthly}</span>
               </div>
             </header>
             <div class="budget-meter">
               <div class="budget-meter-head">
                 <span>Semana</span>
-                <small>${money(weeklyUsed)} de ${money(rule.weekly)}</small>
+                <small>${money(item.used.weekly)} de ${money(item.rule.weekly)}</small>
               </div>
-              <div class="bar"><span style="--value:${weeklyPct}%;--color:${safeCssColor(color)}"></span></div>
+              <div class="bar"><span style="--value:${item.pct.weekly}%;--color:${safeCssColor(item.color)}"></span></div>
             </div>
             <div class="budget-meter">
               <div class="budget-meter-head">
                 <span>Mes</span>
-                <small>${money(monthlyUsed)} de ${money(rule.monthly)}</small>
+                <small>${money(item.used.monthly)} de ${money(item.rule.monthly)}</small>
               </div>
-              <div class="bar"><span style="--value:${monthlyPct}%;--color:${safeCssColor(color)}"></span></div>
+              <div class="bar"><span style="--value:${item.pct.monthly}%;--color:${safeCssColor(item.color)}"></span></div>
             </div>
-            <form class="budget-rule-form compact" data-budget-key="${esc(key)}">
+            <form class="budget-rule-form compact" data-budget-key="${esc(item.key)}">
               <label>
                 Semanal
-                <input type="number" min="0" step="0.01" name="weekly" value="${Number(rule.weekly || 0)}">
+                <input type="number" min="0" step="0.01" name="weekly" value="${Number(item.rule.weekly || 0)}">
               </label>
               <label>
                 Mensal
-                <input type="number" min="0" step="0.01" name="monthly" value="${Number(rule.monthly || 0)}">
+                <input type="number" min="0" step="0.01" name="monthly" value="${Number(item.rule.monthly || 0)}">
               </label>
               <button class="mini-btn" type="submit">Salvar regra</button>
             </form>
