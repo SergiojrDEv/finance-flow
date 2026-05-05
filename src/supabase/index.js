@@ -1,6 +1,7 @@
 import { SUPABASE_FALLBACK_CONFIG, state } from "../core/state.js";
 import { buildCatalogFromV2, ensureCatalogCoversTransactions } from "../core/catalog.js";
 import { isUuid, planBudgetSync, planGoalSync } from "../application/sync/planCloudCatalogSync.js";
+import { planTransactionV2Sync } from "../application/sync/planTransactionSync.js";
 
 export function createSupabaseModule(deps) {
   function isMissingRelationError(error) {
@@ -544,37 +545,7 @@ export function createSupabaseModule(deps) {
     if (currentTagsError) throw currentTagsError;
     const tagKeyToId = new Map((currentTags || []).map((item) => [`${item.category_id}:${item.slug}`, item.id]));
 
-    const rows = state.transactions.map((item) => {
-      const category = categoryRecords.get(`${item.type}:${item.category}`);
-      const categoryId = category?.id || null;
-      const categoryTagId = categoryId && item.subcategory ? tagKeyToId.get(`${categoryId}:${item.subcategory}`) || null : null;
-      return {
-        id: item.id,
-        user_id: userId,
-        transaction_kind: item.type,
-        status: item.status || "paid",
-        description: item.description,
-        amount: Number(item.amount),
-        transaction_date: item.date,
-        due_date: item.dueDate || item.date,
-        category_id: categoryId,
-        category_tag_id: categoryTagId,
-        account_id: accountNameToId.get(String(item.account || "Conta corrente").toLowerCase()) || null,
-        credit_card_id: item.creditCardId || null,
-        payment_method: item.paymentMethod || "pix",
-        recurring_rule_id: item.recurrenceId || null,
-        installment_group_id: item.installmentGroup || null,
-        installment_number: item.installmentNumber || null,
-        installment_total: item.installmentTotal || null,
-        created_at: item.createdAt || new Date().toISOString(),
-        updated_at: new Date().toISOString(),
-      };
-    });
-
-    if (rows.length) {
-      const { error } = await client.from("transactions_v2").upsert(rows, { onConflict: "id" });
-      if (error) throw error;
-    }
+    const now = new Date().toISOString();
 
     const { data: remoteRows, error: remoteRowsError } = await client
       .from("transactions_v2")
@@ -582,10 +553,25 @@ export function createSupabaseModule(deps) {
       .eq("user_id", userId);
     if (remoteRowsError) throw remoteRowsError;
 
-    const localIds = new Set(state.transactions.map((item) => item.id));
-    const idsToDelete = (remoteRows || []).map((item) => item.id).filter((id) => !localIds.has(id));
-    if (idsToDelete.length) {
-      const { error } = await client.from("transactions_v2").delete().eq("user_id", userId).in("id", idsToDelete);
+    const plan = planTransactionV2Sync({
+      localTransactions: state.transactions,
+      remoteTransactions: remoteRows || [],
+      refs: {
+        userId,
+        categories: categoryRecords,
+        accounts: accountNameToId,
+        tagIds: tagKeyToId,
+        now,
+      },
+    });
+
+    if (plan.upserts.length) {
+      const { error } = await client.from("transactions_v2").upsert(plan.upserts, { onConflict: "id" });
+      if (error) throw error;
+    }
+
+    if (plan.deletes.length) {
+      const { error } = await client.from("transactions_v2").delete().eq("user_id", userId).in("id", plan.deletes);
       if (error) throw error;
     }
   }

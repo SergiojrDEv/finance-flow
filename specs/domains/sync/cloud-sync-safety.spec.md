@@ -16,6 +16,9 @@ Em um app financeiro, a sincronizacao nao pode apagar dados remotos antes de con
 - Metas existentes devem ser atualizadas por id remoto quando houver id valido.
 - Metas sem id remoto devem ser conciliadas por nome e categoria de investimento.
 - Metas antigas devem ser arquivadas, nao apagadas fisicamente, depois que as metas atuais forem salvas com sucesso.
+- Lancamentos V2 devem ser planejados em uma camada pura antes de chamar o Supabase.
+- Lancamentos locais com id devem gerar upsert em `transactions_v2`.
+- Lancamentos remotos que nao existem mais localmente so podem ser removidos depois que os upserts atuais forem planejados.
 - O mapeamento entre catalogo e settings deve preservar valor acumulado, cor e estado arquivado das metas.
 - Se houver alteracao local ainda nao confirmada na nuvem, o pull silencioso do Supabase nao pode sobrescrever o cache local.
 - Se uma sincronizacao for solicitada enquanto outra estiver em andamento, a nova tentativa deve ficar pendente e rodar ao final da atual.
@@ -27,6 +30,7 @@ Em um app financeiro, a sincronizacao nao pode apagar dados remotos antes de con
 - Se a escrita de uma meta ou regra falhar, o sync nao deve ter feito uma limpeza destrutiva antes.
 - Investimentos associados a uma categoria de meta continuam visiveis apos sincronizacao.
 - Receita criada localmente continua visivel apos refresh, mesmo que a sincronizacao anterior ainda nao tenha terminado.
+- O mapeamento de receita, despesa e investimento para `transactions_v2` preserva tipo, status, valor, datas, categoria, subcategoria, conta e forma de pagamento.
 
 ## Fora de escopo
 
