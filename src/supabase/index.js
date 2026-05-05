@@ -1,6 +1,19 @@
 import { SUPABASE_FALLBACK_CONFIG, state } from "../core/state.js";
 import { buildCatalogFromV2, ensureCatalogCoversTransactions } from "../core/catalog.js";
-import { isUuid, planBudgetSync, planGoalSync } from "../application/sync/planCloudCatalogSync.js";
+import {
+  buildAccountRows,
+  buildBudgetRows,
+  buildCategoryRows,
+  buildCreditCardRows,
+  buildGoalRows,
+  buildTagRows,
+  findStaleAccountIds,
+  findStaleCategoryIds,
+  findStaleCreditCardIds,
+  findStaleTagIds,
+  planBudgetSync,
+  planGoalSync,
+} from "../application/sync/planCloudCatalogSync.js";
 import { SupabaseTransactionV2SyncRepository } from "../infrastructure/sync/SupabaseTransactionV2SyncRepository.js";
 
 export function createSupabaseModule(deps) {
@@ -284,14 +297,13 @@ export function createSupabaseModule(deps) {
     );
     state.catalog = catalog;
 
-    const accountRows = catalog.accounts.map((account) => ({
-      user_id: userId,
-      name: account.name,
-      kind: account.kind || inferAccountKind(account.name),
-      color: account.color || "#0b7285",
-      is_archived: false,
-      updated_at: new Date().toISOString(),
-    }));
+    const now = new Date().toISOString();
+    const accountRows = buildAccountRows({
+      accounts: catalog.accounts,
+      userId,
+      now,
+      inferAccountKind,
+    });
     if (accountRows.length) {
       const { error } = await client.from("accounts").upsert(accountRows, { onConflict: "user_id,name" });
       if (error) throw error;
@@ -303,25 +315,20 @@ export function createSupabaseModule(deps) {
       .eq("user_id", userId);
     if (accountsFetchError) throw accountsFetchError;
 
-    const activeAccountNames = new Set(catalog.accounts.map((item) => item.name.toLowerCase()));
-    const staleAccountIds = (existingAccounts || [])
-      .filter((item) => !activeAccountNames.has(String(item.name).toLowerCase()))
-      .map((item) => item.id);
+    const staleAccountIds = findStaleAccountIds({
+      localAccounts: catalog.accounts,
+      remoteAccounts: existingAccounts || [],
+    });
     if (staleAccountIds.length) {
       const { error } = await client.from("accounts").update({ is_archived: true, updated_at: new Date().toISOString() }).in("id", staleAccountIds);
       if (error) throw error;
     }
 
-    const categoryRows = catalog.categories.map((item) => ({
-        user_id: userId,
-        kind: item.kind,
-        slug: item.slug,
-        name: item.name,
-        color: item.color || "#667085",
-        monthly_limit: item.kind === "expense" ? Number(item.monthlyLimit || 0) : null,
-        is_archived: false,
-        updated_at: new Date().toISOString(),
-      }));
+    const categoryRows = buildCategoryRows({
+      categories: catalog.categories,
+      userId,
+      now,
+    });
     if (categoryRows.length) {
       const { error } = await client.from("categories").upsert(categoryRows, { onConflict: "user_id,kind,slug" });
       if (error) throw error;
@@ -333,10 +340,10 @@ export function createSupabaseModule(deps) {
       .eq("user_id", userId);
     if (categoriesFetchError) throw categoriesFetchError;
 
-    const activeCategoryKeys = new Set(categoryRows.map((item) => `${item.kind}:${item.slug}`));
-    const staleCategoryIds = (existingCategories || [])
-      .filter((item) => !activeCategoryKeys.has(`${item.kind}:${item.slug}`))
-      .map((item) => item.id);
+    const staleCategoryIds = findStaleCategoryIds({
+      localCategoryRows: categoryRows,
+      remoteCategories: existingCategories || [],
+    });
     if (staleCategoryIds.length) {
       const { error } = await client.from("categories").update({ is_archived: true, updated_at: new Date().toISOString() }).in("id", staleCategoryIds);
       if (error) throw error;
@@ -350,18 +357,11 @@ export function createSupabaseModule(deps) {
     if (freshCategoriesError) throw freshCategoriesError;
     const categoryKeyToId = new Map((freshCategories || []).map((item) => [`${item.kind}:${item.slug}`, item]));
 
-    const tagRows = catalog.tags.flatMap((item) => {
-      const category = categoryKeyToId.get(`${item.kind}:${item.categorySlug}`);
-      if (!category) return [];
-      return [{
-        user_id: userId,
-        category_id: category.id,
-        slug: item.slug,
-        name: item.name,
-        color: item.color || category.color || "#667085",
-        is_archived: false,
-        updated_at: new Date().toISOString(),
-      }];
+    const tagRows = buildTagRows({
+      tags: catalog.tags,
+      categoryKeyToId,
+      userId,
+      now,
     });
     if (tagRows.length) {
       const { error } = await client.from("category_tags").upsert(tagRows, { onConflict: "user_id,category_id,slug" });
@@ -373,55 +373,44 @@ export function createSupabaseModule(deps) {
       .select("id,category_id,slug")
       .eq("user_id", userId);
     if (tagsFetchError) throw tagsFetchError;
-    const activeTagKeys = new Set(tagRows.map((item) => `${item.category_id}:${item.slug}`));
-    const staleTagIds = (existingTags || [])
-      .filter((item) => !activeTagKeys.has(`${item.category_id}:${item.slug}`))
-      .map((item) => item.id);
+    const staleTagIds = findStaleTagIds({
+      localTagRows: tagRows,
+      remoteTags: existingTags || [],
+    });
     if (staleTagIds.length) {
       const { error } = await client.from("category_tags").update({ is_archived: true, updated_at: new Date().toISOString() }).in("id", staleTagIds);
       if (error) throw error;
     }
 
-    const creditCardRows = catalog.creditCards.map((card) => ({
-      id: card.id,
-      user_id: userId,
-      name: card.name,
-      color: card.color || "#635bff",
-      closing_day: Number(card.closingDay || 25),
-      due_day: Number(card.dueDay || 10),
-      is_archived: false,
-      updated_at: new Date().toISOString(),
-    }));
+    const creditCardRows = buildCreditCardRows({
+      creditCards: catalog.creditCards,
+      userId,
+      now,
+    });
     if (creditCardRows.length) {
       const { error } = await client.from("credit_cards").upsert(creditCardRows, { onConflict: "id" });
       if (error) throw error;
     }
 
-    const activeCardIds = new Set(catalog.creditCards.map((item) => item.id));
     const { data: existingCards, error: cardsFetchError } = await client
       .from("credit_cards")
       .select("id")
       .eq("user_id", userId);
     if (cardsFetchError) throw cardsFetchError;
-    const staleCardIds = (existingCards || []).map((item) => item.id).filter((id) => !activeCardIds.has(id));
+    const staleCardIds = findStaleCreditCardIds({
+      localCreditCards: catalog.creditCards,
+      remoteCreditCards: existingCards || [],
+    });
     if (staleCardIds.length) {
       const { error } = await client.from("credit_cards").update({ is_archived: true, updated_at: new Date().toISOString() }).in("id", staleCardIds);
       if (error) throw error;
     }
 
-    const budgetRows = catalog.budgets.flatMap((item) => {
-      const category = categoryKeyToId.get(`expense:${item.categorySlug}`);
-      if (!category) return [];
-      return [{
-        user_id: userId,
-        category_id: category.id,
-        categoryId: category.id,
-        period_kind: item.periodKind,
-        periodKind: item.periodKind,
-        amount: Number(item.amount || 0),
-        starts_on: new Date().toISOString().slice(0, 10),
-        updated_at: new Date().toISOString(),
-      }];
+    const budgetRows = buildBudgetRows({
+      budgets: catalog.budgets,
+      categoryKeyToId,
+      userId,
+      now,
     });
 
     const { data: existingBudgets, error: existingBudgetsError } = await client
@@ -467,18 +456,12 @@ export function createSupabaseModule(deps) {
       if (error) throw error;
     }
 
-    const goalRows = catalog.goals.map((goal) => ({
-      id: isUuid(goal.id) ? goal.id : undefined,
-      user_id: userId,
-      name: goal.name,
-      target_amount: Number(goal.target || 0),
-      current_amount: Number(goal.currentAmount || 0),
-      linked_category_id: categoryKeyToId.get(`investment:${goal.key}`)?.id || null,
-      linkedCategoryId: categoryKeyToId.get(`investment:${goal.key}`)?.id || null,
-      color: goal.color || "#635bff",
-      is_archived: Boolean(goal.isArchived),
-      updated_at: new Date().toISOString(),
-    }));
+    const goalRows = buildGoalRows({
+      goals: catalog.goals,
+      categoryKeyToId,
+      userId,
+      now,
+    });
 
     const { data: existingGoals, error: existingGoalsError } = await client
       .from("goals")
