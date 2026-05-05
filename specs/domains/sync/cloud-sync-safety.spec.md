@@ -17,6 +17,8 @@ Em um app financeiro, a sincronizacao nao pode apagar dados remotos antes de con
 - Metas sem id remoto devem ser conciliadas por nome e categoria de investimento.
 - Metas antigas devem ser arquivadas, nao apagadas fisicamente, depois que as metas atuais forem salvas com sucesso.
 - O mapeamento entre catalogo e settings deve preservar valor acumulado, cor e estado arquivado das metas.
+- Se houver alteracao local ainda nao confirmada na nuvem, o pull silencioso do Supabase nao pode sobrescrever o cache local.
+- Se uma sincronizacao for solicitada enquanto outra estiver em andamento, a nova tentativa deve ficar pendente e rodar ao final da atual.
 
 ## Criterios de aceite
 
@@ -24,6 +26,7 @@ Em um app financeiro, a sincronizacao nao pode apagar dados remotos antes de con
 - Ao alterar uma regra semanal ou mensal, o valor permanece depois de atualizar a pagina.
 - Se a escrita de uma meta ou regra falhar, o sync nao deve ter feito uma limpeza destrutiva antes.
 - Investimentos associados a uma categoria de meta continuam visiveis apos sincronizacao.
+- Receita criada localmente continua visivel apos refresh, mesmo que a sincronizacao anterior ainda nao tenha terminado.
 
 ## Fora de escopo
 

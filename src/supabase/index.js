@@ -68,6 +68,13 @@ export function createSupabaseModule(deps) {
     return true;
   }
 
+  function hasUnsyncedLocalChanges() {
+    if (!state.transactions.length) return false;
+    if (!state.lastLocalChangeAt) return false;
+    if (!state.lastCloudSyncAt) return true;
+    return new Date(state.lastLocalChangeAt).getTime() > new Date(state.lastCloudSyncAt).getTime();
+  }
+
   async function saveUserProfileFromMetadata(user) {
     if (!state.supabaseClient || !user?.id || !deps.isEmailConfirmed(user)) return;
     const data = user.user_metadata || {};
@@ -188,6 +195,13 @@ export function createSupabaseModule(deps) {
   async function pullFromSupabaseV2(options = {}) {
     const client = state.supabaseClient;
     const userId = state.currentUser.id;
+
+    if (options.silent && hasUnsyncedLocalChanges()) {
+      renderCloudStatus("Salvando pendencias...");
+      deps.scheduleAutoSync?.();
+      return;
+    }
+
     const [
       accountsResult,
       cardsResult,
@@ -579,8 +593,13 @@ export function createSupabaseModule(deps) {
   }
 
   async function syncToSupabase() {
-    if (!state.currentUser || !state.supabaseClient || state.isSyncing) return;
+    if (!state.currentUser || !state.supabaseClient) return;
+    if (state.isSyncing) {
+      state.pendingCloudSync = true;
+      return;
+    }
     state.isSyncing = true;
+    state.pendingCloudSync = false;
     renderCloudStatus("Salvando...");
 
     const client = state.supabaseClient;
@@ -638,13 +657,25 @@ export function createSupabaseModule(deps) {
     }
 
     state.isSyncing = false;
+    state.lastCloudSyncAt = new Date().toISOString();
+    deps.save();
     renderCloudStatus();
+    if (state.pendingCloudSync) {
+      state.pendingCloudSync = false;
+      window.setTimeout(() => syncToSupabase(), 0);
+    }
   }
 
   async function pullFromSupabase(options = {}) {
     if (!requireCloudUser()) return;
     if (!options.silent && state.transactions.length && !confirm("Substituir os dados locais pelos dados do Supabase?")) return;
     if (!options.silent) renderCloudStatus("Baixando...");
+
+    if (options.silent && hasUnsyncedLocalChanges()) {
+      renderCloudStatus("Salvando pendencias...");
+      deps.scheduleAutoSync?.();
+      return;
+    }
 
     const supportsV2 = await hasV2Schema().catch((error) => {
       handleCloudError(error);

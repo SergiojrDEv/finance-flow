@@ -9,11 +9,20 @@ export function createStorageModule(deps) {
   function save() {
     localStorage.setItem(
       APP_STORAGE_KEY,
-      JSON.stringify({ transactions: state.transactions, settings: state.settings, catalog: state.catalog })
+      JSON.stringify({
+        transactions: state.transactions,
+        settings: state.settings,
+        catalog: state.catalog,
+        meta: {
+          lastLocalChangeAt: state.lastLocalChangeAt,
+          lastCloudSyncAt: state.lastCloudSyncAt,
+        },
+      })
     );
   }
 
   function persist() {
+    state.lastLocalChangeAt = new Date().toISOString();
     save();
     scheduleAutoSync();
   }
@@ -34,6 +43,8 @@ export function createStorageModule(deps) {
         state.transactions = Array.isArray(saved.transactions) ? saved.transactions : [];
         state.settings = mergeSettings(saved.settings);
         state.catalog = buildCatalogFromSettings(state.settings, saved.catalog || {});
+        state.lastLocalChangeAt = saved.meta?.lastLocalChangeAt || null;
+        state.lastCloudSyncAt = saved.meta?.lastCloudSyncAt || null;
         return;
       }
 
