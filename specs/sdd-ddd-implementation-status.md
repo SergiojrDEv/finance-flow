@@ -29,6 +29,7 @@ Evoluir o Finance Flow sem repetir o erro de acoplar arquitetura nova diretament
 
 - Ativar endpoint `/api/config` no Cloudflare Worker e remover `SUPABASE_FALLBACK_CONFIG` do bundle.
 - Migrar edicao/exclusao de lancamentos da UI para os casos de uso, com shadow mode ou comparacao.
+  - Parcialmente feito: exclusao da UI ja passa por `DeleteTransactionUseCase`.
 - Migrar dashboard inteiro para selectors/application services puros.
   - Parcialmente feito: resumo financeiro, maiores despesas, alertas/insights e fluxo mensal ja estao fora da UI.
 - Criar testes de integracao de auth com mocks do Supabase.

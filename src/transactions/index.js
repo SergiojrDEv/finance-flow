@@ -18,8 +18,21 @@ import { createTransactionServices } from "../infrastructure/composition/createT
 import { runTransactionCreationShadow } from "../infrastructure/shadow/runTransactionCreationShadow.js";
 
 export function createTransactionsModule(deps) {
+  let transactionServices = null;
   let shadowServices = null;
   let shadowTransactions = [];
+
+  function getTransactionServices() {
+    if (transactionServices) return transactionServices;
+    transactionServices = createTransactionServices({
+      readTransactions: () => state.transactions,
+      writeTransactions: (nextTransactions) => {
+        state.transactions = nextTransactions;
+      },
+      createId,
+    });
+    return transactionServices;
+  }
 
   function getShadowServices() {
     if (shadowServices) return shadowServices;
@@ -555,8 +568,16 @@ export function createTransactionsModule(deps) {
     deps.notify("Lancamento marcado como pago.");
   }
 
-  function removeTransaction(id) {
-    state.transactions = state.transactions.filter((item) => item.id !== id);
+  async function removeTransaction(id) {
+    const result = await getTransactionServices().deleteTransaction.execute(id, {
+      userId: state.currentUser?.id || "",
+    });
+
+    if (!result.ok) {
+      deps.notify(Object.values(result.errors || {})[0] || "Nao foi possivel remover o lancamento.");
+      return;
+    }
+
     deps.persist();
     deps.renderAll();
     deps.notify("Lancamento removido.");
