@@ -117,8 +117,7 @@
 
     <nav class="nav-list">
       <a class="nav-item active" href="#visao-geral" data-section="visao-geral">Visao geral</a>
-      <a class="nav-item" href="#novo-lancamento" data-section="novo-lancamento">Novo lancamento</a>
-      <a class="nav-item" href="#lancamentos-mes" data-section="lancamentos-mes">Lancamentos do mes</a>
+      <a class="nav-item" href="#novo-lancamento" data-section="novo-lancamento">Lancamentos</a>
       <a class="nav-item" href="#orcamentos" data-section="orcamentos">Orcamentos</a>
       <a class="nav-item" href="#metas" data-section="metas">Metas</a>
       <a class="nav-item" href="#relatorios" data-section="relatorios">Relatorios</a>
@@ -236,14 +235,17 @@
       <div class="transactions-shell">
         <article class="panel transaction-hero">
           <div>
-            <p class="eyebrow">Novo lancamento</p>
+            <p class="eyebrow">Lancamentos</p>
             <h2 id="transaction-hero-title">Cadastre um movimento em uma tela dedicada</h2>
-            <p class="section-copy" id="transaction-hero-copy">Use esta area apenas para criar receitas, despesas e investimentos. O historico do mes fica em outra tela, mais limpa para consultar, editar e filtrar.</p>
+            <p class="section-copy" id="transaction-hero-copy">Crie um movimento ou revise o mes dentro do mesmo fluxo, sem espalhar a rotina financeira por varias abas.</p>
           </div>
-          <button class="ghost-btn" id="go-to-month-transactions" type="button">Ver lancamentos do mes</button>
+          <div class="transaction-view-tabs" aria-label="Visualizacao de lancamentos">
+            <button class="view-tab is-active" id="go-to-new-transaction" type="button" data-transaction-view="compose">Novo</button>
+            <button class="view-tab" id="go-to-month-transactions" type="button" data-transaction-view="month">Mes</button>
+          </div>
         </article>
 
-        <form class="panel form-panel transaction-composer" id="transaction-form">
+        <form class="panel form-panel transaction-composer transaction-view transaction-view-compose" id="transaction-form">
           <div class="panel-header">
             <div>
               <p class="eyebrow">Novo lancamento</p>
@@ -346,21 +348,7 @@
           </div>
         </form>
 
-      </div>
-    </section>
-
-    <section class="section" id="lancamentos-mes">
-      <div class="transactions-shell">
-        <article class="panel transaction-hero">
-          <div>
-            <p class="eyebrow">Lancamentos do mes</p>
-            <h2>Consulte e ajuste o mes sem misturar com o cadastro</h2>
-            <p class="section-copy">Aqui ficam os lancamentos do periodo atual com busca, filtros, formas de pagamento e edicao direta. Para cadastrar um novo item, use a tela propria de novo lancamento.</p>
-          </div>
-          <button class="primary-btn" id="go-to-new-transaction" type="button">Novo lancamento</button>
-        </article>
-
-        <article class="panel table-panel month-transactions-panel">
+        <article class="panel table-panel month-transactions-panel transaction-view transaction-view-month">
           <div class="panel-header table-tools">
             <div>
               <p class="eyebrow">Lancamentos do mes</p>

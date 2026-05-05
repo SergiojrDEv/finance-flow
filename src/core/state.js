@@ -72,6 +72,7 @@ export const state = {
   manageView: "categories",
   settingsItemEdit: null,
   activeType: "expense",
+  transactionView: "compose",
   search: "",
   typeFilter: "all",
   editingId: null,

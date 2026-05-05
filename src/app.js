@@ -63,17 +63,20 @@ function bindEvents() {
   });
   document.querySelector("#open-transaction").addEventListener("click", () => {
     location.hash = "novo-lancamento";
+    setTransactionView("compose");
     setSectionFromHash();
     document.querySelector("#description").focus();
   });
   document.querySelector("#go-to-new-transaction").addEventListener("click", () => {
     location.hash = "novo-lancamento";
+    setTransactionView("compose");
     setSectionFromHash();
     document.querySelector("#description").focus();
     document.querySelector("#transaction-form").scrollIntoView({ behavior: "smooth", block: "start" });
   });
   document.querySelector("#go-to-month-transactions").addEventListener("click", () => {
-    location.hash = "lancamentos-mes";
+    location.hash = "novo-lancamento";
+    setTransactionView("month");
     setSectionFromHash();
   });
   document.querySelector("#seed-data").addEventListener("click", deps.seedData);
@@ -313,7 +316,9 @@ function bindEvents() {
 
 function setSectionFromHash() {
   const rawId = location.hash.replace("#", "") || "visao-geral";
-  const id = rawId === "lancamentos" ? "novo-lancamento" : rawId;
+  const id = rawId === "lancamentos" || rawId === "lancamentos-mes" ? "novo-lancamento" : rawId;
+  if (rawId === "lancamentos-mes") setTransactionView("month");
+  if (id === "novo-lancamento" && !document.body.dataset.transactionView) setTransactionView(state.transactionView || "compose");
   document.body.dataset.section = id;
   document.querySelectorAll(".section").forEach((section) => {
     section.classList.toggle("active", section.id === id);
@@ -323,7 +328,16 @@ function setSectionFromHash() {
   });
 }
 
+function setTransactionView(view) {
+  state.transactionView = view === "month" ? "month" : "compose";
+  document.body.dataset.transactionView = state.transactionView;
+  document.querySelectorAll("[data-transaction-view]").forEach((button) => {
+    button.classList.toggle("is-active", button.dataset.transactionView === state.transactionView);
+  });
+}
+
 deps.setSectionFromHash = setSectionFromHash;
+deps.setTransactionView = setTransactionView;
 
 async function init() {
   deps.load();
@@ -334,6 +348,7 @@ async function init() {
   deps.updateCreditPaymentFields();
   deps.setupPwaSupport();
   bindEvents();
+  setTransactionView(state.transactionView);
   setSectionFromHash();
   deps.renderAll();
   state.supabaseInitPromise = deps.initSupabase();

@@ -436,6 +436,42 @@ h2 {
   gap: 20px;
 }
 
+.transaction-view-tabs {
+  min-width: 220px;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 6px;
+  padding: 5px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: #eef3f8;
+}
+
+.view-tab {
+  min-height: 36px;
+  border: 0;
+  border-radius: 7px;
+  background: transparent;
+  color: var(--muted);
+  font-weight: 900;
+  cursor: pointer;
+}
+
+.view-tab.is-active {
+  background: var(--text);
+  color: #ffffff;
+  box-shadow: 0 8px 16px rgba(15, 23, 42, 0.14);
+}
+
+.transaction-view {
+  display: none;
+}
+
+body[data-transaction-view="compose"] .transaction-view-compose,
+body[data-transaction-view="month"] .transaction-view-month {
+  display: block;
+}
+
 .section-copy {
   margin: 8px 0 0;
   max-width: 760px;
