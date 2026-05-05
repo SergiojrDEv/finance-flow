@@ -9,6 +9,7 @@ import {
   monthKey,
   parseLocalDate,
   paymentMethodLabel,
+  safeCssColor,
   toDateInput,
 } from "../core/utils.js";
 
@@ -196,7 +197,7 @@ export function createDashboardModule(deps) {
           <div class="category-row">
             <strong>${esc(label)}</strong>
             <span class="money negative">${money(value)}</span>
-            <div class="bar"><span style="--value:${width}%;--color:${color}"></span></div>
+            <div class="bar"><span style="--value:${width}%;--color:${safeCssColor(color)}"></span></div>
           </div>
         `;
       })
@@ -280,14 +281,14 @@ export function createDashboardModule(deps) {
                 <span>Semana</span>
                 <small>${money(weeklyUsed)} de ${money(rule.weekly)}</small>
               </div>
-              <div class="bar"><span style="--value:${weeklyPct}%;--color:${color}"></span></div>
+              <div class="bar"><span style="--value:${weeklyPct}%;--color:${safeCssColor(color)}"></span></div>
             </div>
             <div class="budget-meter">
               <div class="budget-meter-head">
                 <span>Mes</span>
                 <small>${money(monthlyUsed)} de ${money(rule.monthly)}</small>
               </div>
-              <div class="bar"><span style="--value:${monthlyPct}%;--color:${color}"></span></div>
+              <div class="bar"><span style="--value:${monthlyPct}%;--color:${safeCssColor(color)}"></span></div>
             </div>
             <form class="budget-rule-form compact" data-budget-key="${esc(key)}">
               <label>

@@ -17,6 +17,13 @@ export function esc(value) {
     .replaceAll("'", "&#039;");
 }
 
+export function safeCssColor(value, fallback = "#667085") {
+  const color = String(value || "").trim();
+  if (/^#[0-9a-f]{3}([0-9a-f]{3})?$/i.test(color)) return color;
+  if (/^var\(--[a-z0-9-]+\)$/i.test(color)) return color;
+  return fallback;
+}
+
 export function monthKey(date) {
   return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}`;
 }

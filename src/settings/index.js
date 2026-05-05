@@ -5,6 +5,7 @@ import {
   getBudgetRule,
   getCategoryColorFromList,
   money,
+  safeCssColor,
   slugify,
 } from "../core/utils.js";
 
@@ -249,7 +250,7 @@ export function createSettingsModule(deps) {
       .map((item) => `
         <div class="manage-item">
           <div>
-            <strong><span class="color-dot" style="--color:${esc(item.color)}"></span>${esc(item.label)}</strong>
+            <strong><span class="color-dot" style="--color:${safeCssColor(item.color)}"></span>${esc(item.label)}</strong>
             <small>${labels[item.type]}${item.type === "expense" ? ` | limite ${money(Number(item.limit || 0))}` : ""}${getTags(item.type, item.key).length ? ` | ${getTags(item.type, item.key).length} subcategoria${getTags(item.type, item.key).length === 1 ? "" : "s"}` : ""}</small>
           </div>
           <div class="mini-actions">
@@ -388,7 +389,7 @@ export function createSettingsModule(deps) {
         </header>
         <div class="tag-chip-wrap">
           ${group.tags.length ? group.tags.map(([subKey, subLabel, subColor]) => `
-            <div class="tag-chip" style="--tag-color:${esc(subColor || getCategoryColorFromList(group.type, group.categoryKey, state.settings.categories))}">
+            <div class="tag-chip" style="--tag-color:${safeCssColor(subColor || getCategoryColorFromList(group.type, group.categoryKey, state.settings.categories))}">
               <span class="tag-chip-dot"></span>
               <span>${esc(subLabel)}</span>
               <span class="tag-chip-actions">
