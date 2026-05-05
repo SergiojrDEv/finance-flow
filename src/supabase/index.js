@@ -1,7 +1,7 @@
 import { SUPABASE_FALLBACK_CONFIG, state } from "../core/state.js";
 import { buildCatalogFromV2, ensureCatalogCoversTransactions } from "../core/catalog.js";
 import { isUuid, planBudgetSync, planGoalSync } from "../application/sync/planCloudCatalogSync.js";
-import { planTransactionV2Sync } from "../application/sync/planTransactionSync.js";
+import { SupabaseTransactionV2SyncRepository } from "../infrastructure/sync/SupabaseTransactionV2SyncRepository.js";
 
 export function createSupabaseModule(deps) {
   function isMissingRelationError(error) {
@@ -534,46 +534,12 @@ export function createSupabaseModule(deps) {
 
   async function syncTransactionsToV2(userId, refs) {
     const client = state.supabaseClient;
-    const categoryRecords = refs.categories;
-    const accountNameToId = refs.accounts;
-
-    const { data: currentTags, error: currentTagsError } = await client
-      .from("category_tags")
-      .select("id,category_id,slug")
-      .eq("user_id", userId)
-      .eq("is_archived", false);
-    if (currentTagsError) throw currentTagsError;
-    const tagKeyToId = new Map((currentTags || []).map((item) => [`${item.category_id}:${item.slug}`, item.id]));
-
-    const now = new Date().toISOString();
-
-    const { data: remoteRows, error: remoteRowsError } = await client
-      .from("transactions_v2")
-      .select("id")
-      .eq("user_id", userId);
-    if (remoteRowsError) throw remoteRowsError;
-
-    const plan = planTransactionV2Sync({
-      localTransactions: state.transactions,
-      remoteTransactions: remoteRows || [],
-      refs: {
-        userId,
-        categories: categoryRecords,
-        accounts: accountNameToId,
-        tagIds: tagKeyToId,
-        now,
-      },
+    const repository = new SupabaseTransactionV2SyncRepository({ client });
+    await repository.sync({
+      userId,
+      transactions: state.transactions,
+      refs,
     });
-
-    if (plan.upserts.length) {
-      const { error } = await client.from("transactions_v2").upsert(plan.upserts, { onConflict: "id" });
-      if (error) throw error;
-    }
-
-    if (plan.deletes.length) {
-      const { error } = await client.from("transactions_v2").delete().eq("user_id", userId).in("id", plan.deletes);
-      if (error) throw error;
-    }
   }
 
   async function syncToSupabase() {
