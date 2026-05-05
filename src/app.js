@@ -314,6 +314,7 @@ function bindEvents() {
 function setSectionFromHash() {
   const rawId = location.hash.replace("#", "") || "visao-geral";
   const id = rawId === "lancamentos" ? "novo-lancamento" : rawId;
+  document.body.dataset.section = id;
   document.querySelectorAll(".section").forEach((section) => {
     section.classList.toggle("active", section.id === id);
   });

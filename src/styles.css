@@ -288,6 +288,11 @@ h2 {
   color: #be123c;
 }
 
+.danger-btn.subtle {
+  background: #fff7f8;
+  color: #9f1239;
+}
+
 .full {
   width: 100%;
 }
@@ -448,6 +453,48 @@ h2 {
   grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 12px;
   margin-bottom: 16px;
+}
+
+.month-tools-drawer {
+  margin: 0 0 14px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: #fbfcfe;
+}
+
+.month-tools-drawer summary {
+  min-height: 44px;
+  padding: 0 14px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  cursor: pointer;
+  color: var(--muted);
+  font-weight: 800;
+}
+
+.month-tools-drawer summary::after {
+  content: "+";
+  width: 24px;
+  height: 24px;
+  display: grid;
+  place-items: center;
+  border-radius: 6px;
+  background: #eef3f8;
+  color: var(--text);
+}
+
+.month-tools-drawer[open] summary::after {
+  content: "-";
+}
+
+.month-tools-drawer .report-actions,
+.month-tools-drawer .import-preview {
+  margin: 0 14px 14px;
+}
+
+.report-actions.compact {
+  padding-top: 2px;
 }
 
 .mini-stat-card {
@@ -1026,7 +1073,11 @@ td {
 }
 
 .report-panel {
-  max-width: 760px;
+  max-width: 920px;
+}
+
+body[data-section="relatorios"] #open-transaction {
+  display: none;
 }
 
 .settings-grid {

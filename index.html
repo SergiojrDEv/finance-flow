@@ -379,6 +379,20 @@
 
           <div class="transaction-highlights" id="transaction-highlights"></div>
 
+          <details class="month-tools-drawer">
+            <summary>Exportacao e backup</summary>
+            <div class="report-actions compact">
+              <button class="ghost-btn" id="export-csv" type="button">Exportar CSV</button>
+              <button class="ghost-btn" id="export-json" type="button">Exportar JSON</button>
+              <label class="import-label">
+                Importar JSON
+                <input id="import-json" type="file" accept="application/json">
+              </label>
+              <button class="danger-btn subtle" id="clear-data" type="button">Limpar dados</button>
+            </div>
+            <div class="import-preview is-hidden" id="import-preview"></div>
+          </details>
+
           <div class="table-scroll">
             <table>
               <thead>
@@ -460,24 +474,6 @@
     </section>
 
     <section class="section" id="relatorios">
-      <article class="panel report-panel">
-        <div class="panel-header">
-          <div>
-            <p class="eyebrow">Exportacao</p>
-            <h2>Relatorios e backups</h2>
-          </div>
-        </div>
-        <div class="report-actions">
-          <button class="primary-btn" id="export-csv" type="button">Exportar CSV</button>
-          <button class="ghost-btn" id="export-json" type="button">Exportar JSON</button>
-          <label class="import-label">
-            Importar JSON
-            <input id="import-json" type="file" accept="application/json">
-          </label>
-          <button class="danger-btn" id="clear-data" type="button">Limpar dados</button>
-        </div>
-        <div class="import-preview is-hidden" id="import-preview"></div>
-      </article>
       <article class="panel report-panel">
         <div class="panel-header">
           <div>
