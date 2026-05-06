@@ -14,6 +14,7 @@ import {
   toDateInput,
 } from "../core/utils.js";
 import { isFeatureEnabled } from "../core/featureFlags.js";
+import { buildMonthTransactionList } from "../application/transactions/buildMonthTransactionList.js";
 import { createTransactionServices } from "../infrastructure/composition/createTransactionServices.js";
 import { runTransactionCreationShadow } from "../infrastructure/shadow/runTransactionCreationShadow.js";
 
@@ -417,14 +418,12 @@ export function createTransactionsModule(deps) {
   }
 
   function renderTable() {
-    const monthTransactions = getMonthTransactions();
-    const filtered = monthTransactions
-      .filter((item) => state.typeFilter === "all" || item.type === state.typeFilter)
-      .filter((item) => {
-        const haystack = `${item.description} ${item.category} ${item.subcategory || ""} ${item.account} ${item.paymentMethod || ""}`.toLowerCase();
-        return haystack.includes(state.search.toLowerCase());
-      })
-      .sort((a, b) => String(b.date || "").localeCompare(String(a.date || "")));
+    const filtered = buildMonthTransactionList({
+      transactions: state.transactions,
+      monthKey: deps.monthKey(state.currentDate),
+      typeFilter: state.typeFilter,
+      search: state.search,
+    });
 
     if (!filtered.length) {
       els.table.innerHTML = '<tr><td colspan="10" class="empty-state">Nenhum lancamento encontrado.</td></tr>';
