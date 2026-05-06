@@ -1,5 +1,25 @@
 const VALID_TYPES = new Set(["income", "expense", "investment"]);
 
+const TYPE_LABELS = {
+  income: "Receita",
+  expense: "Despesa",
+  investment: "Investimento",
+};
+
+const STATUS_LABELS = {
+  paid: "Pago",
+  pending: "Pendente",
+  planned: "Previsto",
+};
+
+const PAYMENT_METHOD_LABELS = {
+  pix: "Pix",
+  debit: "Debito",
+  credit: "Credito",
+  cash: "Dinheiro",
+  transfer: "Transferencia",
+};
+
 function parseMonthKey(dateValue) {
   const [year, month] = String(dateValue || "").split("-");
   if (!year || !month) return "";
@@ -8,6 +28,26 @@ function parseMonthKey(dateValue) {
 
 export function normalizeTransactionType(type) {
   return VALID_TYPES.has(type) ? type : "expense";
+}
+
+export function getTransactionTypeLabel(type) {
+  return TYPE_LABELS[normalizeTransactionType(type)] || TYPE_LABELS.expense;
+}
+
+export function getTransactionStatusLabel(status) {
+  return STATUS_LABELS[status] || STATUS_LABELS.paid;
+}
+
+export function getPaymentMethodLabel(paymentMethod) {
+  return PAYMENT_METHOD_LABELS[paymentMethod] || "Outro";
+}
+
+export function getTransactionAmountPresentation(type) {
+  const normalizedType = normalizeTransactionType(type);
+  return {
+    sign: normalizedType === "income" ? "+" : "-",
+    className: normalizedType === "income" ? "positive" : normalizedType === "investment" ? "purple" : "negative",
+  };
 }
 
 export function buildMonthTransactionList({
@@ -33,6 +73,15 @@ export function buildMonthTransactionList({
       dueDate: item?.dueDate || "",
       status: item?.status || "paid",
       amount: Number(item?.amount || 0),
+    }))
+    .map((item) => ({
+      ...item,
+      presentation: {
+        typeLabel: getTransactionTypeLabel(item.type),
+        statusLabel: getTransactionStatusLabel(item.status),
+        paymentMethodLabel: getPaymentMethodLabel(item.paymentMethod),
+        amount: getTransactionAmountPresentation(item.type),
+      },
     }))
     .filter((item) => safeTypeFilter === "all" || item.type === safeTypeFilter)
     .filter((item) => {

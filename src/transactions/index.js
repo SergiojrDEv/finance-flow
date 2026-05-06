@@ -8,7 +8,6 @@ import {
   getSubcategories,
   money,
   parseLocalDate,
-  paymentMethodLabel,
   slugify,
   simplifyFieldName,
   toDateInput,
@@ -432,10 +431,10 @@ export function createTransactionsModule(deps) {
 
     els.table.innerHTML = filtered
       .map((item) => {
-        const amountClass = item.type === "income" ? "positive" : item.type === "investment" ? "purple" : "negative";
-        const sign = item.type === "income" ? "+" : "-";
-        const typeLabel = item.type === "income" ? "Receita" : item.type === "investment" ? "Investimento" : "Despesa";
-        const statusLabel = item.status === "pending" ? "Pendente" : item.status === "planned" ? "Previsto" : "Pago";
+        const amountClass = item.presentation.amount.className;
+        const sign = item.presentation.amount.sign;
+        const typeLabel = item.presentation.typeLabel;
+        const statusLabel = item.presentation.statusLabel;
         const dateLabel = item.date ? parseLocalDate(item.date).toLocaleDateString("pt-BR") : "-";
         const dueDateLabel = item.dueDate ? parseLocalDate(item.dueDate).toLocaleDateString("pt-BR") : "-";
 
@@ -446,7 +445,7 @@ export function createTransactionsModule(deps) {
             <td><span class="category-pill">${esc(categoryDisplayLabel(item))}</span></td>
             <td>${esc(item.account)}</td>
             <td><span class="type-pill ${item.status || "paid"}">${statusLabel}</span></td>
-            <td><span class="payment-pill ${item.paymentMethod || "pix"}">${paymentMethodLabel(item.paymentMethod)}</span></td>
+            <td><span class="payment-pill ${item.paymentMethod || "pix"}">${item.presentation.paymentMethodLabel}</span></td>
             <td>${dueDateLabel}</td>
             <td><span class="type-pill ${item.type}">${typeLabel}</span></td>
             <td class="right money ${amountClass}">${sign} ${money(Number(item.amount))}</td>

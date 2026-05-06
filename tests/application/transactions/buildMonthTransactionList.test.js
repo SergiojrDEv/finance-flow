@@ -1,6 +1,13 @@
 import assert from "node:assert/strict";
 import test from "node:test";
-import { buildMonthTransactionList, normalizeTransactionType } from "../../../src/application/transactions/buildMonthTransactionList.js";
+import {
+  buildMonthTransactionList,
+  getPaymentMethodLabel,
+  getTransactionAmountPresentation,
+  getTransactionStatusLabel,
+  getTransactionTypeLabel,
+  normalizeTransactionType,
+} from "../../../src/application/transactions/buildMonthTransactionList.js";
 
 const transactions = [
   {
@@ -65,4 +72,20 @@ test("normaliza dados antigos sem quebrar listagem", () => {
 test("usa despesa como tipo defensivo para valores invalidos", () => {
   assert.equal(normalizeTransactionType("foo"), "expense");
   assert.equal(normalizeTransactionType("income"), "income");
+});
+
+test("monta apresentacao de tipo status pagamento e valor", () => {
+  const list = buildMonthTransactionList({
+    transactions: [{ id: "tx-1", type: "investment", status: "planned", paymentMethod: "transfer", date: "2026-05-10", amount: 100 }],
+    monthKey: "2026-05",
+  });
+
+  assert.equal(list[0].presentation.typeLabel, "Investimento");
+  assert.equal(list[0].presentation.statusLabel, "Previsto");
+  assert.equal(list[0].presentation.paymentMethodLabel, "Transferencia");
+  assert.deepEqual(list[0].presentation.amount, { sign: "-", className: "purple" });
+  assert.equal(getTransactionTypeLabel("foo"), "Despesa");
+  assert.equal(getTransactionStatusLabel("x"), "Pago");
+  assert.equal(getPaymentMethodLabel("boleto"), "Outro");
+  assert.deepEqual(getTransactionAmountPresentation("income"), { sign: "+", className: "positive" });
 });
