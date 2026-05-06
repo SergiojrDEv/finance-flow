@@ -8,10 +8,7 @@ import { createSyncServices } from "../../../src/infrastructure/composition/crea
 
 test("monta repositorios de sync v2", () => {
   const client = { from() {} };
-  const services = createSyncServices({
-    client,
-    inferAccountKind: () => "checking",
-  });
+  const services = createSyncServices({ client });
 
   assert.equal(services.cloudSnapshotRepository instanceof CloudSnapshotRepository, true);
   assert.equal(services.catalogV2SyncRepository instanceof CatalogV2SyncRepository, true);

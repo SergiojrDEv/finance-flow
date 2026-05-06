@@ -6,22 +6,9 @@ import {
   loadSupabaseConfig as resolveSupabaseConfig,
 } from "../infrastructure/config/SupabaseConfigProvider.js";
 import { createSyncServices } from "../infrastructure/composition/createSyncServices.js";
+import { isMissingRelationError } from "../infrastructure/sync/SupabaseSyncHelpers.js";
 
 export function createSupabaseModule(deps) {
-  function isMissingRelationError(error) {
-    const message = String(error?.message || "").toLowerCase();
-    return message.includes("does not exist") || message.includes("could not find") || error?.code === "PGRST205";
-  }
-
-  function inferAccountKind(name) {
-    const lower = String(name || "").toLowerCase();
-    if (lower.includes("cartao")) return "credit_card";
-    if (lower.includes("corretora")) return "investment";
-    if (lower.includes("carteira")) return "wallet";
-    if (lower.includes("poupanca")) return "savings";
-    return "checking";
-  }
-
   function getAuthHashType() {
     const hash = String(location.hash || "").replace(/^#/, "");
     const params = new URLSearchParams(hash);
@@ -172,7 +159,7 @@ export function createSupabaseModule(deps) {
 
     let snapshot;
     try {
-      const services = createSyncServices({ client, inferAccountKind, isMissingRelationError });
+      const services = createSyncServices({ client });
       snapshot = await services.cloudSnapshotRepository.fetchV2({ userId });
     } catch (error) {
       return handleCloudError(error);
@@ -230,7 +217,6 @@ export function createSupabaseModule(deps) {
 
     const services = createSyncServices({
       client,
-      inferAccountKind,
     });
     return services.catalogV2SyncRepository.sync({
       userId,
@@ -242,7 +228,6 @@ export function createSupabaseModule(deps) {
     const client = state.supabaseClient;
     const services = createSyncServices({
       client,
-      inferAccountKind,
     });
     await services.transactionV2SyncRepository.sync({
       userId,
