@@ -9,7 +9,7 @@ Evoluir o Finance Flow sem repetir o erro de acoplar arquitetura nova diretament
 - Especificacoes por dominio criadas em `specs/domains`.
 - ADRs para SDD/DDD, shadow mode, TypeScript gradual e configuracao Supabase.
 - Camadas `domain`, `application`, `infrastructure` e `composition` criadas.
-- Casos de uso de criacao, edicao e exclusao de lancamentos.
+- Casos de uso de criacao, criacao em serie, edicao e exclusao de lancamentos.
 - Selector puro para listagem de lancamentos do mes, com filtro, busca, ordenacao e compatibilidade com dados antigos.
 - Builder puro para serie de lancamentos, parcelas e recorrencia, consumido pela UI.
 - Casos de uso de categorias, etiquetas e orcamentos.

@@ -91,11 +91,12 @@ Campos que nao devem aparecer por padrao:
 - Validacao de draft: `src/application/transactions/validateTransactionDraft.js`.
 - Criacao de serie/parcelas/recorrencia: `src/application/transactions/buildTransactionSeries.js`.
 - Caso de uso: `src/application/transactions/CreateTransactionUseCase.js`.
+- Caso de uso de serie: `src/application/transactions/CreateTransactionSeriesUseCase.js`.
 - Porta de persistencia: `src/application/transactions/ports/TransactionRepository.js`.
 - Entidade de dominio: `src/domain/transactions/Transaction.js`.
 - Adaptador local: `src/infrastructure/transactions/LocalTransactionRepository.js`.
 - Composition root: `src/infrastructure/composition/createTransactionServices.js`.
 - Shadow adapter: `src/infrastructure/shadow/compareTransactionCreation.js`.
 - Plano de integracao segura: `specs/domains/transactions/shadow-create-transaction-plan.md`.
-- Testes: `tests/transactions/transactionFormRules.test.js`, `tests/transactions/validateTransactionDraft.test.js` e `tests/application/transactions/buildTransactionSeries.test.js`.
-- Status: validacao automatizada inicial com entidade de dominio, ainda nao conectada ao runtime principal.
+- Testes: `tests/transactions/transactionFormRules.test.js`, `tests/transactions/validateTransactionDraft.test.js`, `tests/application/transactions/CreateTransactionUseCase.test.js`, `tests/application/transactions/CreateTransactionSeriesUseCase.test.js` e `tests/application/transactions/buildTransactionSeries.test.js`.
+- Status: runtime de criacao usa builder de serie e caso de uso de aplicacao.

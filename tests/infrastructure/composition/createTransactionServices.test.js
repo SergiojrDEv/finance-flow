@@ -28,6 +28,7 @@ test("monta caso de uso com repositorio local", async () => {
   assert.equal(result.value.id, "factory-1");
   assert.equal(rows.length, 1);
   assert.equal(typeof services.transactionRepository.save, "function");
+  assert.equal(typeof services.createTransactionSeries.execute, "function");
   assert.equal(typeof services.updateTransaction.execute, "function");
   assert.equal(typeof services.deleteTransaction.execute, "function");
 });

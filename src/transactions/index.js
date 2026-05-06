@@ -462,7 +462,7 @@ export function createTransactionsModule(deps) {
       .join("");
   }
 
-  function addTransaction(event) {
+  async function addTransaction(event) {
     event.preventDefault();
     const formData = new FormData(event.currentTarget);
     if (state.editingId) {
@@ -491,8 +491,18 @@ export function createTransactionsModule(deps) {
     });
     const totalItems = transactions.length;
 
-    compareTransactionsInShadow(transactions);
-    state.transactions.push(...transactions);
+    const drafts = transactions.map((transaction) => ({
+      ...transaction,
+      userId: state.currentUser?.id || "local-user",
+    }));
+    await compareTransactionsInShadow(drafts);
+    const result = await getTransactionServices().createTransactionSeries.execute(drafts);
+
+    if (!result.ok) {
+      deps.notify(Object.values(result.errors || {})[0] || "Nao foi possivel salvar o lancamento.");
+      return;
+    }
+
     deps.persist();
     event.currentTarget.reset();
     setDefaultDate();
