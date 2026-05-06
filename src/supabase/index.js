@@ -1,11 +1,14 @@
 import { SUPABASE_FALLBACK_CONFIG, state } from "../core/state.js";
-import { buildCatalogFromV2, ensureCatalogCoversTransactions } from "../core/catalog.js";
-import { mapV2TransactionsWithLegacyFallback } from "../application/sync/mapCloudSnapshot.js";
+import { ensureCatalogCoversTransactions } from "../core/catalog.js";
 import {
   fetchSupabaseConfig,
   loadSupabaseConfig as resolveSupabaseConfig,
 } from "../infrastructure/config/SupabaseConfigProvider.js";
 import { createSyncServices } from "../infrastructure/composition/createSyncServices.js";
+import {
+  hydrateCloudSnapshot,
+  shouldSkipSilentCloudSnapshot,
+} from "../infrastructure/sync/CloudSnapshotHydrator.js";
 import {
   mapLegacyRowToLocalTransaction,
   mapLocalTransactionToLegacyRow,
@@ -113,39 +116,20 @@ export function createSupabaseModule(deps) {
       return handleCloudError(error);
     }
 
-    const {
-      accounts,
-      creditCards,
-      categories,
-      categoryTags,
-      budgets,
-      goals,
-      transactions: txRows,
-      legacyTransactions: legacyRows,
-    } = snapshot;
-
-    if (options.silent && !txRows.length && !categories.length && state.transactions.length) {
+    if (shouldSkipSilentCloudSnapshot({
+      snapshot,
+      hasLocalTransactions: Boolean(state.transactions.length),
+      silent: options.silent,
+    })) {
       renderCloudStatus();
       return;
     }
 
-    const refs = {
-      accountById: new Map(accounts.map((item) => [item.id, item])),
-      categoryById: new Map(categories.map((item) => [item.id, item])),
-      tagById: new Map(categoryTags.map((item) => [item.id, item])),
-    };
-
-    state.catalog = ensureCatalogCoversTransactions(
-      buildCatalogFromV2({ accounts, creditCards, categories, categoryTags, budgets, goals }),
-      legacyRows
-    );
-    state.dataMode = "v2";
+    const hydrated = hydrateCloudSnapshot(snapshot);
+    state.catalog = hydrated.catalog;
+    state.dataMode = hydrated.dataMode;
     deps.syncSettingsFromCatalog();
-    state.transactions = mapV2TransactionsWithLegacyFallback({
-      rows: txRows,
-      legacyRows,
-      refs,
-    });
+    state.transactions = hydrated.transactions;
     deps.save();
     deps.updateCategoryOptions();
     deps.updateAccountOptions();
