@@ -89,6 +89,7 @@ Campos que nao devem aparecer por padrao:
 
 - Regras de campos: `src/application/transactions/transactionFormRules.js`.
 - Validacao de draft: `src/application/transactions/validateTransactionDraft.js`.
+- Criacao de serie/parcelas/recorrencia: `src/application/transactions/buildTransactionSeries.js`.
 - Caso de uso: `src/application/transactions/CreateTransactionUseCase.js`.
 - Porta de persistencia: `src/application/transactions/ports/TransactionRepository.js`.
 - Entidade de dominio: `src/domain/transactions/Transaction.js`.
@@ -96,5 +97,5 @@ Campos que nao devem aparecer por padrao:
 - Composition root: `src/infrastructure/composition/createTransactionServices.js`.
 - Shadow adapter: `src/infrastructure/shadow/compareTransactionCreation.js`.
 - Plano de integracao segura: `specs/domains/transactions/shadow-create-transaction-plan.md`.
-- Testes: `tests/transactions/transactionFormRules.test.js` e `tests/transactions/validateTransactionDraft.test.js`.
+- Testes: `tests/transactions/transactionFormRules.test.js`, `tests/transactions/validateTransactionDraft.test.js` e `tests/application/transactions/buildTransactionSeries.test.js`.
 - Status: validacao automatizada inicial com entidade de dominio, ainda nao conectada ao runtime principal.

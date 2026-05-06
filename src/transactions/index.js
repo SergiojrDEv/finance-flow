@@ -1,6 +1,5 @@
 import { els, state } from "../core/state.js";
 import {
-  addMonths,
   categoryDisplayLabel,
   createId,
   esc,
@@ -14,6 +13,7 @@ import {
 } from "../core/utils.js";
 import { isFeatureEnabled } from "../core/featureFlags.js";
 import { buildMonthTransactionList } from "../application/transactions/buildMonthTransactionList.js";
+import { buildTransactionSeries } from "../application/transactions/buildTransactionSeries.js";
 import { createTransactionServices } from "../infrastructure/composition/createTransactionServices.js";
 import { runTransactionCreationShadow } from "../infrastructure/shadow/runTransactionCreationShadow.js";
 
@@ -469,43 +469,27 @@ export function createTransactionsModule(deps) {
       updateTransaction(formData);
       return;
     }
-    const paymentMethod = formData.get("paymentMethod") || "pix";
-    const useExpenseFields = shouldUseExpenseOnlyFields(state.activeType);
-    const normalizedPaymentMethod = useExpenseFields ? paymentMethod : defaultPaymentMethodForType(state.activeType);
-    const isCredit = useExpenseFields && normalizedPaymentMethod === "credit";
-    const installments = isCredit ? Math.max(1, Number(formData.get("installments") || 1)) : 1;
-    const repeatCount = useExpenseFields ? Math.max(1, Number(formData.get("repeatCount") || 1)) : 1;
-    const recurrence = useExpenseFields ? formData.get("recurrence") : "none";
-    const totalItems = installments > 1 ? installments : recurrence === "monthly" ? repeatCount : 1;
-    const groupId = totalItems > 1 ? createId() : null;
-    const baseAmount = Number(formData.get("amount"));
-    const perItemAmount = installments > 1 ? Number((baseAmount / installments).toFixed(2)) : baseAmount;
-    const subcategory = useExpenseFields ? formData.get("subcategory") || null : null;
-    const transactions = Array.from({ length: totalItems }, (_, index) => {
-      const date = addMonths(formData.get("date"), index);
-      const dueDate = formData.get("dueDate") ? addMonths(formData.get("dueDate"), index) : date;
-      const suffix = installments > 1 ? ` (${index + 1}/${installments})` : recurrence === "monthly" && totalItems > 1 ? ` (${index + 1}/${totalItems})` : "";
-      return {
-        id: createId(),
-        type: state.activeType,
-        description: `${formData.get("description").trim()}${suffix}`,
+    const transactions = buildTransactionSeries({
+      type: state.activeType,
+      createId,
+      resolveAccount: resolveAccountValue,
+      values: {
+        description: formData.get("description"),
         category: formData.get("category"),
-        subcategory,
-        account: resolveAccountValue(formData.get("account")),
-        amount: perItemAmount,
-        date,
-        dueDate,
-        status: formData.get("status") || "paid",
-        paymentMethod: normalizedPaymentMethod,
-        creditCardId: isCredit ? formData.get("creditCardId") || null : null,
-        recurrence: recurrence || "none",
-        recurrenceId: recurrence === "monthly" ? groupId : null,
-        installmentGroup: installments > 1 ? groupId : null,
-        installmentNumber: installments > 1 ? index + 1 : null,
-        installmentTotal: installments > 1 ? installments : null,
-        createdAt: new Date().toISOString(),
-      };
+        subcategory: formData.get("subcategory"),
+        account: formData.get("account"),
+        amount: formData.get("amount"),
+        date: formData.get("date"),
+        dueDate: formData.get("dueDate"),
+        status: formData.get("status"),
+        paymentMethod: formData.get("paymentMethod"),
+        creditCardId: formData.get("creditCardId"),
+        recurrence: formData.get("recurrence"),
+        repeatCount: formData.get("repeatCount"),
+        installments: formData.get("installments"),
+      },
     });
+    const totalItems = transactions.length;
 
     compareTransactionsInShadow(transactions);
     state.transactions.push(...transactions);
