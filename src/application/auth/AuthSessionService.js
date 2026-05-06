@@ -1,4 +1,5 @@
 import { validateAuthInput, validateSignupProfile } from "./validateAuth.js";
+import { fail, ok } from "../shared/result.js";
 
 function isEmail(value) {
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(String(value || "").trim());
@@ -17,22 +18,23 @@ export class AuthSessionService {
 
   async signIn({ email, password } = {}) {
     const validationError = validateAuthInput(email, password);
-    if (validationError) return { ok: false, message: validationError };
+    if (validationError) return fail({ auth: validationError }, { message: validationError });
 
     const { data, error } = await this.authClient.signInWithPassword({ email, password });
-    if (error) return { ok: false, message: error.message };
+    if (error) return fail({ auth: error.message }, { message: error.message });
 
     if (!isEmailConfirmed(data?.user)) {
       await this.authClient.signOut?.();
-      return { ok: false, code: "email-unconfirmed", message: "Confirme seu e-mail antes de entrar." };
+      const message = "Confirme seu e-mail antes de entrar.";
+      return fail({ auth: message }, { code: "email-unconfirmed", message });
     }
 
-    return { ok: true, user: data.user };
+    return ok(data.user, { user: data.user });
   }
 
   async signUp({ profile, redirectTo } = {}) {
     const validationError = validateSignupProfile(profile, { today: this.today });
-    if (validationError) return { ok: false, message: validationError };
+    if (validationError) return fail({ auth: validationError }, { message: validationError });
 
     const { error } = await this.authClient.signUp({
       email: profile.email,
@@ -47,33 +49,41 @@ export class AuthSessionService {
         },
       },
     });
-    if (error) return { ok: false, message: error.message };
+    if (error) return fail({ auth: error.message }, { message: error.message });
 
     await this.authClient.signOut?.();
-    return { ok: true, email: profile.email };
+    return ok(profile.email, { email: profile.email });
   }
 
   async requestPasswordReset({ email, redirectTo } = {}) {
     const normalizedEmail = String(email || "").trim();
-    if (!normalizedEmail) return { ok: false, message: "Informe seu e-mail." };
-    if (!isEmail(normalizedEmail)) return { ok: false, message: "Informe um e-mail valido." };
+    if (!normalizedEmail) {
+      const message = "Informe seu e-mail.";
+      return fail({ email: message }, { message });
+    }
+    if (!isEmail(normalizedEmail)) {
+      const message = "Informe um e-mail valido.";
+      return fail({ email: message }, { message });
+    }
 
     const { error } = await this.authClient.resetPasswordForEmail(normalizedEmail, { redirectTo });
-    if (error) return { ok: false, message: error.message };
-    return { ok: true, email: normalizedEmail };
+    if (error) return fail({ auth: error.message }, { message: error.message });
+    return ok(normalizedEmail, { email: normalizedEmail });
   }
 
   async updatePassword({ password, confirmPassword } = {}) {
     if (String(password || "").length < 6) {
-      return { ok: false, message: "A senha deve ter pelo menos 6 caracteres." };
+      const message = "A senha deve ter pelo menos 6 caracteres.";
+      return fail({ password: message }, { message });
     }
     if (password !== confirmPassword) {
-      return { ok: false, message: "As senhas nao conferem." };
+      const message = "As senhas nao conferem.";
+      return fail({ confirmPassword: message }, { message });
     }
 
     const { error } = await this.authClient.updateUser({ password });
-    if (error) return { ok: false, message: error.message };
+    if (error) return fail({ auth: error.message }, { message: error.message });
     await this.authClient.signOut?.();
-    return { ok: true };
+    return ok(null);
   }
 }
