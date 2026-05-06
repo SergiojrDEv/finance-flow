@@ -2,12 +2,13 @@ import { SupabaseCloudSnapshotRepository } from "../sync/SupabaseCloudSnapshotRe
 import { SupabaseCatalogV2SyncRepository } from "../sync/SupabaseCatalogV2SyncRepository.js";
 import { SupabaseLegacySyncRepository } from "../sync/SupabaseLegacySyncRepository.js";
 import { SupabaseTransactionV2SyncRepository } from "../sync/SupabaseTransactionV2SyncRepository.js";
+import { SupabaseUserProfileRepository } from "../sync/SupabaseUserProfileRepository.js";
 import {
   inferAccountKind as defaultInferAccountKind,
   isMissingRelationError as defaultIsMissingRelationError,
 } from "../sync/SupabaseSyncHelpers.js";
 
-export function createSyncServices({ client, inferAccountKind, isMissingRelationError } = {}) {
+export function createSyncServices({ client, inferAccountKind, isEmailConfirmed = () => false, isMissingRelationError } = {}) {
   const cloudSnapshotRepository = new SupabaseCloudSnapshotRepository({
     client,
     isMissingRelationError: isMissingRelationError || defaultIsMissingRelationError,
@@ -22,11 +23,16 @@ export function createSyncServices({ client, inferAccountKind, isMissingRelation
   const legacySyncRepository = new SupabaseLegacySyncRepository({
     client,
   });
+  const userProfileRepository = new SupabaseUserProfileRepository({
+    client,
+    isEmailConfirmed,
+  });
 
   return {
     cloudSnapshotRepository,
     catalogV2SyncRepository,
     legacySyncRepository,
     transactionV2SyncRepository,
+    userProfileRepository,
   };
 }

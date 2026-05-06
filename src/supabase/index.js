@@ -62,18 +62,12 @@ export function createSupabaseModule(deps) {
   }
 
   async function saveUserProfileFromMetadata(user) {
-    if (!state.supabaseClient || !user?.id || !deps.isEmailConfirmed(user)) return;
-    const data = user.user_metadata || {};
-    if (!data.full_name && !data.cpf && !data.phone && !data.birthdate) return;
-
-    await state.supabaseClient.from("user_profiles").upsert({
-      user_id: user.id,
-      full_name: data.full_name || "",
-      cpf: data.cpf || "",
-      phone: data.phone || "",
-      birthdate: data.birthdate || null,
-      updated_at: new Date().toISOString(),
+    if (!state.supabaseClient) return;
+    const services = createSyncServices({
+      client: state.supabaseClient,
+      isEmailConfirmed: deps.isEmailConfirmed,
     });
+    await services.userProfileRepository.saveFromMetadata(user);
   }
 
   function toRemoteTransaction(item) {
