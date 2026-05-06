@@ -36,5 +36,12 @@ Periodo mensal mostra o fechamento do mes.
 - Entidade de dominio: `src/domain/budget/CategoryBudget.js`.
 - Caso de uso: `src/application/budget/UpsertCategoryBudgetUseCase.js`.
 - Porta de persistencia: `src/application/budget/ports/CategoryBudgetRepository.js`.
-- Testes: `tests/budget/*.test.js`, `tests/domain/budget/*.test.js`, `tests/application/budget/*.test.js`.
+- Adaptador local: `src/infrastructure/budget/LocalCategoryBudgetRepository.js`.
+- Composition root: `src/infrastructure/composition/createBudgetServices.js`.
+- Runtime consumidor: `src/settings/index.js`.
+- Testes: `tests/budget/*.test.js`, `tests/domain/budget/*.test.js`, `tests/application/budget/*.test.js`, `tests/infrastructure/budget/*.test.js` e `tests/infrastructure/composition/createBudgetServices.test.js`.
+
+## Status
+
+Runtime de salvamento de regra semanal/mensal usa caso de uso e repositorio local.
 - Status: validacao automatizada inicial, ainda nao conectada ao runtime principal.

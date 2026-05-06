@@ -8,8 +8,22 @@ import {
   safeCssColor,
   slugify,
 } from "../core/utils.js";
+import { createBudgetServices } from "../infrastructure/composition/createBudgetServices.js";
 
 export function createSettingsModule(deps) {
+  let budgetServices = null;
+
+  function getBudgetServices() {
+    if (budgetServices) return budgetServices;
+    budgetServices = createBudgetServices({
+      readBudgets: () => getCatalog().budgets || [],
+      writeBudgets: (nextBudgets) => {
+        getCatalog().budgets = nextBudgets;
+      },
+    });
+    return budgetServices;
+  }
+
   function getCatalog() {
     return state.catalog || deps.hydrateCatalog(state.settings, state.catalog);
   }
@@ -689,30 +703,49 @@ export function createSettingsModule(deps) {
     deps.updateCreditCardOptions();
   }
 
-  function editExpenseLimit(key) {
+  async function editExpenseLimit(key) {
     const category = getCategoryRecord("expense", key);
     if (!category) return;
     const current = getBudgetRule(key);
     const next = prompt("Novo limite mensal para esta categoria:", current.monthly || category.monthlyLimit || 0);
     if (next === null) return;
     const monthly = Math.max(0, Number(next) || 0);
+    const weekly = current.weekly || (monthly ? monthly / 4 : 0);
+    const result = await getBudgetServices().upsertCategoryBudget.execute({
+      categorySlug: key,
+      weeklyLimit: weekly,
+      monthlyLimit: monthly,
+    });
+
+    if (!result.ok) {
+      deps.notify(Object.values(result.errors || {})[0] || "Nao foi possivel atualizar o limite.");
+      return;
+    }
+
     category.monthlyLimit = monthly;
-    upsertBudget(key, "monthly", monthly);
-    upsertBudget(key, "weekly", current.weekly || (monthly ? monthly / 4 : 0));
     commitCatalogChanges("Limite atualizado.");
   }
 
-  function saveBudgetRule(event) {
+  async function saveBudgetRule(event) {
     event.preventDefault();
     const form = event.target.closest(".budget-rule-form");
     const key = form.dataset.budgetKey;
     if (!key) return;
     const weekly = Math.max(0, Number(new FormData(form).get("weekly")) || 0);
     const monthly = Math.max(0, Number(new FormData(form).get("monthly")) || 0);
+    const result = await getBudgetServices().upsertCategoryBudget.execute({
+      categorySlug: key,
+      weeklyLimit: weekly,
+      monthlyLimit: monthly,
+    });
+
+    if (!result.ok) {
+      deps.notify(Object.values(result.errors || {})[0] || "Nao foi possivel salvar a regra.");
+      return;
+    }
+
     const category = getCategoryRecord("expense", key);
     if (category) category.monthlyLimit = monthly;
-    upsertBudget(key, "weekly", weekly);
-    upsertBudget(key, "monthly", monthly);
     commitCatalogChanges("Regras de gasto atualizadas.");
   }
 
