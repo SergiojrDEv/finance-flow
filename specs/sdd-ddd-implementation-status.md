@@ -27,6 +27,7 @@ Evoluir o Finance Flow sem repetir o erro de acoplar arquitetura nova diretament
 - Validacao de autenticacao extraida para aplicacao.
 - TypeScript preparado em modo gradual para camadas DDD.
 - CI de qualidade criado para testes e typecheck.
+- Guardrail automatico de arquitetura criado para impedir que `src/application` dependa de DOM, Supabase, `localStorage`, UI ou infraestrutura.
 - Hardening inicial:
   - sanitizacao de cores em CSS inline;
   - endpoints de config sem fallback hardcoded quando forem ativados.
@@ -55,4 +56,5 @@ A trilha SDD/DDD/TypeScript inicial sera considerada completa quando:
 - sync, auth, dashboard, catalogo, orcamento e lancamentos tiverem regra principal fora da UI;
 - CI rodar testes e typecheck;
 - nenhuma parte nova depender diretamente de DOM, Supabase ou localStorage dentro de `src/domain` e `src/application`;
+- o guardrail automatico de fronteira da camada `src/application` continuar passando;
 - houver plano aprovado para remover fallback Supabase do bundle.

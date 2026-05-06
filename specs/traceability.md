@@ -26,3 +26,4 @@ Uma linha so pode mudar para `Pronto` quando:
 - a mudanca nao quebrar o app estavel;
 - se houver risco, a integracao tiver shadow mode ou feature flag.
 - testes e verificacao estatica estiverem prontos para rodar no CI quando aplicavel.
+- guardrails automaticos de arquitetura passarem antes de conectar novas camadas ao runtime.
