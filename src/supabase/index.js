@@ -1,6 +1,10 @@
 import { SUPABASE_FALLBACK_CONFIG, state } from "../core/state.js";
 import { buildCatalogFromV2, ensureCatalogCoversTransactions } from "../core/catalog.js";
 import { mapV2TransactionsWithLegacyFallback } from "../application/sync/mapCloudSnapshot.js";
+import {
+  fetchSupabaseConfig,
+  loadSupabaseConfig as resolveSupabaseConfig,
+} from "../infrastructure/config/SupabaseConfigProvider.js";
 import { createSyncServices } from "../infrastructure/composition/createSyncServices.js";
 
 export function createSupabaseModule(deps) {
@@ -25,20 +29,12 @@ export function createSupabaseModule(deps) {
   }
 
   async function loadSupabaseConfig() {
-    if (window.FINANCE_FLOW_SUPABASE) return window.FINANCE_FLOW_SUPABASE;
-
-    const endpoints = ["/api/config", "/.netlify/functions/config"];
-    for (const endpoint of endpoints) {
-      try {
-        const response = await fetch(endpoint, { cache: "no-store" });
-        if (!response.ok) continue;
-        const config = await response.json();
-        if (config?.url && config?.anonKey) return config;
-      } catch (error) {
-        console.error("Erro ao carregar config do Supabase", endpoint, error);
-      }
-    }
-    return SUPABASE_FALLBACK_CONFIG;
+    return resolveSupabaseConfig({
+      explicitConfig: window.FINANCE_FLOW_SUPABASE,
+      fetchConfig: (endpoint) => fetchSupabaseConfig(endpoint, { fetchImpl: fetch }),
+      fallbackConfig: SUPABASE_FALLBACK_CONFIG,
+      logger: console,
+    });
   }
 
   function renderCloudStatus(forcedText) {

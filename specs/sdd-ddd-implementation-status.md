@@ -33,6 +33,7 @@ Evoluir o Finance Flow sem repetir o erro de acoplar arquitetura nova diretament
 - Hardening inicial:
   - sanitizacao de cores em CSS inline;
   - Worker Cloudflare com endpoint `/api/config` para config Supabase por ambiente;
+  - carregamento de config Supabase extraido para infraestrutura testavel;
   - frontend tentando `/api/config` antes de fallback temporario.
 
 ## Ainda falta
