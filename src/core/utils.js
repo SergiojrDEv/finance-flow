@@ -56,7 +56,9 @@ export function getMonthTransactions(date = state.currentDate) {
 }
 
 export function getCategory(type, key) {
-  return state.settings.categories[type].find((item) => item[0] === key) || [key, key, "#667085"];
+  const categories = state.settings?.categories?.[type] || [];
+  const fallbackKey = key || "sem-categoria";
+  return categories.find((item) => item[0] === key) || [fallbackKey, fallbackKey, "#667085"];
 }
 
 export function mergeBudgetRules(saved = {}, expenseCategories = []) {

@@ -424,7 +424,7 @@ export function createTransactionsModule(deps) {
         const haystack = `${item.description} ${item.category} ${item.subcategory || ""} ${item.account} ${item.paymentMethod || ""}`.toLowerCase();
         return haystack.includes(state.search.toLowerCase());
       })
-      .sort((a, b) => b.date.localeCompare(a.date));
+      .sort((a, b) => String(b.date || "").localeCompare(String(a.date || "")));
 
     if (!filtered.length) {
       els.table.innerHTML = '<tr><td colspan="10" class="empty-state">Nenhum lancamento encontrado.</td></tr>';
@@ -437,16 +437,18 @@ export function createTransactionsModule(deps) {
         const sign = item.type === "income" ? "+" : "-";
         const typeLabel = item.type === "income" ? "Receita" : item.type === "investment" ? "Investimento" : "Despesa";
         const statusLabel = item.status === "pending" ? "Pendente" : item.status === "planned" ? "Previsto" : "Pago";
+        const dateLabel = item.date ? parseLocalDate(item.date).toLocaleDateString("pt-BR") : "-";
+        const dueDateLabel = item.dueDate ? parseLocalDate(item.dueDate).toLocaleDateString("pt-BR") : "-";
 
         return `
           <tr>
-            <td>${parseLocalDate(item.date).toLocaleDateString("pt-BR")}</td>
+            <td>${dateLabel}</td>
             <td><strong>${esc(item.description)}</strong></td>
             <td><span class="category-pill">${esc(categoryDisplayLabel(item))}</span></td>
             <td>${esc(item.account)}</td>
             <td><span class="type-pill ${item.status || "paid"}">${statusLabel}</span></td>
             <td><span class="payment-pill ${item.paymentMethod || "pix"}">${paymentMethodLabel(item.paymentMethod)}</span></td>
-            <td>${item.dueDate ? parseLocalDate(item.dueDate).toLocaleDateString("pt-BR") : "-"}</td>
+            <td>${dueDateLabel}</td>
             <td><span class="type-pill ${item.type}">${typeLabel}</span></td>
             <td class="right money ${amountClass}">${sign} ${money(Number(item.amount))}</td>
             <td class="right">

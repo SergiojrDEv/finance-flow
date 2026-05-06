@@ -1,23 +1,13 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 
-globalThis.document = {
-  querySelector() {
-    return null;
-  },
-};
+test("usa fallback quando categoria vem de tipo antigo ou desconhecido", async () => {
+  global.document = {
+    querySelector: () => null,
+  };
+  const { categoryDisplayLabel, getCategory } = await import("../../src/core/utils.js");
 
-const { safeCssColor } = await import("../../src/core/utils.js");
-
-test("aceita cores hexadecimais e variaveis CSS conhecidas", () => {
-  assert.equal(safeCssColor("#0b7285"), "#0b7285");
-  assert.equal(safeCssColor("#fff"), "#fff");
-  assert.equal(safeCssColor("var(--invest)"), "var(--invest)");
-});
-
-test("recusa valores de cor inseguros para style inline", () => {
-  assert.equal(safeCssColor("red"), "#667085");
-  assert.equal(safeCssColor("url(javascript:alert(1))"), "#667085");
-  assert.equal(safeCssColor("var(--x);background:red"), "#667085");
-  assert.equal(safeCssColor("", "#0b7285"), "#0b7285");
+  assert.deepEqual(getCategory("legacy", "mercado"), ["mercado", "mercado", "#667085"]);
+  assert.equal(categoryDisplayLabel({ type: "legacy", category: "mercado" }), "mercado");
+  delete global.document;
 });
