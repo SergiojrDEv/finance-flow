@@ -12,6 +12,7 @@ Evoluir o Finance Flow sem repetir o erro de acoplar arquitetura nova diretament
 - Casos de uso de criacao, criacao em serie, edicao e exclusao de lancamentos.
 - Selector puro para listagem de lancamentos do mes, com filtro, busca, ordenacao e compatibilidade com dados antigos.
 - Builder puro para serie de lancamentos, parcelas e recorrencia, consumido pela UI.
+- Camada `src/application` verificada sem dependencia direta de DOM, `localStorage`, Supabase ou `src/core`.
 - Casos de uso de categorias, etiquetas e orcamentos.
 - Shadow mode para criacao de lancamentos e catalogo.
 - Sync V2 separado em:
