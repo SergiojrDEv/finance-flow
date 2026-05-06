@@ -1,4 +1,5 @@
 import { CategoryBudget } from "../../domain/budget/CategoryBudget.js";
+import { fail, ok } from "../shared/result.js";
 
 export class UpsertCategoryBudgetUseCase {
   constructor({ categoryBudgetRepository, clock = () => new Date() } = {}) {
@@ -28,20 +29,13 @@ export class UpsertCategoryBudgetUseCase {
     });
 
     if (!creation.ok) {
-      return {
-        ok: false,
-        errors: creation.errors,
-      };
+      return fail(creation.errors);
     }
 
     const saved = existing
       ? await this.categoryBudgetRepository.update(existing.id, creation.value)
       : await this.categoryBudgetRepository.save(creation.value);
 
-    return {
-      ok: true,
-      value: saved,
-      action: existing ? "updated" : "created",
-    };
+    return ok(saved, { action: existing ? "updated" : "created" });
   }
 }

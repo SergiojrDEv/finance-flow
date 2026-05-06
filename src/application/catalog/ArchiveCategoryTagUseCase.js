@@ -1,3 +1,5 @@
+import { fail, ok } from "../shared/result.js";
+
 export class ArchiveCategoryTagUseCase {
   constructor({ categoryTagRepository, clock = () => new Date() } = {}) {
     if (!categoryTagRepository || typeof categoryTagRepository.findById !== "function") {
@@ -14,16 +16,13 @@ export class ArchiveCategoryTagUseCase {
   async execute(id) {
     const existing = await this.categoryTagRepository.findById(id);
     if (!existing) {
-      return { ok: false, errors: { id: "Etiqueta nao encontrada." } };
+      return fail({ id: "Etiqueta nao encontrada." });
     }
 
-    return {
-      ok: true,
-      value: await this.categoryTagRepository.update(id, {
+    return ok(await this.categoryTagRepository.update(id, {
         ...existing,
         isArchived: true,
         updatedAt: this.clock().toISOString(),
-      }),
-    };
+      }));
   }
 }

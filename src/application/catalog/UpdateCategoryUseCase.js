@@ -1,4 +1,5 @@
 import { Category } from "../../domain/catalog/Category.js";
+import { fail, ok } from "../shared/result.js";
 
 export class UpdateCategoryUseCase {
   constructor({ categoryRepository, clock = () => new Date() } = {}) {
@@ -16,7 +17,7 @@ export class UpdateCategoryUseCase {
   async execute(id, draft) {
     const existing = await this.categoryRepository.findById(id);
     if (!existing) {
-      return { ok: false, errors: { id: "Categoria nao encontrada." } };
+      return fail({ id: "Categoria nao encontrada." });
     }
 
     const now = this.clock().toISOString();
@@ -30,11 +31,8 @@ export class UpdateCategoryUseCase {
       updatedAt: now,
     });
 
-    if (!creation.ok) return { ok: false, errors: creation.errors };
+    if (!creation.ok) return fail(creation.errors);
 
-    return {
-      ok: true,
-      value: await this.categoryRepository.update(id, creation.value),
-    };
+    return ok(await this.categoryRepository.update(id, creation.value));
   }
 }

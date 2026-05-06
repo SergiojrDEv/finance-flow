@@ -1,3 +1,5 @@
+import { fail, ok } from "../shared/result.js";
+
 export class ArchiveCategoryUseCase {
   constructor({ categoryRepository, clock = () => new Date() } = {}) {
     if (!categoryRepository || typeof categoryRepository.findById !== "function") {
@@ -14,16 +16,13 @@ export class ArchiveCategoryUseCase {
   async execute(id) {
     const existing = await this.categoryRepository.findById(id);
     if (!existing) {
-      return { ok: false, errors: { id: "Categoria nao encontrada." } };
+      return fail({ id: "Categoria nao encontrada." });
     }
 
-    return {
-      ok: true,
-      value: await this.categoryRepository.update(id, {
+    return ok(await this.categoryRepository.update(id, {
         ...existing,
         isArchived: true,
         updatedAt: this.clock().toISOString(),
-      }),
-    };
+      }));
   }
 }

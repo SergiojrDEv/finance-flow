@@ -1,4 +1,5 @@
 import { CategoryTag } from "../../domain/catalog/CategoryTag.js";
+import { fail, ok } from "../shared/result.js";
 
 export class UpdateCategoryTagUseCase {
   constructor({ categoryTagRepository, clock = () => new Date() } = {}) {
@@ -16,7 +17,7 @@ export class UpdateCategoryTagUseCase {
   async execute(id, draft) {
     const existing = await this.categoryTagRepository.findById(id);
     if (!existing) {
-      return { ok: false, errors: { id: "Etiqueta nao encontrada." } };
+      return fail({ id: "Etiqueta nao encontrada." });
     }
 
     const now = this.clock().toISOString();
@@ -31,11 +32,8 @@ export class UpdateCategoryTagUseCase {
       updatedAt: now,
     });
 
-    if (!creation.ok) return { ok: false, errors: creation.errors };
+    if (!creation.ok) return fail(creation.errors);
 
-    return {
-      ok: true,
-      value: await this.categoryTagRepository.update(id, creation.value),
-    };
+    return ok(await this.categoryTagRepository.update(id, creation.value));
   }
 }

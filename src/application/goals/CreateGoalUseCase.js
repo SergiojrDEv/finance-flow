@@ -1,4 +1,5 @@
 import { Goal } from "../../domain/goals/Goal.js";
+import { fail, ok } from "../shared/result.js";
 
 export class CreateGoalUseCase {
   constructor({ goalRepository, clock = () => new Date() } = {}) {
@@ -19,15 +20,9 @@ export class CreateGoalUseCase {
     });
 
     if (!creation.ok) {
-      return {
-        ok: false,
-        errors: creation.errors,
-      };
+      return fail(creation.errors);
     }
 
-    return {
-      ok: true,
-      value: await this.goalRepository.save(creation.value),
-    };
+    return ok(await this.goalRepository.save(creation.value));
   }
 }

@@ -10,7 +10,7 @@ Evoluir o Finance Flow sem repetir o erro de acoplar arquitetura nova diretament
 - ADRs para SDD/DDD, shadow mode, TypeScript gradual e configuracao Supabase.
 - Camadas `domain`, `application`, `infrastructure` e `composition` criadas.
 - Casos de uso de criacao, criacao em serie, edicao e exclusao de lancamentos.
-- Contrato padrao de resultado da camada de aplicacao iniciado em `src/application/shared/result.js` e aplicado aos casos de uso de lancamentos.
+- Contrato padrao de resultado da camada de aplicacao iniciado em `src/application/shared/result.js` e aplicado aos casos de uso de lancamentos, catalogo, orcamento e metas.
 - Selector puro para listagem de lancamentos do mes, com filtro, busca, ordenacao e compatibilidade com dados antigos.
 - Builder puro para serie de lancamentos, parcelas e recorrencia, consumido pela UI.
 - Camada `src/application` verificada sem dependencia direta de DOM, `localStorage`, Supabase ou `src/core`.

@@ -1,4 +1,5 @@
 import { Goal } from "../../domain/goals/Goal.js";
+import { fail, ok } from "../shared/result.js";
 
 export class UpdateGoalUseCase {
   constructor({ goalRepository, clock = () => new Date() } = {}) {
@@ -16,10 +17,7 @@ export class UpdateGoalUseCase {
   async execute(id, draft) {
     const existing = await this.goalRepository.findById(id);
     if (!existing) {
-      return {
-        ok: false,
-        errors: { id: "Meta nao encontrada." },
-      };
+      return fail({ id: "Meta nao encontrada." });
     }
 
     const creation = Goal.create({
@@ -33,15 +31,9 @@ export class UpdateGoalUseCase {
     });
 
     if (!creation.ok) {
-      return {
-        ok: false,
-        errors: creation.errors,
-      };
+      return fail(creation.errors);
     }
 
-    return {
-      ok: true,
-      value: await this.goalRepository.update(id, creation.value),
-    };
+    return ok(await this.goalRepository.update(id, creation.value));
   }
 }

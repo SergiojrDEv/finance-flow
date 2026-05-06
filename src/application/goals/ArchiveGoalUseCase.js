@@ -1,3 +1,5 @@
+import { fail, ok } from "../shared/result.js";
+
 export class ArchiveGoalUseCase {
   constructor({ goalRepository, clock = () => new Date() } = {}) {
     if (!goalRepository || typeof goalRepository.findById !== "function") {
@@ -14,19 +16,13 @@ export class ArchiveGoalUseCase {
   async execute(id) {
     const existing = await this.goalRepository.findById(id);
     if (!existing) {
-      return {
-        ok: false,
-        errors: { id: "Meta nao encontrada." },
-      };
+      return fail({ id: "Meta nao encontrada." });
     }
 
-    return {
-      ok: true,
-      value: await this.goalRepository.update(id, {
+    return ok(await this.goalRepository.update(id, {
         ...existing,
         isArchived: true,
         updatedAt: this.clock().toISOString(),
-      }),
-    };
+      }));
   }
 }

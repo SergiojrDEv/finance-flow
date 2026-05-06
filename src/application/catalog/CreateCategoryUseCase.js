@@ -1,4 +1,5 @@
 import { Category } from "../../domain/catalog/Category.js";
+import { fail, ok } from "../shared/result.js";
 
 export class CreateCategoryUseCase {
   constructor({ categoryRepository, clock = () => new Date() } = {}) {
@@ -16,10 +17,7 @@ export class CreateCategoryUseCase {
   async execute(draft) {
     const existing = await this.categoryRepository.findByKindAndSlug(draft.kind, draft.slug);
     if (existing && !existing.isArchived) {
-      return {
-        ok: false,
-        errors: { slug: "Categoria ja existe para este tipo." },
-      };
+      return fail({ slug: "Categoria ja existe para este tipo." });
     }
 
     const now = this.clock().toISOString();
@@ -30,17 +28,11 @@ export class CreateCategoryUseCase {
     });
 
     if (!creation.ok) {
-      return {
-        ok: false,
-        errors: creation.errors,
-      };
+      return fail(creation.errors);
     }
 
     const saved = await this.categoryRepository.save(creation.value);
 
-    return {
-      ok: true,
-      value: saved,
-    };
+    return ok(saved);
   }
 }
