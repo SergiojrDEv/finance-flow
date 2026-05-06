@@ -42,4 +42,4 @@ Etiqueta e uma classificacao menor e opcional dentro do planejamento do usuario.
 - Shadow mode: `src/infrastructure/shadow/compareCatalogSnapshot.js` e `src/infrastructure/shadow/runCatalogShadow.js`.
 - Roteiro manual: `specs/domains/catalog/manual-catalog-shadow-test.md`.
 - Testes: `tests/catalog/validateCategoryDraft.test.js`, `tests/catalog/validateCategoryTagDraft.test.js`, `tests/domain/catalog/*.test.js` e `tests/application/catalog/*.test.js`.
-- Status: validacao automatizada inicial para criar, editar e arquivar categorias/etiquetas, ainda nao conectada ao runtime principal.
+- Status: validacao automatizada inicial para criar, editar e arquivar categorias/etiquetas, conectada ao runtime de ajustes para criacao, edicao e arquivamento.

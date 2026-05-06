@@ -14,6 +14,7 @@ Evoluir o Finance Flow sem repetir o erro de acoplar arquitetura nova diretament
 - Builder puro para serie de lancamentos, parcelas e recorrencia, consumido pela UI.
 - Camada `src/application` verificada sem dependencia direta de DOM, `localStorage`, Supabase ou `src/core`.
 - Casos de uso de categorias, etiquetas e orcamentos.
+- Runtime de categorias e etiquetas conectado aos casos de uso de criacao, edicao e arquivamento.
 - Runtime de regras de orcamento conectado ao caso de uso e repositorio local.
 - Runtime de metas conectado a casos de uso de criacao, edicao e arquivamento.
 - Shadow mode para criacao de lancamentos e catalogo.

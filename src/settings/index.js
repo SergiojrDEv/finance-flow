@@ -9,10 +9,12 @@ import {
   slugify,
 } from "../core/utils.js";
 import { createBudgetServices } from "../infrastructure/composition/createBudgetServices.js";
+import { createCatalogServices } from "../infrastructure/composition/createCatalogServices.js";
 import { createGoalServices } from "../infrastructure/composition/createGoalServices.js";
 
 export function createSettingsModule(deps) {
   let budgetServices = null;
+  let catalogServices = null;
   let goalServices = null;
 
   function getBudgetServices() {
@@ -24,6 +26,23 @@ export function createSettingsModule(deps) {
       },
     });
     return budgetServices;
+  }
+
+  function getCatalogServices() {
+    if (catalogServices) return catalogServices;
+    catalogServices = createCatalogServices({
+      readCategories: () => getCatalog().categories || [],
+      writeCategories: (nextCategories) => {
+        getCatalog().categories = nextCategories;
+      },
+      readTags: () => getCatalog().tags || [],
+      writeTags: (nextTags) => {
+        getCatalog().tags = nextTags;
+      },
+      createCategoryId: () => createId(),
+      createTagId: () => createId(),
+    });
+    return catalogServices;
   }
 
   function getGoalServices() {
@@ -438,25 +457,25 @@ export function createSettingsModule(deps) {
     `).join("");
   }
 
-  function addInlineSubcategory(type, categoryKey, name) {
+  async function addInlineSubcategory(type, categoryKey, name) {
     const normalized = name.trim();
     if (!normalized) return deps.notify("Informe um nome para a etiqueta.");
     const key = slugify(normalized);
     const color = getCategoryColorFromList(type, categoryKey, state.settings.categories);
-    const catalog = getCatalog();
-    if (catalog.tags.some((item) => item.kind === type && item.categorySlug === categoryKey && item.slug === key && !item.isArchived)) {
-      return deps.notify("Esta etiqueta ja existe nessa categoria.");
-    }
 
-    catalog.tags.push({
-      id: `tag:${type}:${categoryKey}:${key}`,
+    const result = await getCatalogServices().createCategoryTag.execute({
       kind: type,
       categorySlug: categoryKey,
       slug: key,
       name: normalized,
       color,
-      isArchived: false,
     });
+
+    if (!result.ok) {
+      deps.notify(Object.values(result.errors || {})[0] || "Nao foi possivel criar a etiqueta.");
+      return;
+    }
+
     commitCatalogChanges("Etiqueta adicionada.");
   }
 
@@ -489,7 +508,7 @@ export function createSettingsModule(deps) {
     document.body.classList.remove("modal-open");
   }
 
-  function saveSettingsItemFromModal(event) {
+  async function saveSettingsItemFromModal(event) {
     event.preventDefault();
     const edit = state.settingsItemEdit;
     if (!edit) return closeSettingsItemModal();
@@ -500,12 +519,28 @@ export function createSettingsModule(deps) {
     if (edit.kind === "category") {
       const item = getCategoryRecord(edit.type, edit.key);
       if (!item) return closeSettingsItemModal();
-      item.name = name;
-      item.color = document.querySelector("#settings-item-modal-color").value;
+      const color = document.querySelector("#settings-item-modal-color").value;
       const monthly = Math.max(0, Number(document.querySelector("#settings-item-modal-limit").value) || 0);
-      item.monthlyLimit = monthly;
-      upsertBudget(edit.key, "weekly", getBudgetRule(edit.key).weekly || (monthly ? monthly / 4 : 0));
-      upsertBudget(edit.key, "monthly", monthly);
+      const result = await getCatalogServices().updateCategory.execute(item.id, {
+        name,
+        color,
+        monthlyLimit: edit.type === "expense" ? monthly : null,
+      });
+      if (!result.ok) {
+        deps.notify(Object.values(result.errors || {})[0] || "Nao foi possivel atualizar a categoria.");
+        return;
+      }
+      if (edit.type === "expense") {
+        const budgetResult = await getBudgetServices().upsertCategoryBudget.execute({
+          categorySlug: edit.key,
+          weeklyLimit: getBudgetRule(edit.key).weekly || (monthly ? monthly / 4 : 0),
+          monthlyLimit: monthly,
+        });
+        if (!budgetResult.ok) {
+          deps.notify(Object.values(budgetResult.errors || {})[0] || "Nao foi possivel atualizar o limite.");
+          return;
+        }
+      }
     }
 
     if (edit.kind === "account") {
@@ -535,15 +570,21 @@ export function createSettingsModule(deps) {
     if (edit.kind === "tag") {
       const item = getTagRecord(edit.type, edit.categoryKey, edit.subKey);
       if (!item) return closeSettingsItemModal();
-      item.name = name;
-      item.color = document.querySelector("#settings-item-modal-color").value;
+      const result = await getCatalogServices().updateCategoryTag.execute(item.id, {
+        name,
+        color: document.querySelector("#settings-item-modal-color").value,
+      });
+      if (!result.ok) {
+        deps.notify(Object.values(result.errors || {})[0] || "Nao foi possivel atualizar a etiqueta.");
+        return;
+      }
     }
 
     commitCatalogChanges("Alteracoes salvas.");
     closeSettingsItemModal();
   }
 
-  function addCategory(event) {
+  async function addCategory(event) {
     event.preventDefault();
     const type = document.querySelector("#new-category-type").value;
     const name = document.querySelector("#new-category-name").value.trim();
@@ -552,22 +593,27 @@ export function createSettingsModule(deps) {
     const key = slugify(name);
 
     if (!key) return deps.notify("Informe um nome valido.");
-    if (getCategoriesByType(type).some((item) => item.slug === key)) {
-      return deps.notify("Esta categoria ja existe.");
-    }
-
-    getCatalog().categories.push({
-      id: `category:${type}:${key}`,
+    const result = await getCatalogServices().createCategory.execute({
       kind: type,
       slug: key,
       name,
       color,
       monthlyLimit: type === "expense" ? limit : null,
-      isArchived: false,
     });
+    if (!result.ok) {
+      deps.notify(Object.values(result.errors || {})[0] || "Nao foi possivel criar a categoria.");
+      return;
+    }
     if (type === "expense") {
-      upsertBudget(key, "weekly", limit ? limit / 4 : 0);
-      upsertBudget(key, "monthly", limit);
+      const budgetResult = await getBudgetServices().upsertCategoryBudget.execute({
+        categorySlug: key,
+        weeklyLimit: limit ? limit / 4 : 0,
+        monthlyLimit: limit,
+      });
+      if (!budgetResult.ok) {
+        deps.notify(Object.values(budgetResult.errors || {})[0] || "Nao foi possivel criar o limite.");
+        return;
+      }
     }
     event.currentTarget.reset();
     document.querySelector("#new-category-color").value = "#0b7285";
@@ -684,25 +730,37 @@ export function createSettingsModule(deps) {
     commitCatalogChanges("Meta atualizada.");
   }
 
-  function removeCategory(type, key) {
+  async function removeCategory(type, key) {
     if (getCategoriesByType(type).length <= 1) {
       return deps.notify("Mantenha pelo menos uma categoria deste tipo.");
     }
     const inUse = state.transactions.some((item) => item.type === type && item.category === key);
     if (inUse) return deps.notify("Categoria em uso. Remova ou altere os lancamentos primeiro.");
+    const category = getCategoryRecord(type, key);
+    if (!category) return;
+    const result = await getCatalogServices().archiveCategory.execute(category.id);
+    if (!result.ok) {
+      deps.notify(Object.values(result.errors || {})[0] || "Nao foi possivel remover a categoria.");
+      return;
+    }
     const catalog = getCatalog();
-    catalog.categories = catalog.categories.filter((item) => !(item.kind === type && item.slug === key));
-    catalog.tags = catalog.tags.filter((item) => !(item.kind === type && item.categorySlug === key));
+    catalog.tags = catalog.tags.map((item) => item.kind === type && item.categorySlug === key ? { ...item, isArchived: true } : item);
     catalog.goals = catalog.goals.filter((goal) => goal.key !== key);
     catalog.budgets = catalog.budgets.filter((item) => item.categorySlug !== key);
     commitCatalogChanges("Categoria removida.");
     deps.updateCategoryOptions();
   }
 
-  function removeSubcategory(type, categoryKey, subKey) {
+  async function removeSubcategory(type, categoryKey, subKey) {
     const inUse = state.transactions.some((item) => item.type === type && item.category === categoryKey && item.subcategory === subKey);
     if (inUse) return deps.notify("Subcategoria em uso. Ajuste os lancamentos primeiro.");
-    getCatalog().tags = getCatalog().tags.filter((item) => !(item.kind === type && item.categorySlug === categoryKey && item.slug === subKey));
+    const tag = getTagRecord(type, categoryKey, subKey);
+    if (!tag) return;
+    const result = await getCatalogServices().archiveCategoryTag.execute(tag.id);
+    if (!result.ok) {
+      deps.notify(Object.values(result.errors || {})[0] || "Nao foi possivel remover a etiqueta.");
+      return;
+    }
     commitCatalogChanges("Subcategoria removida.");
   }
 
