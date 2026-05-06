@@ -38,6 +38,7 @@ Evoluir o Finance Flow sem repetir o erro de acoplar arquitetura nova diretament
 - Mapeamento legacy de transacoes Supabase extraido para infraestrutura testavel.
 - Sync legacy de transacoes/settings Supabase extraido para repositorio de infraestrutura testavel.
 - Persistencia de perfil do usuario Supabase extraida para repositorio de infraestrutura testavel.
+- Verificacao de schema Supabase V2 extraida para repositorio de infraestrutura testavel.
 
 ## Ainda falta
 

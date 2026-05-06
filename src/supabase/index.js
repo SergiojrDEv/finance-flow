@@ -11,7 +11,6 @@ import {
   mapLocalTransactionToLegacyRow,
   normalizeRemoteDate as normalizeLegacyRemoteDate,
 } from "../infrastructure/sync/LegacyTransactionMapper.js";
-import { isMissingRelationError } from "../infrastructure/sync/SupabaseSyncHelpers.js";
 
 export function createSupabaseModule(deps) {
   function getAuthHashType() {
@@ -92,13 +91,8 @@ export function createSupabaseModule(deps) {
   }
 
   async function hasV2Schema() {
-    const { error } = await state.supabaseClient
-      .from("transactions_v2")
-      .select("id")
-      .limit(1);
-    if (!error) return true;
-    if (isMissingRelationError(error)) return false;
-    throw error;
+    const services = createSyncServices({ client: state.supabaseClient });
+    return services.schemaRepository.hasTransactionsV2();
   }
 
   async function pullFromSupabaseV2(options = {}) {

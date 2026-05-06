@@ -1,6 +1,7 @@
 import { SupabaseCloudSnapshotRepository } from "../sync/SupabaseCloudSnapshotRepository.js";
 import { SupabaseCatalogV2SyncRepository } from "../sync/SupabaseCatalogV2SyncRepository.js";
 import { SupabaseLegacySyncRepository } from "../sync/SupabaseLegacySyncRepository.js";
+import { SupabaseSchemaRepository } from "../sync/SupabaseSchemaRepository.js";
 import { SupabaseTransactionV2SyncRepository } from "../sync/SupabaseTransactionV2SyncRepository.js";
 import { SupabaseUserProfileRepository } from "../sync/SupabaseUserProfileRepository.js";
 import {
@@ -23,6 +24,10 @@ export function createSyncServices({ client, inferAccountKind, isEmailConfirmed 
   const legacySyncRepository = new SupabaseLegacySyncRepository({
     client,
   });
+  const schemaRepository = new SupabaseSchemaRepository({
+    client,
+    isMissingRelationError: isMissingRelationError || defaultIsMissingRelationError,
+  });
   const userProfileRepository = new SupabaseUserProfileRepository({
     client,
     isEmailConfirmed,
@@ -32,6 +37,7 @@ export function createSyncServices({ client, inferAccountKind, isEmailConfirmed 
     cloudSnapshotRepository,
     catalogV2SyncRepository,
     legacySyncRepository,
+    schemaRepository,
     transactionV2SyncRepository,
     userProfileRepository,
   };
