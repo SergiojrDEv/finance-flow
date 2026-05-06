@@ -1,6 +1,11 @@
 import { SUPABASE_FALLBACK_CONFIG, state } from "../core/state.js";
 import { ensureCatalogCoversTransactions } from "../core/catalog.js";
 import {
+  hasUnsyncedLocalChanges as detectUnsyncedLocalChanges,
+  planCloudSyncCompletion,
+  planCloudSyncStart,
+} from "../application/sync/planCloudSyncLifecycle.js";
+import {
   fetchSupabaseConfig,
   loadSupabaseConfig as resolveSupabaseConfig,
 } from "../infrastructure/config/SupabaseConfigProvider.js";
@@ -61,10 +66,11 @@ export function createSupabaseModule(deps) {
   }
 
   function hasUnsyncedLocalChanges() {
-    if (!state.transactions.length) return false;
-    if (!state.lastLocalChangeAt) return false;
-    if (!state.lastCloudSyncAt) return true;
-    return new Date(state.lastLocalChangeAt).getTime() > new Date(state.lastCloudSyncAt).getTime();
+    return detectUnsyncedLocalChanges({
+      transactions: state.transactions,
+      lastLocalChangeAt: state.lastLocalChangeAt,
+      lastCloudSyncAt: state.lastCloudSyncAt,
+    });
   }
 
   async function saveUserProfileFromMetadata(user) {
@@ -173,11 +179,16 @@ export function createSupabaseModule(deps) {
   }
 
   async function syncToSupabase() {
-    if (!state.currentUser || !state.supabaseClient) return;
-    if (state.isSyncing) {
+    const startPlan = planCloudSyncStart({
+      hasUser: Boolean(state.currentUser),
+      hasClient: Boolean(state.supabaseClient),
+      isSyncing: state.isSyncing,
+    });
+    if (startPlan.shouldMarkPending) {
       state.pendingCloudSync = true;
       return;
     }
+    if (!startPlan.shouldStart) return;
     state.isSyncing = true;
     state.pendingCloudSync = false;
     renderCloudStatus("Salvando...");
@@ -214,11 +225,14 @@ export function createSupabaseModule(deps) {
     }
 
     state.isSyncing = false;
-    state.lastCloudSyncAt = new Date().toISOString();
+    const completionPlan = planCloudSyncCompletion({
+      pendingCloudSync: state.pendingCloudSync,
+    });
+    state.lastCloudSyncAt = completionPlan.lastCloudSyncAt;
+    state.pendingCloudSync = completionPlan.pendingCloudSync;
     deps.save();
     renderCloudStatus();
-    if (state.pendingCloudSync) {
-      state.pendingCloudSync = false;
+    if (completionPlan.shouldRunAgain) {
       window.setTimeout(() => syncToSupabase(), 0);
     }
   }

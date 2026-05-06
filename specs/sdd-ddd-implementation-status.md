@@ -41,6 +41,7 @@ Evoluir o Finance Flow sem repetir o erro de acoplar arquitetura nova diretament
 - Verificacao de schema Supabase V2 extraida para repositorio de infraestrutura testavel.
 - Hidratacao de snapshot Supabase V2 extraida para helper de infraestrutura testavel.
 - Hidratacao de snapshot Supabase legacy extraida para helper de infraestrutura testavel.
+- Decisoes de ciclo de sincronizacao com a nuvem extraidas para modulo puro de aplicacao.
 
 ## Ainda falta
 
