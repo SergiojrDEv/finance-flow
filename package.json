@@ -4,10 +4,14 @@
   "private": true,
   "type": "module",
   "scripts": {
+    "build": "node scripts/build-static.mjs",
+    "deploy": "npm run build && wrangler deploy",
+    "preview": "npm run build && wrangler dev",
     "test": "node --test",
     "typecheck": "tsc -p tsconfig.json --noEmit"
   },
   "devDependencies": {
-    "typescript": "^5.9.3"
+    "typescript": "^5.9.3",
+    "wrangler": "^4.87.0"
   }
 }
