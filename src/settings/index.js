@@ -9,9 +9,11 @@ import {
   slugify,
 } from "../core/utils.js";
 import { createBudgetServices } from "../infrastructure/composition/createBudgetServices.js";
+import { createGoalServices } from "../infrastructure/composition/createGoalServices.js";
 
 export function createSettingsModule(deps) {
   let budgetServices = null;
+  let goalServices = null;
 
   function getBudgetServices() {
     if (budgetServices) return budgetServices;
@@ -22,6 +24,18 @@ export function createSettingsModule(deps) {
       },
     });
     return budgetServices;
+  }
+
+  function getGoalServices() {
+    if (goalServices) return goalServices;
+    goalServices = createGoalServices({
+      readGoals: () => getCatalog().goals || [],
+      writeGoals: (nextGoals) => {
+        getCatalog().goals = nextGoals;
+      },
+      createId,
+    });
+    return goalServices;
   }
 
   function getCatalog() {
@@ -213,7 +227,7 @@ export function createSettingsModule(deps) {
     document.body.classList.remove("modal-open");
   }
 
-  function saveGoalFromModal(event) {
+  async function saveGoalFromModal(event) {
     event.preventDefault();
     const index = state.activeGoalEditIndex;
     const goal = getGoalRecord(index);
@@ -224,9 +238,12 @@ export function createSettingsModule(deps) {
     const target = Number(document.querySelector("#goal-modal-target").value);
     if (!name || target <= 0) return deps.notify("Preencha a meta corretamente.");
 
-    goal.name = name;
-    goal.key = key;
-    goal.target = target;
+    const result = await getGoalServices().updateGoal.execute(goal.id, { name, key, target });
+    if (!result.ok) {
+      deps.notify(Object.values(result.errors || {})[0] || "Nao foi possivel atualizar a meta.");
+      return;
+    }
+
     commitCatalogChanges("Meta atualizada.");
     closeGoalModal();
   }
@@ -628,19 +645,24 @@ export function createSettingsModule(deps) {
     commitCatalogChanges("Subcategoria criada.");
   }
 
-  function addGoal(event) {
+  async function addGoal(event) {
     event.preventDefault();
     const name = document.querySelector("#new-goal-name").value.trim();
     const key = document.querySelector("#new-goal-category").value;
     const target = Number(document.querySelector("#new-goal-target").value);
     if (!name || target <= 0) return deps.notify("Preencha a meta corretamente.");
 
-    getCatalog().goals.push({ id: createId(), name, key, target, currentAmount: 0, color: "#635bff", isArchived: false });
+    const result = await getGoalServices().createGoal.execute({ name, key, target, currentAmount: 0, color: "#635bff" });
+    if (!result.ok) {
+      deps.notify(Object.values(result.errors || {})[0] || "Nao foi possivel criar a meta.");
+      return;
+    }
+
     event.currentTarget.reset();
     commitCatalogChanges("Meta criada.");
   }
 
-  function updateGoal(index) {
+  async function updateGoal(index) {
     const goal = getGoalRecord(index);
     if (!goal) return;
     const nameInput = document.querySelector(`[data-goal-name="${index}"]`);
@@ -653,9 +675,12 @@ export function createSettingsModule(deps) {
     const target = Number(targetInput.value);
     if (!name || target <= 0) return deps.notify("Preencha a meta corretamente.");
 
-    goal.name = name;
-    goal.key = key;
-    goal.target = target;
+    const result = await getGoalServices().updateGoal.execute(goal.id, { name, key, target });
+    if (!result.ok) {
+      deps.notify(Object.values(result.errors || {})[0] || "Nao foi possivel atualizar a meta.");
+      return;
+    }
+
     commitCatalogChanges("Meta atualizada.");
   }
 
@@ -779,10 +804,14 @@ export function createSettingsModule(deps) {
     addSubcategory,
     addGoal,
     updateGoal,
-    removeGoal(index) {
+    async removeGoal(index) {
       const goal = getGoalRecord(index);
       if (!goal) return;
-      getCatalog().goals = getCatalog().goals.filter((item) => item.id !== goal.id);
+      const result = await getGoalServices().archiveGoal.execute(goal.id);
+      if (!result.ok) {
+        deps.notify(Object.values(result.errors || {})[0] || "Nao foi possivel remover a meta.");
+        return;
+      }
       commitCatalogChanges("Meta removida.");
     },
     removeCategory,

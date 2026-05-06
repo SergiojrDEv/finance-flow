@@ -15,6 +15,7 @@ Evoluir o Finance Flow sem repetir o erro de acoplar arquitetura nova diretament
 - Camada `src/application` verificada sem dependencia direta de DOM, `localStorage`, Supabase ou `src/core`.
 - Casos de uso de categorias, etiquetas e orcamentos.
 - Runtime de regras de orcamento conectado ao caso de uso e repositorio local.
+- Runtime de metas conectado a casos de uso de criacao, edicao e arquivamento.
 - Shadow mode para criacao de lancamentos e catalogo.
 - Sync V2 separado em:
   - mapeadores puros;
