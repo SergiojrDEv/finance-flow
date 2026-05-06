@@ -35,6 +35,7 @@ Evoluir o Finance Flow sem repetir o erro de acoplar arquitetura nova diretament
   - Worker Cloudflare com endpoint `/api/config` para config Supabase por ambiente;
   - carregamento de config Supabase extraido para infraestrutura testavel;
   - frontend tentando `/api/config` antes de fallback temporario.
+- Mapeamento legacy de transacoes Supabase extraido para infraestrutura testavel.
 
 ## Ainda falta
 

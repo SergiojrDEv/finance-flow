@@ -6,6 +6,11 @@ import {
   loadSupabaseConfig as resolveSupabaseConfig,
 } from "../infrastructure/config/SupabaseConfigProvider.js";
 import { createSyncServices } from "../infrastructure/composition/createSyncServices.js";
+import {
+  mapLegacyRowToLocalTransaction,
+  mapLocalTransactionToLegacyRow,
+  normalizeRemoteDate as normalizeLegacyRemoteDate,
+} from "../infrastructure/sync/LegacyTransactionMapper.js";
 import { isMissingRelationError } from "../infrastructure/sync/SupabaseSyncHelpers.js";
 
 export function createSupabaseModule(deps) {
@@ -72,63 +77,18 @@ export function createSupabaseModule(deps) {
   }
 
   function toRemoteTransaction(item) {
-    const date = deps.parseLocalDate(item.date);
-    return {
-      id: item.id,
-      user_id: state.currentUser.id,
-      date: item.date,
-      descricao: item.description,
-      cat: item.category,
-      subcat: item.subcategory || null,
-      type: item.type,
-      val: Number(item.amount),
-      account: item.account || "Conta corrente",
-      status: item.status || "paid",
-      due_date: item.dueDate || item.date,
-      payment_method: item.paymentMethod || "pix",
-      credit_card_id: item.creditCardId || null,
-      recurrence_id: item.recurrenceId || null,
-      installment_group: item.installmentGroup || null,
-      installment_number: item.installmentNumber || null,
-      installment_total: item.installmentTotal || null,
-      year: date.getFullYear(),
-      month: date.getMonth(),
-      created_at: item.createdAt || new Date().toISOString(),
-    };
+    return mapLocalTransactionToLegacyRow(item, {
+      userId: state.currentUser.id,
+      parseLocalDate: deps.parseLocalDate,
+    });
   }
 
   function fromRemoteTransaction(row) {
-    return {
-      id: row.id,
-      type: row.type,
-      description: row.description || row.descricao || "",
-      category: row.category || row.cat || "outros",
-      subcategory: row.subcategory || row.subcat || null,
-      account: row.account || "Conta corrente",
-      amount: Number(row.amount ?? row.val ?? 0),
-      date: normalizeRemoteDate(row.date, row.year, row.month),
-      dueDate: normalizeRemoteDate(row.due_date || row.date, row.year, row.month),
-      status: row.status || "paid",
-      paymentMethod: row.payment_method || "pix",
-      creditCardId: row.credit_card_id || null,
-      recurrenceId: row.recurrence_id || null,
-      installmentGroup: row.installment_group || null,
-      installmentNumber: row.installment_number || null,
-      installmentTotal: row.installment_total || null,
-      createdAt: row.created_at || new Date().toISOString(),
-    };
+    return mapLegacyRowToLocalTransaction(row);
   }
 
   function normalizeRemoteDate(value, year, month) {
-    if (typeof value === "string" && /^\d{4}-\d{2}-\d{2}/.test(value)) return value.slice(0, 10);
-    if (typeof value === "string" && value.includes("/")) {
-      const [day, localMonth, localYear] = value.split("/");
-      return `${localYear}-${localMonth.padStart(2, "0")}-${day.padStart(2, "0")}`;
-    }
-    if (Number.isInteger(year) && Number.isInteger(month)) {
-      return `${year}-${String(month + 1).padStart(2, "0")}-01`;
-    }
-    return new Date().toISOString().slice(0, 10);
+    return normalizeLegacyRemoteDate(value, year, month);
   }
 
   function handleCloudError(error) {
