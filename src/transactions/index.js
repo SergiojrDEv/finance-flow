@@ -123,6 +123,15 @@ export function createTransactionsModule(deps) {
     return type === "expense" ? "pix" : "transfer";
   }
 
+  function firstAccountName() {
+    return state.settings.accounts[0] || "Conta corrente";
+  }
+
+  function resolveAccountValue(value, fallback = firstAccountName()) {
+    const account = String(value || "").trim();
+    return account || fallback;
+  }
+
   function buildTransactionDraftFromValues({
     type,
     description,
@@ -149,7 +158,7 @@ export function createTransactionsModule(deps) {
       type,
       description: String(description || "").trim(),
       category,
-      account,
+      account: resolveAccountValue(account),
       amount: Number(amount),
       date,
       status: status || "paid",
@@ -252,7 +261,11 @@ export function createTransactionsModule(deps) {
   }
 
   function updateAccountOptions() {
-    els.account.innerHTML = state.settings.accounts.map((name) => `<option>${esc(name)}</option>`).join("");
+    const previousValue = els.account.value;
+    els.account.innerHTML = state.settings.accounts
+      .map((name) => `<option value="${esc(name)}">${esc(name)}</option>`)
+      .join("");
+    els.account.value = state.settings.accounts.includes(previousValue) ? previousValue : firstAccountName();
   }
 
   function updateCreditCardOptions() {
@@ -304,7 +317,11 @@ export function createTransactionsModule(deps) {
   function updateTransactionModalAccounts() {
     const account = document.querySelector("#transaction-modal-account");
     if (!account) return;
-    account.innerHTML = state.settings.accounts.map((name) => `<option>${esc(name)}</option>`).join("");
+    const previousValue = account.value;
+    account.innerHTML = state.settings.accounts
+      .map((name) => `<option value="${esc(name)}">${esc(name)}</option>`)
+      .join("");
+    account.value = state.settings.accounts.includes(previousValue) ? previousValue : firstAccountName();
   }
 
   function updateTransactionModalCreditFields() {
@@ -474,7 +491,7 @@ export function createTransactionsModule(deps) {
         description: `${formData.get("description").trim()}${suffix}`,
         category: formData.get("category"),
         subcategory,
-        account: formData.get("account"),
+        account: resolveAccountValue(formData.get("account")),
         amount: perItemAmount,
         date,
         dueDate,
@@ -563,6 +580,7 @@ export function createTransactionsModule(deps) {
     els.form.reset();
     setDefaultDate();
     updateCategoryOptions();
+    updateAccountOptions();
     updateCreditCardOptions();
     document.querySelector("#installments").disabled = false;
     document.querySelector("#recurrence").disabled = false;
