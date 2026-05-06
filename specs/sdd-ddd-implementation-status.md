@@ -36,6 +36,7 @@ Evoluir o Finance Flow sem repetir o erro de acoplar arquitetura nova diretament
   - carregamento de config Supabase extraido para infraestrutura testavel;
   - frontend tentando `/api/config` antes de fallback temporario.
 - Mapeamento legacy de transacoes Supabase extraido para infraestrutura testavel.
+- Sync legacy de transacoes/settings Supabase extraido para repositorio de infraestrutura testavel.
 
 ## Ainda falta
 

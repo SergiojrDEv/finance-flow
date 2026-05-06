@@ -1,5 +1,6 @@
 import { SupabaseCloudSnapshotRepository } from "../sync/SupabaseCloudSnapshotRepository.js";
 import { SupabaseCatalogV2SyncRepository } from "../sync/SupabaseCatalogV2SyncRepository.js";
+import { SupabaseLegacySyncRepository } from "../sync/SupabaseLegacySyncRepository.js";
 import { SupabaseTransactionV2SyncRepository } from "../sync/SupabaseTransactionV2SyncRepository.js";
 import {
   inferAccountKind as defaultInferAccountKind,
@@ -18,10 +19,14 @@ export function createSyncServices({ client, inferAccountKind, isMissingRelation
   const transactionV2SyncRepository = new SupabaseTransactionV2SyncRepository({
     client,
   });
+  const legacySyncRepository = new SupabaseLegacySyncRepository({
+    client,
+  });
 
   return {
     cloudSnapshotRepository,
     catalogV2SyncRepository,
+    legacySyncRepository,
     transactionV2SyncRepository,
   };
 }

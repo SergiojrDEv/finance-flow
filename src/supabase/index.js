@@ -224,40 +224,17 @@ export function createSupabaseModule(deps) {
       }
     }
 
-    const rows = state.transactions.map(toRemoteTransaction);
-    if (rows.length) {
-      const { error: upsertTxError } = await client.from("transactions").upsert(rows, { onConflict: "id" });
-      if (upsertTxError) {
-        handleCloudError(upsertTxError);
-        return;
-      }
-    }
-
-    const { error: settingsError } = await client
-      .from("finance_settings")
-      .upsert({ user_id: userId, settings: state.settings, updated_at: new Date().toISOString() });
-    if (settingsError) {
-      handleCloudError(settingsError);
+    try {
+      const services = createSyncServices({ client });
+      await services.legacySyncRepository.sync({
+        userId,
+        rows: state.transactions.map(toRemoteTransaction),
+        settings: state.settings,
+        localIds: state.transactions.map((item) => item.id),
+      });
+    } catch (error) {
+      handleCloudError(error);
       return;
-    }
-
-    const { data: remoteRows, error: remoteRowsError } = await client
-      .from("transactions")
-      .select("id")
-      .eq("user_id", userId);
-    if (remoteRowsError) {
-      handleCloudError(remoteRowsError);
-      return;
-    }
-
-    const localIds = new Set(state.transactions.map((item) => item.id));
-    const idsToDelete = (remoteRows || []).map((item) => item.id).filter((id) => !localIds.has(id));
-    if (idsToDelete.length) {
-      const { error: deleteTxError } = await client.from("transactions").delete().eq("user_id", userId).in("id", idsToDelete);
-      if (deleteTxError) {
-        handleCloudError(deleteTxError);
-        return;
-      }
     }
 
     state.isSyncing = false;
@@ -290,21 +267,15 @@ export function createSupabaseModule(deps) {
       return;
     }
 
-    const client = state.supabaseClient;
     const userId = state.currentUser.id;
-    const { data: txRows, error: txError } = await client
-      .from("transactions")
-      .select("*")
-      .eq("user_id", userId)
-      .order("created_at", { ascending: true });
-    if (txError) return handleCloudError(txError);
-
-    const { data: settingsRow, error: settingsError } = await client
-      .from("finance_settings")
-      .select("settings")
-      .eq("user_id", userId)
-      .maybeSingle();
-    if (settingsError) return handleCloudError(settingsError);
+    let snapshot;
+    try {
+      const services = createSyncServices({ client: state.supabaseClient });
+      snapshot = await services.legacySyncRepository.fetch({ userId });
+    } catch (error) {
+      return handleCloudError(error);
+    }
+    const { transactions: txRows, settings } = snapshot;
 
     if (options.silent && !txRows?.length && state.transactions.length) {
       renderCloudStatus();
@@ -312,8 +283,8 @@ export function createSupabaseModule(deps) {
     }
 
     state.transactions = (txRows || []).map(fromRemoteTransaction);
-    if (settingsRow?.settings) {
-      state.settings = deps.mergeSettings(settingsRow.settings);
+    if (settings) {
+      state.settings = deps.mergeSettings(settings);
       deps.hydrateCatalog(state.settings, state.catalog);
       state.dataMode = "legacy";
     }
