@@ -1,4 +1,5 @@
 import { Transaction } from "../../domain/transactions/Transaction.js";
+import { fail, ok } from "../shared/result.js";
 
 const EXPENSE_ONLY_FIELDS = [
   "subcategory",
@@ -37,25 +38,16 @@ export class UpdateTransactionUseCase {
 
   async execute(id, draft) {
     if (!id) {
-      return {
-        ok: false,
-        errors: { id: "Lancamento e obrigatorio." },
-      };
+      return fail({ id: "Lancamento e obrigatorio." });
     }
 
     const existing = await this.transactionRepository.findById(id);
     if (!existing) {
-      return {
-        ok: false,
-        errors: { id: "Lancamento nao encontrado." },
-      };
+      return fail({ id: "Lancamento nao encontrado." });
     }
 
     if (existing.userId && draft.userId && existing.userId !== draft.userId) {
-      return {
-        ok: false,
-        errors: { userId: "Lancamento pertence a outro usuario." },
-      };
+      return fail({ userId: "Lancamento pertence a outro usuario." });
     }
 
     const now = this.clock().toISOString();
@@ -74,17 +66,11 @@ export class UpdateTransactionUseCase {
     const creation = Transaction.create(mergedDraft);
 
     if (!creation.ok) {
-      return {
-        ok: false,
-        errors: creation.errors,
-      };
+      return fail(creation.errors);
     }
 
     const saved = await this.transactionRepository.update(id, creation.value);
 
-    return {
-      ok: true,
-      value: saved,
-    };
+    return ok(saved);
   }
 }

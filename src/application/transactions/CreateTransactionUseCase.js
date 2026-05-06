@@ -1,4 +1,5 @@
 import { Transaction } from "../../domain/transactions/Transaction.js";
+import { fail, ok } from "../shared/result.js";
 
 export class CreateTransactionUseCase {
   constructor({ transactionRepository, clock = () => new Date() } = {}) {
@@ -19,17 +20,11 @@ export class CreateTransactionUseCase {
     });
 
     if (!creation.ok) {
-      return {
-        ok: false,
-        errors: creation.errors,
-      };
+      return fail(creation.errors);
     }
 
     const saved = await this.transactionRepository.save(creation.value);
 
-    return {
-      ok: true,
-      value: saved,
-    };
+    return ok(saved);
   }
 }

@@ -1,3 +1,5 @@
+import { fail, ok } from "../shared/result.js";
+
 export class DeleteTransactionUseCase {
   constructor({ transactionRepository } = {}) {
     if (!transactionRepository || typeof transactionRepository.findById !== "function") {
@@ -12,32 +14,20 @@ export class DeleteTransactionUseCase {
 
   async execute(id, { userId } = {}) {
     if (!id) {
-      return {
-        ok: false,
-        errors: { id: "Lancamento e obrigatorio." },
-      };
+      return fail({ id: "Lancamento e obrigatorio." });
     }
 
     const existing = await this.transactionRepository.findById(id);
     if (!existing) {
-      return {
-        ok: false,
-        errors: { id: "Lancamento nao encontrado." },
-      };
+      return fail({ id: "Lancamento nao encontrado." });
     }
 
     if (existing.userId && userId && existing.userId !== userId) {
-      return {
-        ok: false,
-        errors: { userId: "Lancamento pertence a outro usuario." },
-      };
+      return fail({ userId: "Lancamento pertence a outro usuario." });
     }
 
     const removed = await this.transactionRepository.deleteById(id);
 
-    return {
-      ok: true,
-      value: removed,
-    };
+    return ok(removed);
   }
 }

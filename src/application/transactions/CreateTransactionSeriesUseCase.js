@@ -1,3 +1,5 @@
+import { fail, ok } from "../shared/result.js";
+
 export class CreateTransactionSeriesUseCase {
   constructor({ createTransaction } = {}) {
     if (!createTransaction || typeof createTransaction.execute !== "function") {
@@ -9,11 +11,7 @@ export class CreateTransactionSeriesUseCase {
 
   async execute(drafts = []) {
     if (!Array.isArray(drafts) || !drafts.length) {
-      return {
-        ok: false,
-        errors: { transactions: "Nenhum lancamento informado." },
-        values: [],
-      };
+      return fail({ transactions: "Nenhum lancamento informado." }, { values: [] });
     }
 
     const values = [];
@@ -22,19 +20,12 @@ export class CreateTransactionSeriesUseCase {
       const result = await this.createTransaction.execute(draft);
 
       if (!result.ok) {
-        return {
-          ok: false,
-          errors: result.errors || { transactions: "Lancamento invalido." },
-          values,
-        };
+        return fail(result.errors || { transactions: "Lancamento invalido." }, { values });
       }
 
       values.push(result.value);
     }
 
-    return {
-      ok: true,
-      value: values,
-    };
+    return ok(values);
   }
 }
