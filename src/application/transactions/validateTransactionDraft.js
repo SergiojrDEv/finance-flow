@@ -1,7 +1,7 @@
 import { TRANSACTION_TYPES, shouldShowTransactionField } from "./transactionFormRules.js";
 
 const VALID_TYPES = new Set(Object.values(TRANSACTION_TYPES));
-const VALID_STATUSES = new Set(["paid", "pending"]);
+const VALID_STATUSES = new Set(["paid", "pending", "planned"]);
 
 function isNonEmpty(value) {
   return String(value || "").trim().length > 0;

@@ -26,6 +26,16 @@ test("aceita despesa valida com campos de pagamento", () => {
   assert.deepEqual(result.errors, {});
 });
 
+test("aceita lancamento previsto", () => {
+  const result = validateTransactionDraft({
+    ...baseDraft,
+    status: "planned",
+  });
+
+  assert.equal(result.valid, true);
+  assert.deepEqual(result.errors, {});
+});
+
 test("bloqueia receita com campo exclusivo de despesa", () => {
   const result = validateTransactionDraft({
     ...baseDraft,

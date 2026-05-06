@@ -20,6 +20,15 @@ import {
 } from "../core/utils.js";
 
 export function createDashboardModule(deps) {
+  function renderSafely(name, renderFn) {
+    try {
+      renderFn();
+    } catch (error) {
+      console.error(`Erro ao renderizar ${name}`, error);
+      deps.notify?.(`Nao foi possivel atualizar ${name}.`);
+    }
+  }
+
   function renderMonthLabel() {
     deps.els.currentMonth.textContent = state.currentDate.toLocaleDateString("pt-BR", {
       month: "long",
@@ -311,17 +320,17 @@ export function createDashboardModule(deps) {
   }
 
   function renderAll() {
-    renderMonthLabel();
-    renderSummary();
-    renderCategoryBreakdown();
-    renderTransactionHighlights();
-    deps.renderTable();
-    renderBudgets();
-    renderDailyHistory();
-    deps.renderGoalsSummary();
-    deps.renderGoals();
-    deps.renderSettings();
-    renderChart();
+    renderSafely("mes", renderMonthLabel);
+    renderSafely("resumo", renderSummary);
+    renderSafely("categorias", renderCategoryBreakdown);
+    renderSafely("destaques", renderTransactionHighlights);
+    renderSafely("lancamentos", deps.renderTable);
+    renderSafely("orcamentos", renderBudgets);
+    renderSafely("historico", renderDailyHistory);
+    renderSafely("resumo de metas", deps.renderGoalsSummary);
+    renderSafely("metas", deps.renderGoals);
+    renderSafely("ajustes", deps.renderSettings);
+    renderSafely("grafico", renderChart);
   }
 
   return {
