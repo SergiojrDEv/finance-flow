@@ -1,7 +1,15 @@
+const VALID_TRANSACTION_KINDS = new Set(["income", "expense", "investment"]);
+
+function normalizeTransactionKind(transaction) {
+  const kind = transaction?.type || transaction?.transaction_kind || transaction?.kind;
+  return VALID_TRANSACTION_KINDS.has(kind) ? kind : "expense";
+}
+
 export function mapTransactionToV2Row(transaction, { userId, categories, accounts, tagIds, now = new Date().toISOString() } = {}) {
   if (!transaction?.id) return null;
 
-  const category = categories?.get(`${transaction.type}:${transaction.category}`);
+  const transactionKind = normalizeTransactionKind(transaction);
+  const category = categories?.get(`${transactionKind}:${transaction.category}`);
   const categoryId = category?.id || null;
   const categoryTagId = categoryId && transaction.subcategory
     ? tagIds?.get(`${categoryId}:${transaction.subcategory}`) || null
@@ -10,7 +18,7 @@ export function mapTransactionToV2Row(transaction, { userId, categories, account
   return {
     id: transaction.id,
     user_id: userId,
-    transaction_kind: transaction.type,
+    transaction_kind: transactionKind,
     status: transaction.status || "paid",
     description: transaction.description,
     amount: Number(transaction.amount),

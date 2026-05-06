@@ -78,6 +78,44 @@ test("usa padroes seguros quando campos opcionais nao existem", () => {
   assert.equal(row.account_id, null);
 });
 
+test("normaliza tipo antigo antes de enviar para transactions_v2", () => {
+  const row = mapTransactionToV2Row(
+    {
+      id: "tx-legacy",
+      transaction_kind: "investment",
+      description: "Tesouro",
+      amount: 100,
+      date: "2026-04-24",
+      category: "Renda fixa",
+    },
+    {
+      userId: "user-1",
+      categories: new Map([["investment:Renda fixa", { id: "cat-fixed" }]]),
+      tagIds: new Map(),
+      accounts: new Map(),
+      now: "2026-04-24T12:00:00.000Z",
+    }
+  );
+
+  assert.equal(row.transaction_kind, "investment");
+  assert.equal(row.category_id, "cat-fixed");
+});
+
+test("usa despesa como fallback quando tipo esta ausente ou invalido", () => {
+  const row = mapTransactionToV2Row(
+    {
+      id: "tx-missing-kind",
+      description: "Lancamento antigo",
+      amount: 50,
+      date: "2026-04-24",
+      category: "Outros",
+    },
+    { userId: "user-1", categories: new Map(), tagIds: new Map(), accounts: new Map() }
+  );
+
+  assert.equal(row.transaction_kind, "expense");
+});
+
 test("planeja upserts locais e exclusoes remotas sem tocar no Supabase", () => {
   const result = planTransactionV2Sync({
     localTransactions: [
