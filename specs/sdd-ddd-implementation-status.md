@@ -30,11 +30,12 @@ Evoluir o Finance Flow sem repetir o erro de acoplar arquitetura nova diretament
 - Guardrail automatico de arquitetura criado para impedir que `src/application` dependa de DOM, Supabase, `localStorage`, UI ou infraestrutura.
 - Hardening inicial:
   - sanitizacao de cores em CSS inline;
-  - endpoints de config sem fallback hardcoded quando forem ativados.
+  - Worker Cloudflare com endpoint `/api/config` para config Supabase por ambiente;
+  - frontend tentando `/api/config` antes de fallback temporario.
 
 ## Ainda falta
 
-- Ativar endpoint `/api/config` no Cloudflare Worker e remover `SUPABASE_FALLBACK_CONFIG` do bundle.
+- Confirmar variaveis `SUPABASE_URL` e `SUPABASE_ANON_KEY` no Cloudflare Worker publicado e remover `SUPABASE_FALLBACK_CONFIG` do bundle.
 - Migrar edicao/exclusao de lancamentos da UI para os casos de uso, com shadow mode ou comparacao.
   - Feito: edicao e exclusao da UI passam por `UpdateTransactionUseCase` e `DeleteTransactionUseCase`.
 - Migrar dashboard inteiro para selectors/application services puros.

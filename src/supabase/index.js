@@ -27,16 +27,16 @@ export function createSupabaseModule(deps) {
   async function loadSupabaseConfig() {
     if (window.FINANCE_FLOW_SUPABASE) return window.FINANCE_FLOW_SUPABASE;
 
-    const endpoints = ["/.netlify/functions/config", "/api/config"];
-    try {
-      for (const endpoint of endpoints) {
+    const endpoints = ["/api/config", "/.netlify/functions/config"];
+    for (const endpoint of endpoints) {
+      try {
         const response = await fetch(endpoint, { cache: "no-store" });
         if (!response.ok) continue;
         const config = await response.json();
         if (config?.url && config?.anonKey) return config;
+      } catch (error) {
+        console.error("Erro ao carregar config do Supabase", endpoint, error);
       }
-    } catch (error) {
-      console.error("Erro ao carregar config do Supabase", error);
     }
     return SUPABASE_FALLBACK_CONFIG;
   }

@@ -14,6 +14,12 @@ Endpoints de configuracao devem ler `SUPABASE_URL` e `SUPABASE_ANON_KEY` do ambi
 
 O fallback no frontend so pode permanecer enquanto o Worker atual nao tiver endpoint de config ativo.
 
+## Implementacao incremental
+
+O Worker do Cloudflare passa a expor `/api/config` lendo `SUPABASE_URL` e `SUPABASE_ANON_KEY` do ambiente.
+
+O frontend tenta `/api/config` antes de endpoints legados e continua com fallback temporario enquanto as variaveis do Worker nao forem confirmadas no ambiente publicado.
+
 ## Proximo passo
 
-Ativar uma rota de configuracao no deploy Cloudflare ou migrar para um backend dedicado. Depois disso, remover `SUPABASE_FALLBACK_CONFIG` do bundle.
+Confirmar que as variaveis existem no deploy Cloudflare publicado. Depois disso, remover `SUPABASE_FALLBACK_CONFIG` do bundle.
