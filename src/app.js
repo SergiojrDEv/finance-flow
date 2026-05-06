@@ -24,6 +24,9 @@ import { createAuthModule } from "./auth/index.js";
 import { createSupabaseModule } from "./supabase/index.js";
 import { installDiagnosticsApi } from "./infrastructure/diagnostics/installDiagnosticsApi.js";
 
+const LAST_SECTION_KEY = "finance-flow-last-section";
+const VALID_SECTIONS = new Set(["visao-geral", "novo-lancamento", "orcamentos", "metas", "relatorios", "ajustes"]);
+
 const deps = {
   els,
   state,
@@ -308,11 +311,13 @@ function bindEvents() {
 }
 
 function setSectionFromHash() {
-  const rawId = location.hash.replace("#", "") || "visao-geral";
+  const savedSection = localStorage.getItem(LAST_SECTION_KEY);
+  const rawId = location.hash.replace("#", "") || (VALID_SECTIONS.has(savedSection) ? savedSection : "visao-geral");
   const id = rawId === "lancamentos" || rawId === "lancamentos-mes" ? "novo-lancamento" : rawId;
   if (rawId === "lancamentos-mes") setTransactionView("month");
   if (id === "novo-lancamento" && !document.body.dataset.transactionView) setTransactionView(state.transactionView || "compose");
   document.body.dataset.section = id;
+  if (VALID_SECTIONS.has(id)) localStorage.setItem(LAST_SECTION_KEY, id);
   document.querySelectorAll(".section").forEach((section) => {
     section.classList.toggle("active", section.id === id);
   });

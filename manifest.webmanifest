@@ -3,7 +3,7 @@
   "short_name": "Finance Flow",
   "description": "Controle financeiro pessoal com metas, categorias, lancamentos e sincronizacao em nuvem.",
   "lang": "pt-BR",
-  "start_url": "./",
+  "start_url": "./#visao-geral",
   "scope": "./",
   "display": "standalone",
   "orientation": "portrait",
