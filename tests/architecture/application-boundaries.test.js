@@ -24,6 +24,10 @@ const forbiddenImportPatterns = [
   { pattern: /["']\.\.\/\.\.\/transactions\//, reason: "src/application nao deve importar UI de lancamentos" },
 ];
 
+const allowedManualResultFiles = new Set([
+  "src/application/shared/result.js",
+]);
+
 async function listJavaScriptFiles(dir) {
   const entries = await readdir(dir, { withFileTypes: true });
   const files = await Promise.all(entries.map(async (entry) => {
@@ -56,6 +60,23 @@ test("src/application nao depende de DOM, Supabase, storage concreto ou UI", asy
           violations.push(`${relativePath}: ${check.reason}`);
         }
       }
+    }
+  }
+
+  assert.deepEqual(violations, []);
+});
+
+test("src/application usa helper compartilhado para resultados ok/fail", async () => {
+  const files = await listJavaScriptFiles(applicationDir);
+  const violations = [];
+
+  for (const filePath of files) {
+    const source = await readFile(filePath, "utf8");
+    const relativePath = path.relative(rootDir, filePath).replaceAll("\\", "/");
+    if (allowedManualResultFiles.has(relativePath)) continue;
+
+    if (/return\s+\{\s*ok\s*:/m.test(source)) {
+      violations.push(`${relativePath}: use ok(...) ou fail(...) de src/application/shared/result.js`);
     }
   }
 
