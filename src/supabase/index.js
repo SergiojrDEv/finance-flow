@@ -10,6 +10,10 @@ import {
   shouldSkipSilentCloudSnapshot,
 } from "../infrastructure/sync/CloudSnapshotHydrator.js";
 import {
+  hydrateLegacyCloudSnapshot,
+  shouldSkipSilentLegacySnapshot,
+} from "../infrastructure/sync/LegacyCloudSnapshotHydrator.js";
+import {
   mapLegacyRowToLocalTransaction,
   mapLocalTransactionToLegacyRow,
   normalizeRemoteDate as normalizeLegacyRemoteDate,
@@ -247,18 +251,25 @@ export function createSupabaseModule(deps) {
     } catch (error) {
       return handleCloudError(error);
     }
-    const { transactions: txRows, settings } = snapshot;
-
-    if (options.silent && !txRows?.length && state.transactions.length) {
+    if (shouldSkipSilentLegacySnapshot({
+      snapshot,
+      hasLocalTransactions: Boolean(state.transactions.length),
+      silent: options.silent,
+    })) {
       renderCloudStatus();
       return;
     }
 
-    state.transactions = (txRows || []).map(fromRemoteTransaction);
-    if (settings) {
-      state.settings = deps.mergeSettings(settings);
-      deps.hydrateCatalog(state.settings, state.catalog);
-      state.dataMode = "legacy";
+    const hydrated = hydrateLegacyCloudSnapshot(snapshot, {
+      currentCatalog: state.catalog,
+      mergeSettings: deps.mergeSettings,
+      hydrateCatalog: deps.hydrateCatalog,
+    });
+    state.transactions = hydrated.transactions;
+    if (hydrated.hasSettings) {
+      state.settings = hydrated.settings;
+      state.catalog = hydrated.catalog;
+      state.dataMode = hydrated.dataMode;
     }
     deps.save();
     deps.updateCategoryOptions();

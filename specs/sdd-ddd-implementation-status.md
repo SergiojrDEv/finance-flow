@@ -40,6 +40,7 @@ Evoluir o Finance Flow sem repetir o erro de acoplar arquitetura nova diretament
 - Persistencia de perfil do usuario Supabase extraida para repositorio de infraestrutura testavel.
 - Verificacao de schema Supabase V2 extraida para repositorio de infraestrutura testavel.
 - Hidratacao de snapshot Supabase V2 extraida para helper de infraestrutura testavel.
+- Hidratacao de snapshot Supabase legacy extraida para helper de infraestrutura testavel.
 
 ## Ainda falta
 
