@@ -1,9 +1,9 @@
-const CACHE_NAME = "finance-flow-shell-v2";
+const CACHE_NAME = "finance-flow-shell-v3";
 const APP_SHELL = [
   "./",
   "./index.html",
-  "./src/styles.css",
-  "./src/app.js",
+  "./src/styles.css?v=20260506-2",
+  "./src/app.js?v=20260506-2",
   "./app-icon.svg",
   "./manifest.webmanifest",
 ];
@@ -40,7 +40,7 @@ self.addEventListener("fetch", (event) => {
     return;
   }
 
-  if (url.pathname.endsWith(".js") || url.pathname.endsWith(".css") || url.pathname.endsWith(".webmanifest")) {
+  if (url.pathname.startsWith("/src/") || url.pathname.endsWith(".js") || url.pathname.endsWith(".css") || url.pathname.endsWith(".webmanifest")) {
     event.respondWith(
       fetch(event.request)
         .then((response) => {
