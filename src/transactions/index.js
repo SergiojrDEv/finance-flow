@@ -14,6 +14,7 @@ import {
 import { isFeatureEnabled } from "../core/featureFlags.js";
 import { buildMonthTransactionList } from "../application/transactions/buildMonthTransactionList.js";
 import { buildTransactionSeries } from "../application/transactions/buildTransactionSeries.js";
+import { firstErrorMessage } from "../application/shared/result.js";
 import { createTransactionServices } from "../infrastructure/composition/createTransactionServices.js";
 import { runTransactionCreationShadow } from "../infrastructure/shadow/runTransactionCreationShadow.js";
 
@@ -499,7 +500,7 @@ export function createTransactionsModule(deps) {
     const result = await getTransactionServices().createTransactionSeries.execute(drafts);
 
     if (!result.ok) {
-      deps.notify(Object.values(result.errors || {})[0] || "Nao foi possivel salvar o lancamento.");
+      deps.notify(firstErrorMessage(result.errors, "Nao foi possivel salvar o lancamento."));
       return;
     }
 
@@ -536,7 +537,7 @@ export function createTransactionsModule(deps) {
     const result = await getTransactionServices().updateTransaction.execute(item.id, draft);
 
     if (!result.ok) {
-      deps.notify(Object.values(result.errors || {})[0] || "Nao foi possivel atualizar o lancamento.");
+      deps.notify(firstErrorMessage(result.errors, "Nao foi possivel atualizar o lancamento."));
       return;
     }
 
@@ -616,7 +617,7 @@ export function createTransactionsModule(deps) {
     const result = await getTransactionServices().updateTransaction.execute(item.id, draft);
 
     if (!result.ok) {
-      deps.notify(Object.values(result.errors || {})[0] || "Preencha os dados do lancamento corretamente.");
+      deps.notify(firstErrorMessage(result.errors, "Preencha os dados do lancamento corretamente."));
       return;
     }
 
@@ -642,7 +643,7 @@ export function createTransactionsModule(deps) {
     });
 
     if (!result.ok) {
-      deps.notify(Object.values(result.errors || {})[0] || "Nao foi possivel remover o lancamento.");
+      deps.notify(firstErrorMessage(result.errors, "Nao foi possivel remover o lancamento."));
       return;
     }
 

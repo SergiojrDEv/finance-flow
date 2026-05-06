@@ -8,6 +8,7 @@ import {
   safeCssColor,
   slugify,
 } from "../core/utils.js";
+import { firstErrorMessage } from "../application/shared/result.js";
 import { createBudgetServices } from "../infrastructure/composition/createBudgetServices.js";
 import { createCatalogServices } from "../infrastructure/composition/createCatalogServices.js";
 import { createGoalServices } from "../infrastructure/composition/createGoalServices.js";
@@ -259,7 +260,7 @@ export function createSettingsModule(deps) {
 
     const result = await getGoalServices().updateGoal.execute(goal.id, { name, key, target });
     if (!result.ok) {
-      deps.notify(Object.values(result.errors || {})[0] || "Nao foi possivel atualizar a meta.");
+      deps.notify(firstErrorMessage(result.errors, "Nao foi possivel atualizar a meta."));
       return;
     }
 
@@ -472,7 +473,7 @@ export function createSettingsModule(deps) {
     });
 
     if (!result.ok) {
-      deps.notify(Object.values(result.errors || {})[0] || "Nao foi possivel criar a etiqueta.");
+      deps.notify(firstErrorMessage(result.errors, "Nao foi possivel criar a etiqueta."));
       return;
     }
 
@@ -527,7 +528,7 @@ export function createSettingsModule(deps) {
         monthlyLimit: edit.type === "expense" ? monthly : null,
       });
       if (!result.ok) {
-        deps.notify(Object.values(result.errors || {})[0] || "Nao foi possivel atualizar a categoria.");
+        deps.notify(firstErrorMessage(result.errors, "Nao foi possivel atualizar a categoria."));
         return;
       }
       if (edit.type === "expense") {
@@ -537,7 +538,7 @@ export function createSettingsModule(deps) {
           monthlyLimit: monthly,
         });
         if (!budgetResult.ok) {
-          deps.notify(Object.values(budgetResult.errors || {})[0] || "Nao foi possivel atualizar o limite.");
+          deps.notify(firstErrorMessage(budgetResult.errors, "Nao foi possivel atualizar o limite."));
           return;
         }
       }
@@ -575,7 +576,7 @@ export function createSettingsModule(deps) {
         color: document.querySelector("#settings-item-modal-color").value,
       });
       if (!result.ok) {
-        deps.notify(Object.values(result.errors || {})[0] || "Nao foi possivel atualizar a etiqueta.");
+        deps.notify(firstErrorMessage(result.errors, "Nao foi possivel atualizar a etiqueta."));
         return;
       }
     }
@@ -601,7 +602,7 @@ export function createSettingsModule(deps) {
       monthlyLimit: type === "expense" ? limit : null,
     });
     if (!result.ok) {
-      deps.notify(Object.values(result.errors || {})[0] || "Nao foi possivel criar a categoria.");
+      deps.notify(firstErrorMessage(result.errors, "Nao foi possivel criar a categoria."));
       return;
     }
     if (type === "expense") {
@@ -611,7 +612,7 @@ export function createSettingsModule(deps) {
         monthlyLimit: limit,
       });
       if (!budgetResult.ok) {
-        deps.notify(Object.values(budgetResult.errors || {})[0] || "Nao foi possivel criar o limite.");
+        deps.notify(firstErrorMessage(budgetResult.errors, "Nao foi possivel criar o limite."));
         return;
       }
     }
@@ -700,7 +701,7 @@ export function createSettingsModule(deps) {
 
     const result = await getGoalServices().createGoal.execute({ name, key, target, currentAmount: 0, color: "#635bff" });
     if (!result.ok) {
-      deps.notify(Object.values(result.errors || {})[0] || "Nao foi possivel criar a meta.");
+      deps.notify(firstErrorMessage(result.errors, "Nao foi possivel criar a meta."));
       return;
     }
 
@@ -723,7 +724,7 @@ export function createSettingsModule(deps) {
 
     const result = await getGoalServices().updateGoal.execute(goal.id, { name, key, target });
     if (!result.ok) {
-      deps.notify(Object.values(result.errors || {})[0] || "Nao foi possivel atualizar a meta.");
+      deps.notify(firstErrorMessage(result.errors, "Nao foi possivel atualizar a meta."));
       return;
     }
 
@@ -740,7 +741,7 @@ export function createSettingsModule(deps) {
     if (!category) return;
     const result = await getCatalogServices().archiveCategory.execute(category.id);
     if (!result.ok) {
-      deps.notify(Object.values(result.errors || {})[0] || "Nao foi possivel remover a categoria.");
+      deps.notify(firstErrorMessage(result.errors, "Nao foi possivel remover a categoria."));
       return;
     }
     const catalog = getCatalog();
@@ -758,7 +759,7 @@ export function createSettingsModule(deps) {
     if (!tag) return;
     const result = await getCatalogServices().archiveCategoryTag.execute(tag.id);
     if (!result.ok) {
-      deps.notify(Object.values(result.errors || {})[0] || "Nao foi possivel remover a etiqueta.");
+      deps.notify(firstErrorMessage(result.errors, "Nao foi possivel remover a etiqueta."));
       return;
     }
     commitCatalogChanges("Subcategoria removida.");
@@ -801,7 +802,7 @@ export function createSettingsModule(deps) {
     });
 
     if (!result.ok) {
-      deps.notify(Object.values(result.errors || {})[0] || "Nao foi possivel atualizar o limite.");
+      deps.notify(firstErrorMessage(result.errors, "Nao foi possivel atualizar o limite."));
       return;
     }
 
@@ -823,7 +824,7 @@ export function createSettingsModule(deps) {
     });
 
     if (!result.ok) {
-      deps.notify(Object.values(result.errors || {})[0] || "Nao foi possivel salvar a regra.");
+      deps.notify(firstErrorMessage(result.errors, "Nao foi possivel salvar a regra."));
       return;
     }
 
@@ -867,7 +868,7 @@ export function createSettingsModule(deps) {
       if (!goal) return;
       const result = await getGoalServices().archiveGoal.execute(goal.id);
       if (!result.ok) {
-        deps.notify(Object.values(result.errors || {})[0] || "Nao foi possivel remover a meta.");
+        deps.notify(firstErrorMessage(result.errors, "Nao foi possivel remover a meta."));
         return;
       }
       commitCatalogChanges("Meta removida.");
