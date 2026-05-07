@@ -18,6 +18,7 @@ import {
 import { planCloudConnectionSetup } from "../application/sync/planCloudConnectionSetup.js";
 import {
   planCloudPullAfterConfirmation,
+  planCloudPullCompletion,
   planCloudPullStart,
 } from "../application/sync/planCloudPull.js";
 import {
@@ -201,18 +202,19 @@ export function createSupabaseModule(deps) {
     const applied = applyCloudPullResult(state, result, {
       syncSettingsFromCatalog: deps.syncSettingsFromCatalog,
     });
-    if (applied.skipped) {
-      renderCloudStatus();
-      return;
+    const completionPlan = planCloudPullCompletion({
+      skipped: applied.skipped,
+      silent: Boolean(options.silent),
+    });
+    if (completionPlan.shouldSave) deps.save();
+    if (completionPlan.shouldUpdateOptions) {
+      deps.updateCategoryOptions();
+      deps.updateAccountOptions();
+      deps.updateCreditCardOptions();
     }
-
-    deps.save();
-    deps.updateCategoryOptions();
-    deps.updateAccountOptions();
-    deps.updateCreditCardOptions();
-    deps.renderAll();
-    renderCloudStatus();
-    if (!options.silent) deps.notify("Dados baixados do Supabase.");
+    if (completionPlan.shouldRenderAll) deps.renderAll();
+    if (completionPlan.shouldRenderStatus) renderCloudStatus();
+    if (completionPlan.shouldNotify) deps.notify("Dados baixados do Supabase.");
   }
 
   async function initSupabase() {

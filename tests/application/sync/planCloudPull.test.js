@@ -2,6 +2,7 @@ import assert from "node:assert/strict";
 import test from "node:test";
 import {
   planCloudPullAfterConfirmation,
+  planCloudPullCompletion,
   planCloudPullStart,
 } from "../../../src/application/sync/planCloudPull.js";
 
@@ -59,4 +60,32 @@ test("aplica decisao de confirmacao para pull manual", () => {
   assert.equal(accepted.statusText, "Baixando...");
   assert.equal(cancelled.action, "cancel");
   assert.equal(cancelled.shouldContinue, false);
+});
+
+test("planeja efeitos quando pull foi ignorado", () => {
+  const plan = planCloudPullCompletion({ skipped: true, silent: false });
+
+  assert.equal(plan.action, "skipped");
+  assert.equal(plan.shouldSave, false);
+  assert.equal(plan.shouldRenderStatus, true);
+  assert.equal(plan.shouldNotify, false);
+});
+
+test("planeja efeitos completos depois de pull manual aplicado", () => {
+  const plan = planCloudPullCompletion({ skipped: false, silent: false });
+
+  assert.equal(plan.action, "applied");
+  assert.equal(plan.shouldSave, true);
+  assert.equal(plan.shouldUpdateOptions, true);
+  assert.equal(plan.shouldRenderAll, true);
+  assert.equal(plan.shouldRenderStatus, true);
+  assert.equal(plan.shouldNotify, true);
+});
+
+test("planeja pull silencioso sem notificacao final", () => {
+  const plan = planCloudPullCompletion({ skipped: false, silent: true });
+
+  assert.equal(plan.action, "applied");
+  assert.equal(plan.shouldSave, true);
+  assert.equal(plan.shouldNotify, false);
 });

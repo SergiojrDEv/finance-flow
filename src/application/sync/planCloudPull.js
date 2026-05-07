@@ -43,3 +43,25 @@ export function planCloudPullAfterConfirmation({ confirmed = false } = {}) {
     statusText: confirmed ? "Baixando..." : "",
   };
 }
+
+export function planCloudPullCompletion({ skipped = false, silent = false } = {}) {
+  if (skipped) {
+    return {
+      action: "skipped",
+      shouldSave: false,
+      shouldUpdateOptions: false,
+      shouldRenderAll: false,
+      shouldRenderStatus: true,
+      shouldNotify: false,
+    };
+  }
+
+  return {
+    action: "applied",
+    shouldSave: true,
+    shouldUpdateOptions: true,
+    shouldRenderAll: true,
+    shouldRenderStatus: true,
+    shouldNotify: !silent,
+  };
+}
