@@ -2,6 +2,7 @@ import { SUPABASE_FALLBACK_CONFIG, state } from "../core/state.js";
 import {
   applyCloudPullResult,
 } from "../application/sync/applyCloudPullResult.js";
+import { buildCloudStatusText } from "../application/sync/buildCloudStatusText.js";
 import {
   applyCloudSyncCompletion,
   applyCloudSyncStart,
@@ -36,14 +37,12 @@ export function createSupabaseModule(deps) {
   function renderCloudStatus(forcedText) {
     const badge = document.querySelector("#cloud-status");
     if (!badge) return;
-    if (forcedText) {
-      badge.textContent = forcedText;
-      return;
-    }
-    if (!state.cloudReady) badge.textContent = "Offline";
-    else if (state.isSyncing) badge.textContent = "Salvando...";
-    else if (state.currentUser?.email) badge.textContent = `Salvo na nuvem: ${state.currentUser.email}`;
-    else badge.textContent = "Nao conectado";
+    badge.textContent = buildCloudStatusText({
+      forcedText,
+      cloudReady: state.cloudReady,
+      isSyncing: state.isSyncing,
+      userEmail: state.currentUser?.email,
+    });
   }
 
   function requireCloudUser() {

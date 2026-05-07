@@ -49,6 +49,7 @@ Evoluir o Finance Flow sem repetir o erro de acoplar arquitetura nova diretament
 - Adaptadores legacy obsoletos removidos da fachada Supabase.
 - Aplicacao de resultado de leitura da nuvem no estado extraida para helper de aplicacao testavel.
 - Aplicacao de inicio/conclusao de sincronizacao extraida para helper de aplicacao testavel.
+- Texto de status da nuvem extraido para helper de aplicacao testavel.
 
 ## Ainda falta
 
