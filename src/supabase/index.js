@@ -1,5 +1,4 @@
 import { SUPABASE_FALLBACK_CONFIG, state } from "../core/state.js";
-import { ensureCatalogCoversTransactions } from "../core/catalog.js";
 import {
   hasUnsyncedLocalChanges as detectUnsyncedLocalChanges,
   planCloudSyncCompletion,
@@ -19,6 +18,10 @@ import {
   shouldSkipSilentLegacySnapshot,
 } from "../infrastructure/sync/LegacyCloudSnapshotHydrator.js";
 import { buildLegacySyncPayload } from "../infrastructure/sync/LegacySyncPayload.js";
+import {
+  buildV2CatalogSyncPayload,
+  buildV2TransactionSyncPayload,
+} from "../infrastructure/sync/V2SyncPayload.js";
 import {
   mapLegacyRowToLocalTransaction,
   mapLocalTransactionToLegacyRow,
@@ -152,19 +155,19 @@ export function createSupabaseModule(deps) {
 
   async function syncSettingsToV2(userId) {
     const client = state.supabaseClient;
-    const catalog = ensureCatalogCoversTransactions(
-      state.catalog || deps.hydrateCatalog(state.settings, state.catalog),
-      state.transactions
-    );
-    state.catalog = catalog;
+    const payload = buildV2CatalogSyncPayload({
+      userId,
+      catalog: state.catalog,
+      settings: state.settings,
+      transactions: state.transactions,
+      hydrateCatalog: deps.hydrateCatalog,
+    });
+    state.catalog = payload.catalog;
 
     const services = createSyncServices({
       client,
     });
-    return services.catalogV2SyncRepository.sync({
-      userId,
-      catalog,
-    });
+    return services.catalogV2SyncRepository.sync(payload);
   }
 
   async function syncTransactionsToV2(userId, refs) {
@@ -172,11 +175,11 @@ export function createSupabaseModule(deps) {
     const services = createSyncServices({
       client,
     });
-    await services.transactionV2SyncRepository.sync({
+    await services.transactionV2SyncRepository.sync(buildV2TransactionSyncPayload({
       userId,
       transactions: state.transactions,
       refs,
-    });
+    }));
   }
 
   async function syncToSupabase() {

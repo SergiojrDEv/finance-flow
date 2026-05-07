@@ -43,6 +43,7 @@ Evoluir o Finance Flow sem repetir o erro de acoplar arquitetura nova diretament
 - Hidratacao de snapshot Supabase legacy extraida para helper de infraestrutura testavel.
 - Decisoes de ciclo de sincronizacao com a nuvem extraidas para modulo puro de aplicacao.
 - Montagem de payload legacy de sincronizacao extraida para helper de infraestrutura testavel.
+- Montagem de payload V2 de catalogo/transacoes extraida para helper de infraestrutura testavel.
 
 ## Ainda falta
 
