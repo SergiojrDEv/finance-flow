@@ -62,6 +62,31 @@ export function createSupabaseModule(deps) {
     });
   }
 
+  function applyConnectionSetupFailure(plan) {
+    renderCloudStatus(plan.statusText);
+    deps.renderAuthGate(plan.authGateMessage);
+    return false;
+  }
+
+  async function setupSupabaseClient() {
+    const runtimePlan = planCloudConnectionSetup({
+      hasRuntimeFactory: Boolean(window.supabase),
+      hasConfig: true,
+    });
+    if (!runtimePlan.ok) return applyConnectionSetupFailure(runtimePlan);
+
+    const config = await loadSupabaseConfig();
+    const configPlan = planCloudConnectionSetup({
+      hasRuntimeFactory: true,
+      hasConfig: Boolean(config?.url && config?.anonKey),
+    });
+    if (!configPlan.ok) return applyConnectionSetupFailure(configPlan);
+
+    state.supabaseClient = window.supabase.createClient(config.url, config.anonKey);
+    state.cloudReady = true;
+    return true;
+  }
+
   function requireCloudUser() {
     const requirement = planCloudUserRequirement({
       hasClient: Boolean(state.supabaseClient),
@@ -240,29 +265,8 @@ export function createSupabaseModule(deps) {
   async function initSupabase() {
     if (state.supabaseClient) return true;
 
-    const runtimePlan = planCloudConnectionSetup({
-      hasRuntimeFactory: Boolean(window.supabase),
-      hasConfig: true,
-    });
-    if (!runtimePlan.ok) {
-      renderCloudStatus(runtimePlan.statusText);
-      deps.renderAuthGate(runtimePlan.authGateMessage);
-      return false;
-    }
-
-    const config = await loadSupabaseConfig();
-    const configPlan = planCloudConnectionSetup({
-      hasRuntimeFactory: true,
-      hasConfig: Boolean(config?.url && config?.anonKey),
-    });
-    if (!configPlan.ok) {
-      renderCloudStatus(configPlan.statusText);
-      deps.renderAuthGate(configPlan.authGateMessage);
-      return false;
-    }
-
-    state.supabaseClient = window.supabase.createClient(config.url, config.anonKey);
-    state.cloudReady = true;
+    const clientReady = await setupSupabaseClient();
+    if (!clientReady) return false;
 
     const hashPlan = planAuthHashState({ authHashType: getAuthHashType() });
     state.isPasswordRecovery = hashPlan.isPasswordRecovery;
