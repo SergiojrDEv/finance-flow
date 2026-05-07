@@ -45,6 +45,7 @@ Evoluir o Finance Flow sem repetir o erro de acoplar arquitetura nova diretament
 - Montagem de payload legacy de sincronizacao extraida para helper de infraestrutura testavel.
 - Montagem de payload V2 de catalogo/transacoes extraida para helper de infraestrutura testavel.
 - Orquestracao de envio para nuvem extraida para servico de infraestrutura testavel.
+- Orquestracao de leitura da nuvem extraida para servico de infraestrutura testavel.
 
 ## Ainda falta
 

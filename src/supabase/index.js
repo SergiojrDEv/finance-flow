@@ -9,14 +9,7 @@ import {
   loadSupabaseConfig as resolveSupabaseConfig,
 } from "../infrastructure/config/SupabaseConfigProvider.js";
 import { createSyncServices } from "../infrastructure/composition/createSyncServices.js";
-import {
-  hydrateCloudSnapshot,
-  shouldSkipSilentCloudSnapshot,
-} from "../infrastructure/sync/CloudSnapshotHydrator.js";
-import {
-  hydrateLegacyCloudSnapshot,
-  shouldSkipSilentLegacySnapshot,
-} from "../infrastructure/sync/LegacyCloudSnapshotHydrator.js";
+import { pullCloudSync } from "../infrastructure/sync/CloudPullSyncService.js";
 import { pushCloudSync } from "../infrastructure/sync/CloudPushSyncService.js";
 import {
   mapLegacyRowToLocalTransaction,
@@ -108,47 +101,6 @@ export function createSupabaseModule(deps) {
     return services.schemaRepository.hasTransactionsV2();
   }
 
-  async function pullFromSupabaseV2(options = {}) {
-    const client = state.supabaseClient;
-    const userId = state.currentUser.id;
-
-    if (options.silent && hasUnsyncedLocalChanges()) {
-      renderCloudStatus("Salvando pendencias...");
-      deps.scheduleAutoSync?.();
-      return;
-    }
-
-    let snapshot;
-    try {
-      const services = createSyncServices({ client });
-      snapshot = await services.cloudSnapshotRepository.fetchV2({ userId });
-    } catch (error) {
-      return handleCloudError(error);
-    }
-
-    if (shouldSkipSilentCloudSnapshot({
-      snapshot,
-      hasLocalTransactions: Boolean(state.transactions.length),
-      silent: options.silent,
-    })) {
-      renderCloudStatus();
-      return;
-    }
-
-    const hydrated = hydrateCloudSnapshot(snapshot);
-    state.catalog = hydrated.catalog;
-    state.dataMode = hydrated.dataMode;
-    deps.syncSettingsFromCatalog();
-    state.transactions = hydrated.transactions;
-    deps.save();
-    deps.updateCategoryOptions();
-    deps.updateAccountOptions();
-    deps.updateCreditCardOptions();
-    deps.renderAll();
-    renderCloudStatus();
-    if (!options.silent) deps.notify("Dados baixados do Supabase.");
-  }
-
   async function syncToSupabase() {
     const startPlan = planCloudSyncStart({
       hasUser: Boolean(state.currentUser),
@@ -218,35 +170,35 @@ export function createSupabaseModule(deps) {
       handleCloudError(error);
       return false;
     });
-    if (supportsV2) {
-      await pullFromSupabaseV2(options);
-      return;
-    }
 
-    const userId = state.currentUser.id;
-    let snapshot;
+    let result;
     try {
       const services = createSyncServices({ client: state.supabaseClient });
-      snapshot = await services.legacySyncRepository.fetch({ userId });
+      result = await pullCloudSync({
+        services,
+        userId: state.currentUser.id,
+        supportsV2,
+        silent: options.silent,
+        hasLocalTransactions: Boolean(state.transactions.length),
+        currentCatalog: state.catalog,
+        mergeSettings: deps.mergeSettings,
+        hydrateCatalog: deps.hydrateCatalog,
+      });
     } catch (error) {
       return handleCloudError(error);
     }
-    if (shouldSkipSilentLegacySnapshot({
-      snapshot,
-      hasLocalTransactions: Boolean(state.transactions.length),
-      silent: options.silent,
-    })) {
+    if (result.skipped) {
       renderCloudStatus();
       return;
     }
 
-    const hydrated = hydrateLegacyCloudSnapshot(snapshot, {
-      currentCatalog: state.catalog,
-      mergeSettings: deps.mergeSettings,
-      hydrateCatalog: deps.hydrateCatalog,
-    });
+    const hydrated = result.hydrated;
     state.transactions = hydrated.transactions;
-    if (hydrated.hasSettings) {
+    if (result.shouldSyncSettingsFromCatalog) {
+      state.catalog = hydrated.catalog;
+      state.dataMode = hydrated.dataMode;
+      deps.syncSettingsFromCatalog();
+    } else if (hydrated.hasSettings) {
       state.settings = hydrated.settings;
       state.catalog = hydrated.catalog;
       state.dataMode = hydrated.dataMode;
