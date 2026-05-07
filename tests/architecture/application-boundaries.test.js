@@ -28,19 +28,19 @@ const allowedManualResultFiles = new Set([
   "src/application/shared/result.js",
 ]);
 
-async function listJavaScriptFiles(dir) {
+async function listApplicationSourceFiles(dir) {
   const entries = await readdir(dir, { withFileTypes: true });
   const files = await Promise.all(entries.map(async (entry) => {
     const fullPath = path.join(dir, entry.name);
-    if (entry.isDirectory()) return listJavaScriptFiles(fullPath);
-    if (entry.isFile() && entry.name.endsWith(".js")) return [fullPath];
+    if (entry.isDirectory()) return listApplicationSourceFiles(fullPath);
+    if (entry.isFile() && [".js", ".ts"].includes(path.extname(entry.name))) return [fullPath];
     return [];
   }));
   return files.flat();
 }
 
 test("src/application nao depende de DOM, Supabase, storage concreto ou UI", async () => {
-  const files = await listJavaScriptFiles(applicationDir);
+  const files = await listApplicationSourceFiles(applicationDir);
   const violations = [];
 
   for (const filePath of files) {
@@ -67,7 +67,7 @@ test("src/application nao depende de DOM, Supabase, storage concreto ou UI", asy
 });
 
 test("src/application usa helper compartilhado para resultados ok/fail", async () => {
-  const files = await listJavaScriptFiles(applicationDir);
+  const files = await listApplicationSourceFiles(applicationDir);
   const violations = [];
 
   for (const filePath of files) {

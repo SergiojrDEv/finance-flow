@@ -13,8 +13,11 @@
   },
   "include": [
     "src/application/**/*.js",
+    "src/application/**/*.ts",
     "src/domain/**/*.js",
-    "src/infrastructure/**/*.js"
+    "src/domain/**/*.ts",
+    "src/infrastructure/**/*.js",
+    "src/infrastructure/**/*.ts"
   ],
   "exclude": [
     "src/app.js",
