@@ -55,6 +55,7 @@ Evoluir o Finance Flow sem repetir o erro de acoplar arquitetura nova diretament
 - Decisao de estado de sessao de autenticacao extraida para helper de aplicacao testavel.
 - Decisao de disponibilidade inicial da conexao com a nuvem extraida para helper de aplicacao testavel.
 - Decisao de prontidao da conexao com a nuvem extraida para helper de aplicacao testavel.
+- Decisao de inicio de leitura da nuvem extraida para helper de aplicacao testavel.
 
 ## Ainda falta
 

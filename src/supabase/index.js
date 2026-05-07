@@ -17,6 +17,10 @@ import {
 } from "../application/sync/planCloudSyncLifecycle.js";
 import { planCloudConnectionSetup } from "../application/sync/planCloudConnectionSetup.js";
 import {
+  planCloudPullAfterConfirmation,
+  planCloudPullStart,
+} from "../application/sync/planCloudPull.js";
+import {
   planCloudReadiness,
   planCloudReadinessAfterInit,
 } from "../application/sync/planCloudReadiness.js";
@@ -156,14 +160,22 @@ export function createSupabaseModule(deps) {
 
   async function pullFromSupabase(options = {}) {
     if (!requireCloudUser()) return;
-    if (!options.silent && state.transactions.length && !confirm("Substituir os dados locais pelos dados do Supabase?")) return;
-    if (!options.silent) renderCloudStatus("Baixando...");
-
-    if (options.silent && hasUnsyncedLocalChanges()) {
-      renderCloudStatus("Salvando pendencias...");
+    let pullPlan = planCloudPullStart({
+      silent: Boolean(options.silent),
+      hasLocalTransactions: Boolean(state.transactions.length),
+      hasUnsyncedLocalChanges: hasUnsyncedLocalChanges(),
+    });
+    if (pullPlan.shouldAskConfirmation) {
+      pullPlan = planCloudPullAfterConfirmation({
+        confirmed: confirm("Substituir os dados locais pelos dados do Supabase?"),
+      });
+    }
+    if (pullPlan.shouldRenderStatus) renderCloudStatus(pullPlan.statusText);
+    if (pullPlan.shouldScheduleAutoSync) {
       deps.scheduleAutoSync?.();
       return;
     }
+    if (!pullPlan.shouldContinue) return;
 
     const supportsV2 = await hasV2Schema().catch((error) => {
       handleCloudError(error);
