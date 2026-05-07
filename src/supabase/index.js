@@ -10,6 +10,7 @@ import {
   planCloudSyncCompletion,
   planCloudSyncStart,
 } from "../application/sync/planCloudSyncLifecycle.js";
+import { planCloudUserRequirement } from "../application/sync/planCloudUserRequirement.js";
 import {
   fetchSupabaseConfig,
   loadSupabaseConfig as resolveSupabaseConfig,
@@ -46,15 +47,17 @@ export function createSupabaseModule(deps) {
   }
 
   function requireCloudUser() {
-    if (!state.supabaseClient) {
-      deps.notify("Conexao com Supabase indisponivel. Atualize a pagina.");
-      return false;
+    const requirement = planCloudUserRequirement({
+      hasClient: Boolean(state.supabaseClient),
+      hasUser: Boolean(state.currentUser),
+    });
+    if (!requirement.ok) {
+      const message = requirement.errors?.client
+        ? "Conexao com Supabase indisponivel. Atualize a pagina."
+        : "Entre com sua conta antes de sincronizar.";
+      deps.notify(message);
     }
-    if (!state.currentUser) {
-      deps.notify("Entre com sua conta antes de sincronizar.");
-      return false;
-    }
-    return true;
+    return requirement.ok;
   }
 
   function hasUnsyncedLocalChanges() {
