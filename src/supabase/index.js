@@ -17,11 +17,7 @@ import {
   hydrateLegacyCloudSnapshot,
   shouldSkipSilentLegacySnapshot,
 } from "../infrastructure/sync/LegacyCloudSnapshotHydrator.js";
-import { buildLegacySyncPayload } from "../infrastructure/sync/LegacySyncPayload.js";
-import {
-  buildV2CatalogSyncPayload,
-  buildV2TransactionSyncPayload,
-} from "../infrastructure/sync/V2SyncPayload.js";
+import { pushCloudSync } from "../infrastructure/sync/CloudPushSyncService.js";
 import {
   mapLegacyRowToLocalTransaction,
   mapLocalTransactionToLegacyRow,
@@ -153,35 +149,6 @@ export function createSupabaseModule(deps) {
     if (!options.silent) deps.notify("Dados baixados do Supabase.");
   }
 
-  async function syncSettingsToV2(userId) {
-    const client = state.supabaseClient;
-    const payload = buildV2CatalogSyncPayload({
-      userId,
-      catalog: state.catalog,
-      settings: state.settings,
-      transactions: state.transactions,
-      hydrateCatalog: deps.hydrateCatalog,
-    });
-    state.catalog = payload.catalog;
-
-    const services = createSyncServices({
-      client,
-    });
-    return services.catalogV2SyncRepository.sync(payload);
-  }
-
-  async function syncTransactionsToV2(userId, refs) {
-    const client = state.supabaseClient;
-    const services = createSyncServices({
-      client,
-    });
-    await services.transactionV2SyncRepository.sync(buildV2TransactionSyncPayload({
-      userId,
-      transactions: state.transactions,
-      refs,
-    }));
-  }
-
   async function syncToSupabase() {
     const startPlan = planCloudSyncStart({
       hasUser: Boolean(state.currentUser),
@@ -204,25 +171,20 @@ export function createSupabaseModule(deps) {
       return false;
     });
 
-    if (supportsV2) {
-      try {
-        deps.syncSettingsFromCatalog();
-        const refs = await syncSettingsToV2(userId);
-        await syncTransactionsToV2(userId, refs);
-      } catch (error) {
-        handleCloudError(error);
-        return;
-      }
-    }
-
     try {
       const services = createSyncServices({ client });
-      await services.legacySyncRepository.sync(buildLegacySyncPayload({
+      if (supportsV2) deps.syncSettingsFromCatalog();
+      const result = await pushCloudSync({
+        services,
         userId,
+        supportsV2,
+        catalog: state.catalog,
         transactions: state.transactions,
         settings: state.settings,
         parseLocalDate: deps.parseLocalDate,
-      }));
+        hydrateCatalog: deps.hydrateCatalog,
+      });
+      if (result.catalog) state.catalog = result.catalog;
     } catch (error) {
       handleCloudError(error);
       return;
