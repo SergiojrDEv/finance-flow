@@ -46,6 +46,7 @@ Evoluir o Finance Flow sem repetir o erro de acoplar arquitetura nova diretament
 - Montagem de payload V2 de catalogo/transacoes extraida para helper de infraestrutura testavel.
 - Orquestracao de envio para nuvem extraida para servico de infraestrutura testavel.
 - Orquestracao de leitura da nuvem extraida para servico de infraestrutura testavel.
+- Adaptadores legacy obsoletos removidos da fachada Supabase.
 
 ## Ainda falta
 

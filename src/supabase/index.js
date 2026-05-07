@@ -11,11 +11,6 @@ import {
 import { createSyncServices } from "../infrastructure/composition/createSyncServices.js";
 import { pullCloudSync } from "../infrastructure/sync/CloudPullSyncService.js";
 import { pushCloudSync } from "../infrastructure/sync/CloudPushSyncService.js";
-import {
-  mapLegacyRowToLocalTransaction,
-  mapLocalTransactionToLegacyRow,
-  normalizeRemoteDate as normalizeLegacyRemoteDate,
-} from "../infrastructure/sync/LegacyTransactionMapper.js";
 
 export function createSupabaseModule(deps) {
   function getAuthHashType() {
@@ -73,21 +68,6 @@ export function createSupabaseModule(deps) {
       isEmailConfirmed: deps.isEmailConfirmed,
     });
     await services.userProfileRepository.saveFromMetadata(user);
-  }
-
-  function toRemoteTransaction(item) {
-    return mapLocalTransactionToLegacyRow(item, {
-      userId: state.currentUser.id,
-      parseLocalDate: deps.parseLocalDate,
-    });
-  }
-
-  function fromRemoteTransaction(row) {
-    return mapLegacyRowToLocalTransaction(row);
-  }
-
-  function normalizeRemoteDate(value, year, month) {
-    return normalizeLegacyRemoteDate(value, year, month);
   }
 
   function handleCloudError(error) {
@@ -307,9 +287,6 @@ export function createSupabaseModule(deps) {
     renderCloudStatus,
     requireCloudUser,
     saveUserProfileFromMetadata,
-    toRemoteTransaction,
-    fromRemoteTransaction,
-    normalizeRemoteDate,
     handleCloudError,
     syncToSupabase,
     pullFromSupabase,
