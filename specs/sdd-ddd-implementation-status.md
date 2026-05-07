@@ -58,6 +58,7 @@ Evoluir o Finance Flow sem repetir o erro de acoplar arquitetura nova diretament
 - Decisao de inicio de leitura da nuvem extraida para helper de aplicacao testavel.
 - Decisao de conclusao de leitura da nuvem extraida para helper de aplicacao testavel.
 - Decisao de tratamento de erro da nuvem extraida para helper de aplicacao testavel.
+- Decisao de efeitos apos envio para nuvem extraida para helper de aplicacao testavel.
 
 ## Ainda falta
 

@@ -27,6 +27,14 @@ export function planCloudSyncCompletion({ pendingCloudSync = false, now = () => 
   };
 }
 
+export function planCloudSyncCompletionEffects({ shouldRunAgain = false } = {}) {
+  return {
+    shouldSave: true,
+    shouldRenderStatus: true,
+    shouldScheduleRunAgain: Boolean(shouldRunAgain),
+  };
+}
+
 export function applyCloudSyncStart(currentState, startPlan) {
   if (!currentState) throw new Error("currentState e obrigatorio.");
   if (!startPlan) throw new Error("startPlan e obrigatorio.");

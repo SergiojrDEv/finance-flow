@@ -13,6 +13,7 @@ import {
   applyCloudSyncStart,
   hasUnsyncedLocalChanges as detectUnsyncedLocalChanges,
   planCloudSyncCompletion,
+  planCloudSyncCompletionEffects,
   planCloudSyncStart,
 } from "../application/sync/planCloudSyncLifecycle.js";
 import { planCloudConnectionSetup } from "../application/sync/planCloudConnectionSetup.js";
@@ -154,9 +155,12 @@ export function createSupabaseModule(deps) {
       pendingCloudSync: state.pendingCloudSync,
     });
     const completionResult = applyCloudSyncCompletion(state, completionPlan);
-    deps.save();
-    renderCloudStatus();
-    if (completionResult.shouldRunAgain) {
+    const completionEffects = planCloudSyncCompletionEffects({
+      shouldRunAgain: completionResult.shouldRunAgain,
+    });
+    if (completionEffects.shouldSave) deps.save();
+    if (completionEffects.shouldRenderStatus) renderCloudStatus();
+    if (completionEffects.shouldScheduleRunAgain) {
       window.setTimeout(() => syncToSupabase(), 0);
     }
   }

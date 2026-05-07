@@ -5,6 +5,7 @@ import {
   applyCloudSyncStart,
   hasUnsyncedLocalChanges,
   planCloudSyncCompletion,
+  planCloudSyncCompletionEffects,
   planCloudSyncStart,
 } from "../../../src/application/sync/planCloudSyncLifecycle.js";
 
@@ -55,6 +56,19 @@ test("planeja conclusao de sync e reexecucao pendente", () => {
     pendingCloudSync: false,
     lastCloudSyncAt: "2026-04-24T12:00:00.000Z",
     shouldRunAgain: true,
+  });
+});
+
+test("planeja efeitos apos conclusao de sync", () => {
+  assert.deepEqual(planCloudSyncCompletionEffects({ shouldRunAgain: false }), {
+    shouldSave: true,
+    shouldRenderStatus: true,
+    shouldScheduleRunAgain: false,
+  });
+  assert.deepEqual(planCloudSyncCompletionEffects({ shouldRunAgain: true }), {
+    shouldSave: true,
+    shouldRenderStatus: true,
+    shouldScheduleRunAgain: true,
   });
 });
 
