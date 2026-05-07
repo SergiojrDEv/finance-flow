@@ -16,6 +16,7 @@ import {
   planCloudSyncStart,
 } from "../application/sync/planCloudSyncLifecycle.js";
 import { planCloudConnectionSetup } from "../application/sync/planCloudConnectionSetup.js";
+import { planCloudError } from "../application/sync/planCloudError.js";
 import {
   planCloudPullAfterConfirmation,
   planCloudPullCompletion,
@@ -91,9 +92,10 @@ export function createSupabaseModule(deps) {
   }
 
   function handleCloudError(error) {
-    state.isSyncing = false;
-    renderCloudStatus();
-    deps.notify(error.message || "Erro ao sincronizar Supabase.");
+    const errorPlan = planCloudError({ message: error?.message });
+    if (errorPlan.shouldStopSyncing) state.isSyncing = false;
+    if (errorPlan.shouldRenderStatus) renderCloudStatus();
+    if (errorPlan.shouldNotify) deps.notify(errorPlan.message || "Erro ao sincronizar Supabase.");
   }
 
   async function hasV2Schema() {
