@@ -116,6 +116,19 @@ export function createSupabaseModule(deps) {
     if (plan.shouldPull) await pullFromSupabase({ silent: true });
   }
 
+  function listenToAuthStateChanges() {
+    state.supabaseClient.auth.onAuthStateChange(async (event, session) => {
+      const plan = planAuthStateChange({
+        event,
+        user: session?.user,
+        isPasswordRecovery: state.isPasswordRecovery,
+        isEmailConfirmed: deps.isEmailConfirmed,
+      });
+      if (plan.action === "ignore") return;
+      await applyAuthSessionPlan(plan);
+    });
+  }
+
   async function syncToSupabase() {
     const startPlan = planCloudSyncStart({
       hasUser: Boolean(state.currentUser),
@@ -267,16 +280,7 @@ export function createSupabaseModule(deps) {
     await applyAuthSessionPlan(initialPlan);
     if (initialPlan.action === "password-recovery") return true;
 
-    state.supabaseClient.auth.onAuthStateChange(async (event, session) => {
-      const plan = planAuthStateChange({
-        event,
-        user: session?.user,
-        isPasswordRecovery: state.isPasswordRecovery,
-        isEmailConfirmed: deps.isEmailConfirmed,
-      });
-      if (plan.action === "ignore") return;
-      await applyAuthSessionPlan(plan);
-    });
+    listenToAuthStateChanges();
     return true;
   }
 
