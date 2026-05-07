@@ -1,5 +1,8 @@
 import { SUPABASE_FALLBACK_CONFIG, state } from "../core/state.js";
 import {
+  applyCloudPullResult,
+} from "../application/sync/applyCloudPullResult.js";
+import {
   hasUnsyncedLocalChanges as detectUnsyncedLocalChanges,
   planCloudSyncCompletion,
   planCloudSyncStart,
@@ -167,22 +170,14 @@ export function createSupabaseModule(deps) {
     } catch (error) {
       return handleCloudError(error);
     }
-    if (result.skipped) {
+    const applied = applyCloudPullResult(state, result, {
+      syncSettingsFromCatalog: deps.syncSettingsFromCatalog,
+    });
+    if (applied.skipped) {
       renderCloudStatus();
       return;
     }
 
-    const hydrated = result.hydrated;
-    state.transactions = hydrated.transactions;
-    if (result.shouldSyncSettingsFromCatalog) {
-      state.catalog = hydrated.catalog;
-      state.dataMode = hydrated.dataMode;
-      deps.syncSettingsFromCatalog();
-    } else if (hydrated.hasSettings) {
-      state.settings = hydrated.settings;
-      state.catalog = hydrated.catalog;
-      state.dataMode = hydrated.dataMode;
-    }
     deps.save();
     deps.updateCategoryOptions();
     deps.updateAccountOptions();
