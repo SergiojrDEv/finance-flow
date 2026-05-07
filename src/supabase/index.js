@@ -1,5 +1,9 @@
 import { SUPABASE_FALLBACK_CONFIG, state } from "../core/state.js";
-import { parseAuthHashType } from "../application/auth/AuthSessionService.js";
+import {
+  parseAuthHashType,
+  planAuthStateChange,
+  planInitialAuthSession,
+} from "../application/auth/AuthSessionService.js";
 import {
   applyCloudPullResult,
 } from "../application/sync/applyCloudPullResult.js";
@@ -85,6 +89,17 @@ export function createSupabaseModule(deps) {
   async function hasV2Schema() {
     const services = createSyncServices({ client: state.supabaseClient });
     return services.schemaRepository.hasTransactionsV2();
+  }
+
+  async function applyAuthSessionPlan(plan) {
+    if (plan.shouldSignOut) await state.supabaseClient.auth.signOut();
+    state.isPasswordRecovery = plan.isPasswordRecovery;
+    state.currentUser = plan.currentUser;
+    if (plan.view) deps.showAuthView(plan.view);
+    deps.renderAuthGate(plan.authGateMessage || undefined);
+    renderCloudStatus();
+    if (plan.shouldSaveProfile) await saveUserProfileFromMetadata(state.currentUser);
+    if (plan.shouldPull) await pullFromSupabase({ silent: true });
   }
 
   async function syncToSupabase() {
@@ -209,55 +224,23 @@ export function createSupabaseModule(deps) {
     }
 
     const { data } = await state.supabaseClient.auth.getSession();
-    if (data.session?.user && !deps.isEmailConfirmed(data.session.user)) {
-      await state.supabaseClient.auth.signOut();
-      state.currentUser = null;
-      deps.renderAuthGate("Confirme seu e-mail antes de entrar.");
-      renderCloudStatus();
-    } else {
-      state.currentUser = data.session?.user || null;
-      if (state.isPasswordRecovery) {
-        state.currentUser = null;
-        deps.renderAuthGate("Defina sua nova senha para continuar.");
-        renderCloudStatus();
-        return true;
-      }
-      deps.renderAuthGate();
-      renderCloudStatus();
-      if (state.currentUser) {
-        await saveUserProfileFromMetadata(state.currentUser);
-        await pullFromSupabase({ silent: true });
-      }
-    }
+    const initialPlan = planInitialAuthSession({
+      user: data.session?.user,
+      isPasswordRecovery: state.isPasswordRecovery,
+      isEmailConfirmed: deps.isEmailConfirmed,
+    });
+    await applyAuthSessionPlan(initialPlan);
+    if (initialPlan.action === "password-recovery") return true;
 
     state.supabaseClient.auth.onAuthStateChange(async (event, session) => {
-      if (event === "INITIAL_SESSION") return;
-      if (event === "PASSWORD_RECOVERY") {
-        state.isPasswordRecovery = true;
-        state.currentUser = null;
-        deps.showAuthView("update-password");
-        deps.renderAuthGate("Defina sua nova senha para continuar.");
-        renderCloudStatus();
-        return;
-      }
-      if (session?.user && !deps.isEmailConfirmed(session.user)) {
-        await state.supabaseClient.auth.signOut();
-        state.currentUser = null;
-        deps.renderAuthGate("Confirme seu e-mail antes de entrar.");
-        renderCloudStatus();
-        return;
-      }
-      if (state.isPasswordRecovery) {
-        state.currentUser = null;
-        deps.showAuthView("update-password");
-        deps.renderAuthGate("Defina sua nova senha para continuar.");
-        renderCloudStatus();
-        return;
-      }
-      state.currentUser = session?.user || null;
-      deps.renderAuthGate();
-      renderCloudStatus();
-      if (state.currentUser) await pullFromSupabase({ silent: true });
+      const plan = planAuthStateChange({
+        event,
+        user: session?.user,
+        isPasswordRecovery: state.isPasswordRecovery,
+        isEmailConfirmed: deps.isEmailConfirmed,
+      });
+      if (plan.action === "ignore") return;
+      await applyAuthSessionPlan(plan);
     });
     return true;
   }

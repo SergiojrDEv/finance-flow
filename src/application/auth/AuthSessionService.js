@@ -15,6 +15,89 @@ export function parseAuthHashType(hashValue = "") {
   return params.get("type") || "";
 }
 
+const PASSWORD_RECOVERY_MESSAGE = "Defina sua nova senha para continuar.";
+const EMAIL_UNCONFIRMED_MESSAGE = "Confirme seu e-mail antes de entrar.";
+
+function isConfirmedBy(checkEmailConfirmed, user) {
+  if (!user) return false;
+  if (typeof checkEmailConfirmed === "function") return checkEmailConfirmed(user);
+  return isEmailConfirmed(user);
+}
+
+function buildActiveSessionPlan(user, isPasswordRecovery = false) {
+  return {
+    action: "active-session",
+    authGateMessage: "",
+    currentUser: user || null,
+    isPasswordRecovery: Boolean(isPasswordRecovery),
+    shouldPull: Boolean(user),
+    shouldSaveProfile: Boolean(user),
+    shouldSignOut: false,
+    view: "",
+  };
+}
+
+function buildPasswordRecoveryPlan() {
+  return {
+    action: "password-recovery",
+    authGateMessage: PASSWORD_RECOVERY_MESSAGE,
+    currentUser: null,
+    isPasswordRecovery: true,
+    shouldPull: false,
+    shouldSaveProfile: false,
+    shouldSignOut: false,
+    view: "update-password",
+  };
+}
+
+function buildUnconfirmedEmailPlan() {
+  return {
+    action: "sign-out-unconfirmed",
+    authGateMessage: EMAIL_UNCONFIRMED_MESSAGE,
+    currentUser: null,
+    isPasswordRecovery: false,
+    shouldPull: false,
+    shouldSaveProfile: false,
+    shouldSignOut: true,
+    view: "",
+  };
+}
+
+export function planInitialAuthSession({
+  user,
+  isPasswordRecovery = false,
+  isEmailConfirmed: checkEmailConfirmed,
+} = {}) {
+  if (user && !isConfirmedBy(checkEmailConfirmed, user)) return buildUnconfirmedEmailPlan();
+  if (isPasswordRecovery) return buildPasswordRecoveryPlan();
+  return buildActiveSessionPlan(user, isPasswordRecovery);
+}
+
+export function planAuthStateChange({
+  event,
+  user,
+  isPasswordRecovery = false,
+  isEmailConfirmed: checkEmailConfirmed,
+} = {}) {
+  if (event === "INITIAL_SESSION") {
+    return {
+      action: "ignore",
+      authGateMessage: "",
+      currentUser: null,
+      isPasswordRecovery: Boolean(isPasswordRecovery),
+      shouldPull: false,
+      shouldSaveProfile: false,
+      shouldSignOut: false,
+      view: "",
+    };
+  }
+
+  if (event === "PASSWORD_RECOVERY") return buildPasswordRecoveryPlan();
+  if (user && !isConfirmedBy(checkEmailConfirmed, user)) return buildUnconfirmedEmailPlan();
+  if (isPasswordRecovery) return buildPasswordRecoveryPlan();
+  return buildActiveSessionPlan(user, isPasswordRecovery);
+}
+
 export class AuthSessionService {
   constructor({ authClient, today } = {}) {
     if (!authClient) throw new Error("authClient e obrigatorio.");
