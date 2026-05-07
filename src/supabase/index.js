@@ -16,6 +16,10 @@ import {
   planCloudSyncStart,
 } from "../application/sync/planCloudSyncLifecycle.js";
 import { planCloudConnectionSetup } from "../application/sync/planCloudConnectionSetup.js";
+import {
+  planCloudReadiness,
+  planCloudReadinessAfterInit,
+} from "../application/sync/planCloudReadiness.js";
 import { planCloudUserRequirement } from "../application/sync/planCloudUserRequirement.js";
 import {
   fetchSupabaseConfig,
@@ -255,10 +259,19 @@ export function createSupabaseModule(deps) {
   }
 
   async function ensureSupabaseReady() {
-    if (state.supabaseClient) return true;
-    if (!state.supabaseInitPromise) state.supabaseInitPromise = initSupabase();
+    const readinessPlan = planCloudReadiness({
+      hasClient: Boolean(state.supabaseClient),
+      hasInitPromise: Boolean(state.supabaseInitPromise),
+    });
+    if (!readinessPlan.value.shouldWaitInit) return true;
+    if (readinessPlan.value.shouldCreateInitPromise) state.supabaseInitPromise = initSupabase();
+
     const isReady = await state.supabaseInitPromise;
-    if (!isReady || !state.supabaseClient) {
+    const afterInitPlan = planCloudReadinessAfterInit({
+      isReady,
+      hasClient: Boolean(state.supabaseClient),
+    });
+    if (!afterInitPlan.ok) {
       deps.notify("Conexao com Supabase indisponivel. Atualize a pagina.");
       return false;
     }
