@@ -18,6 +18,7 @@ import {
   hydrateLegacyCloudSnapshot,
   shouldSkipSilentLegacySnapshot,
 } from "../infrastructure/sync/LegacyCloudSnapshotHydrator.js";
+import { buildLegacySyncPayload } from "../infrastructure/sync/LegacySyncPayload.js";
 import {
   mapLegacyRowToLocalTransaction,
   mapLocalTransactionToLegacyRow,
@@ -213,12 +214,12 @@ export function createSupabaseModule(deps) {
 
     try {
       const services = createSyncServices({ client });
-      await services.legacySyncRepository.sync({
+      await services.legacySyncRepository.sync(buildLegacySyncPayload({
         userId,
-        rows: state.transactions.map(toRemoteTransaction),
+        transactions: state.transactions,
         settings: state.settings,
-        localIds: state.transactions.map((item) => item.id),
-      });
+        parseLocalDate: deps.parseLocalDate,
+      }));
     } catch (error) {
       handleCloudError(error);
       return;
