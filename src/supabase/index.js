@@ -154,6 +154,17 @@ export function createSupabaseModule(deps) {
     });
   }
 
+  async function applyInitialAuthSession() {
+    const { data } = await state.supabaseClient.auth.getSession();
+    const initialPlan = planInitialAuthSession({
+      user: data.session?.user,
+      isPasswordRecovery: state.isPasswordRecovery,
+      isEmailConfirmed: deps.isEmailConfirmed,
+    });
+    await applyAuthSessionPlan(initialPlan);
+    return initialPlan;
+  }
+
   async function syncToSupabase() {
     const startPlan = planCloudSyncStart({
       hasUser: Boolean(state.currentUser),
@@ -275,13 +286,7 @@ export function createSupabaseModule(deps) {
       deps.renderAuthGate(hashPlan.authGateMessage || undefined);
     }
 
-    const { data } = await state.supabaseClient.auth.getSession();
-    const initialPlan = planInitialAuthSession({
-      user: data.session?.user,
-      isPasswordRecovery: state.isPasswordRecovery,
-      isEmailConfirmed: deps.isEmailConfirmed,
-    });
-    await applyAuthSessionPlan(initialPlan);
+    const initialPlan = await applyInitialAuthSession();
     if (initialPlan.action === "password-recovery") return true;
 
     listenToAuthStateChanges();
