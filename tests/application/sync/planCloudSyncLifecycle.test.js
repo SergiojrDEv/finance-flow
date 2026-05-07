@@ -1,6 +1,8 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 import {
+  applyCloudSyncCompletion,
+  applyCloudSyncStart,
   hasUnsyncedLocalChanges,
   planCloudSyncCompletion,
   planCloudSyncStart,
@@ -54,4 +56,44 @@ test("planeja conclusao de sync e reexecucao pendente", () => {
     lastCloudSyncAt: "2026-04-24T12:00:00.000Z",
     shouldRunAgain: true,
   });
+});
+
+test("aplica inicio de sync no estado", () => {
+  const state = { isSyncing: false, pendingCloudSync: true };
+  const result = applyCloudSyncStart(state, { shouldStart: true, shouldMarkPending: false });
+
+  assert.deepEqual(result, { started: true, pending: false });
+  assert.equal(state.isSyncing, true);
+  assert.equal(state.pendingCloudSync, false);
+});
+
+test("marca sync pendente quando ja existe sincronizacao em andamento", () => {
+  const state = { isSyncing: true, pendingCloudSync: false };
+  const result = applyCloudSyncStart(state, { shouldStart: false, shouldMarkPending: true });
+
+  assert.deepEqual(result, { started: false, pending: true });
+  assert.equal(state.isSyncing, true);
+  assert.equal(state.pendingCloudSync, true);
+});
+
+test("aplica conclusao de sync no estado", () => {
+  const state = { isSyncing: true, pendingCloudSync: true, lastCloudSyncAt: null };
+  const result = applyCloudSyncCompletion(state, {
+    pendingCloudSync: false,
+    lastCloudSyncAt: "2026-04-24T12:00:00.000Z",
+    shouldRunAgain: true,
+  });
+
+  assert.equal(result.shouldRunAgain, true);
+  assert.equal(result.state, state);
+  assert.equal(state.isSyncing, false);
+  assert.equal(state.pendingCloudSync, false);
+  assert.equal(state.lastCloudSyncAt, "2026-04-24T12:00:00.000Z");
+});
+
+test("exige argumentos para aplicar ciclo de sync", () => {
+  assert.throws(() => applyCloudSyncStart(null, {}), /currentState e obrigatorio/);
+  assert.throws(() => applyCloudSyncStart({}, null), /startPlan e obrigatorio/);
+  assert.throws(() => applyCloudSyncCompletion(null, {}), /currentState e obrigatorio/);
+  assert.throws(() => applyCloudSyncCompletion({}, null), /completionPlan e obrigatorio/);
 });

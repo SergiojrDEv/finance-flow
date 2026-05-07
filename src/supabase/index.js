@@ -3,6 +3,8 @@ import {
   applyCloudPullResult,
 } from "../application/sync/applyCloudPullResult.js";
 import {
+  applyCloudSyncCompletion,
+  applyCloudSyncStart,
   hasUnsyncedLocalChanges as detectUnsyncedLocalChanges,
   planCloudSyncCompletion,
   planCloudSyncStart,
@@ -90,13 +92,8 @@ export function createSupabaseModule(deps) {
       hasClient: Boolean(state.supabaseClient),
       isSyncing: state.isSyncing,
     });
-    if (startPlan.shouldMarkPending) {
-      state.pendingCloudSync = true;
-      return;
-    }
-    if (!startPlan.shouldStart) return;
-    state.isSyncing = true;
-    state.pendingCloudSync = false;
+    const startResult = applyCloudSyncStart(state, startPlan);
+    if (!startResult.started) return;
     renderCloudStatus("Salvando...");
 
     const client = state.supabaseClient;
@@ -125,15 +122,13 @@ export function createSupabaseModule(deps) {
       return;
     }
 
-    state.isSyncing = false;
     const completionPlan = planCloudSyncCompletion({
       pendingCloudSync: state.pendingCloudSync,
     });
-    state.lastCloudSyncAt = completionPlan.lastCloudSyncAt;
-    state.pendingCloudSync = completionPlan.pendingCloudSync;
+    const completionResult = applyCloudSyncCompletion(state, completionPlan);
     deps.save();
     renderCloudStatus();
-    if (completionPlan.shouldRunAgain) {
+    if (completionResult.shouldRunAgain) {
       window.setTimeout(() => syncToSupabase(), 0);
     }
   }
