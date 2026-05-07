@@ -15,6 +15,7 @@ import {
   planCloudSyncCompletion,
   planCloudSyncStart,
 } from "../application/sync/planCloudSyncLifecycle.js";
+import { planCloudConnectionSetup } from "../application/sync/planCloudConnectionSetup.js";
 import { planCloudUserRequirement } from "../application/sync/planCloudUserRequirement.js";
 import {
   fetchSupabaseConfig,
@@ -201,16 +202,24 @@ export function createSupabaseModule(deps) {
   async function initSupabase() {
     if (state.supabaseClient) return true;
 
-    if (!window.supabase) {
-      renderCloudStatus("Supabase indisponivel");
-      deps.renderAuthGate("Nao foi possivel conectar agora. Tente novamente em instantes.");
+    const runtimePlan = planCloudConnectionSetup({
+      hasRuntimeFactory: Boolean(window.supabase),
+      hasConfig: true,
+    });
+    if (!runtimePlan.ok) {
+      renderCloudStatus(runtimePlan.statusText);
+      deps.renderAuthGate(runtimePlan.authGateMessage);
       return false;
     }
 
     const config = await loadSupabaseConfig();
-    if (!config?.url || !config?.anonKey) {
-      renderCloudStatus("Configure o deploy");
-      deps.renderAuthGate("Nao foi possivel conectar agora. Tente novamente em instantes.");
+    const configPlan = planCloudConnectionSetup({
+      hasRuntimeFactory: true,
+      hasConfig: Boolean(config?.url && config?.anonKey),
+    });
+    if (!configPlan.ok) {
+      renderCloudStatus(configPlan.statusText);
+      deps.renderAuthGate(configPlan.authGateMessage);
       return false;
     }
 
