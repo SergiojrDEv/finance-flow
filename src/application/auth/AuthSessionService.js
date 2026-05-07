@@ -9,6 +9,12 @@ export function isEmailConfirmed(user) {
   return Boolean(user?.email_confirmed_at || user?.confirmed_at);
 }
 
+export function parseAuthHashType(hashValue = "") {
+  const hash = String(hashValue || "").replace(/^#/, "");
+  const params = new URLSearchParams(hash);
+  return params.get("type") || "";
+}
+
 export class AuthSessionService {
   constructor({ authClient, today } = {}) {
     if (!authClient) throw new Error("authClient e obrigatorio.");

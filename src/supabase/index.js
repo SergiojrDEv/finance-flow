@@ -1,4 +1,5 @@
 import { SUPABASE_FALLBACK_CONFIG, state } from "../core/state.js";
+import { parseAuthHashType } from "../application/auth/AuthSessionService.js";
 import {
   applyCloudPullResult,
 } from "../application/sync/applyCloudPullResult.js";
@@ -21,9 +22,7 @@ import { pushCloudSync } from "../infrastructure/sync/CloudPushSyncService.js";
 
 export function createSupabaseModule(deps) {
   function getAuthHashType() {
-    const hash = String(location.hash || "").replace(/^#/, "");
-    const params = new URLSearchParams(hash);
-    return params.get("type") || "";
+    return parseAuthHashType(location.hash);
   }
 
   async function loadSupabaseConfig() {

@@ -1,6 +1,10 @@
 import assert from "node:assert/strict";
 import test from "node:test";
-import { AuthSessionService, isEmailConfirmed } from "../../../src/application/auth/AuthSessionService.js";
+import {
+  AuthSessionService,
+  isEmailConfirmed,
+  parseAuthHashType,
+} from "../../../src/application/auth/AuthSessionService.js";
 
 function createAuthClient(overrides = {}) {
   const calls = [];
@@ -102,4 +106,11 @@ test("detecta usuarios confirmados por ambos campos do Supabase", () => {
   assert.equal(isEmailConfirmed({ email_confirmed_at: "2026-04-24" }), true);
   assert.equal(isEmailConfirmed({ confirmed_at: "2026-04-24" }), true);
   assert.equal(isEmailConfirmed({}), false);
+});
+
+test("extrai tipo do hash de autenticacao", () => {
+  assert.equal(parseAuthHashType("#access_token=abc&type=recovery"), "recovery");
+  assert.equal(parseAuthHashType("type=signup&access_token=abc"), "signup");
+  assert.equal(parseAuthHashType("#access_token=abc"), "");
+  assert.equal(parseAuthHashType(""), "");
 });
