@@ -1,6 +1,7 @@
 import { SUPABASE_FALLBACK_CONFIG, state } from "../core/state.js";
 import {
   parseAuthHashType,
+  planAuthHashState,
   planAuthStateChange,
   planInitialAuthSession,
 } from "../application/auth/AuthSessionService.js";
@@ -250,10 +251,11 @@ export function createSupabaseModule(deps) {
     state.supabaseClient = window.supabase.createClient(config.url, config.anonKey);
     state.cloudReady = true;
 
-    state.isPasswordRecovery = getAuthHashType() === "recovery";
-    if (state.isPasswordRecovery) {
-      deps.showAuthView("update-password");
-      deps.renderAuthGate("Defina sua nova senha para continuar.");
+    const hashPlan = planAuthHashState({ authHashType: getAuthHashType() });
+    state.isPasswordRecovery = hashPlan.isPasswordRecovery;
+    if (hashPlan.view) {
+      deps.showAuthView(hashPlan.view);
+      deps.renderAuthGate(hashPlan.authGateMessage || undefined);
     }
 
     const { data } = await state.supabaseClient.auth.getSession();

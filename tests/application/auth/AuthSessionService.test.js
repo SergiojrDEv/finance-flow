@@ -4,6 +4,7 @@ import {
   AuthSessionService,
   isEmailConfirmed,
   parseAuthHashType,
+  planAuthHashState,
   planAuthStateChange,
   planInitialAuthSession,
 } from "../../../src/application/auth/AuthSessionService.js";
@@ -115,6 +116,17 @@ test("extrai tipo do hash de autenticacao", () => {
   assert.equal(parseAuthHashType("type=signup&access_token=abc"), "signup");
   assert.equal(parseAuthHashType("#access_token=abc"), "");
   assert.equal(parseAuthHashType(""), "");
+});
+
+test("planeja estado inicial a partir do tipo do hash", () => {
+  const recovery = planAuthHashState({ authHashType: "recovery" });
+  const regular = planAuthHashState({ authHashType: "signup" });
+
+  assert.equal(recovery.action, "password-recovery");
+  assert.equal(recovery.isPasswordRecovery, true);
+  assert.equal(recovery.view, "update-password");
+  assert.equal(regular.action, "active-session");
+  assert.equal(regular.isPasswordRecovery, false);
 });
 
 test("planeja sessao inicial confirmada sem acoplar renderizacao", () => {

@@ -63,6 +63,11 @@ function buildUnconfirmedEmailPlan() {
   };
 }
 
+export function planAuthHashState({ authHashType = "" } = {}) {
+  if (authHashType === "recovery") return buildPasswordRecoveryPlan();
+  return buildActiveSessionPlan(null, false);
+}
+
 export function planInitialAuthSession({
   user,
   isPasswordRecovery = false,
