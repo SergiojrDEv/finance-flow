@@ -35,3 +35,8 @@ O typecheck esta configurado no CI por `.github/workflows/quality.yml`, mas nao 
 - Promover mais modulos para TypeScript como fonte principal em ondas pequenas.
 - Confirmar variaveis Supabase no Cloudflare apos cada deploy.
 - Evoluir decisao de backend real, com Go ou Node, depois que os contratos de dominio/API estiverem maduros.
+
+## Primeira onda da proxima fase
+
+- `src/application/sync/planCloudError.ts` promovido como fonte TypeScript principal.
+- `src/application/transactions/transactionFormRules.ts` promovido como fonte TypeScript principal.
