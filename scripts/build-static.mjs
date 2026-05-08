@@ -1,6 +1,7 @@
-import { cp, mkdir, readdir, readFile, rm, stat, writeFile } from "node:fs/promises";
+import { cp, mkdir, readFile, rm, stat, writeFile } from "node:fs/promises";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
+import { typeScriptPrimarySourceFiles } from "./typescript-primary-sources.mjs";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const dist = path.join(root, "dist");
@@ -20,17 +21,6 @@ for (const entry of entries) {
   await cp(path.join(root, entry), path.join(dist, entry), { recursive: true });
 }
 
-async function listFiles(dir) {
-  const entries = await readdir(dir, { withFileTypes: true });
-  const files = await Promise.all(entries.map(async (entry) => {
-    const fullPath = path.join(dir, entry.name);
-    if (entry.isDirectory()) return listFiles(fullPath);
-    if (entry.isFile()) return [fullPath];
-    return [];
-  }));
-  return files.flat();
-}
-
 async function transpileTypeScriptSources() {
   let ts;
   try {
@@ -40,8 +30,7 @@ async function transpileTypeScriptSources() {
   }
 
   const sourceDir = path.join(root, "src");
-  const files = await listFiles(sourceDir);
-  const tsFiles = files.filter((file) => file.endsWith(".ts"));
+  const tsFiles = typeScriptPrimarySourceFiles.map((file) => path.join(root, file));
 
   await Promise.all(tsFiles.map(async (sourcePath) => {
     const source = await readFile(sourcePath, "utf8");

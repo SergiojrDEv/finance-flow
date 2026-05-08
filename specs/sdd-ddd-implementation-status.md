@@ -42,6 +42,7 @@ Evoluir o Finance Flow sem repetir o erro de acoplar arquitetura nova diretament
 - Guardrail automatico de arquitetura criado para impedir que `src/application` dependa de DOM, Supabase, `localStorage`, UI ou infraestrutura.
 - Guardrail automatico de contrato criado para impedir retornos manuais `{ ok: ... }` fora de `src/application/shared/result.js`.
 - Guardrail automatico de migracao TypeScript criado para exigir contraparte `.js` enquanto o modulo ainda nao for fonte principal no build.
+- Promocao TypeScript controlada por lista explicita em `scripts/typescript-primary-sources.mjs`, iniciando por `planCloudError`.
 - Hardening inicial:
   - sanitizacao de cores em CSS inline;
   - Worker Cloudflare com endpoint `/api/config` para config Supabase por ambiente;

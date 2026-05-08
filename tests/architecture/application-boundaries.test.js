@@ -3,6 +3,7 @@ import { access, readdir, readFile } from "node:fs/promises";
 import path from "node:path";
 import test from "node:test";
 import { fileURLToPath } from "node:url";
+import { typeScriptPrimarySourceFiles } from "../../scripts/typescript-primary-sources.mjs";
 
 const rootDir = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../..");
 const applicationDir = path.join(rootDir, "src", "application");
@@ -28,7 +29,7 @@ const allowedManualResultFiles = new Set([
   "src/application/shared/result.js",
 ]);
 
-const typeScriptPrimarySourceFiles = new Set([]);
+const typeScriptPrimarySourceFileSet = new Set(typeScriptPrimarySourceFiles);
 
 async function listApplicationSourceFiles(dir) {
   const entries = await readdir(dir, { withFileTypes: true });
@@ -101,11 +102,39 @@ test("src/application mantem contraparte JavaScript durante migracao TypeScript"
 
   for (const filePath of typeScriptFiles) {
     const relativePath = path.relative(rootDir, filePath).replaceAll("\\", "/");
-    if (typeScriptPrimarySourceFiles.has(relativePath)) continue;
+    if (typeScriptPrimarySourceFileSet.has(relativePath)) continue;
 
     const javascriptPath = filePath.replace(/\.ts$/, ".js");
     if (!(await exists(javascriptPath))) {
       violations.push(`${relativePath}: mantenha a contraparte .js ate este modulo virar fonte principal no build`);
+    }
+  }
+
+  assert.deepEqual(violations, []);
+});
+
+test("fontes TypeScript principais existem dentro de src/application", async () => {
+  const violations = [];
+
+  for (const relativePath of typeScriptPrimarySourceFiles) {
+    const fullPath = path.join(rootDir, relativePath);
+    if (!relativePath.startsWith("src/application/")) {
+      violations.push(`${relativePath}: fonte TypeScript principal deve ficar em src/application nesta fase`);
+      continue;
+    }
+
+    if (path.extname(relativePath) !== ".ts") {
+      violations.push(`${relativePath}: fonte TypeScript principal deve usar extensao .ts`);
+      continue;
+    }
+
+    if (!(await exists(fullPath))) {
+      violations.push(`${relativePath}: fonte TypeScript principal nao existe`);
+    }
+
+    const javascriptPath = fullPath.replace(/\.ts$/, ".js");
+    if (!(await exists(javascriptPath))) {
+      violations.push(`${relativePath}: mantenha a ponte .js ate os imports do runtime apontarem para dist transpilado`);
     }
   }
 
