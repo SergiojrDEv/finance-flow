@@ -34,6 +34,8 @@ Evoluir o Finance Flow sem repetir o erro de acoplar arquitetura nova diretament
 - Resumo financeiro do dashboard recebeu contraparte TypeScript com contrato tipado para totais, contagens, taxas e saude financeira.
 - Ranking de maiores despesas por categoria recebeu contraparte TypeScript tipada para linhas e entradas do dashboard.
 - Serie de fluxo dos ultimos meses recebeu contraparte TypeScript tipada para pontos de grafico e entradas mensais.
+- Historico diario recebeu contraparte TypeScript tipada para grupos, itens e totais por dia.
+- Resumo de lancamentos do mes recebeu contraparte TypeScript tipada para status, pagamentos e totais.
 - CI de qualidade criado para testes e typecheck.
 - Guardrail automatico de arquitetura criado para impedir que `src/application` dependa de DOM, Supabase, `localStorage`, UI ou infraestrutura.
 - Guardrail automatico de contrato criado para impedir retornos manuais `{ ok: ... }` fora de `src/application/shared/result.js`.
