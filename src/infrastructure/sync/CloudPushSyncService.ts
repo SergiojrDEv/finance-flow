@@ -3,6 +3,7 @@ import {
   buildV2CatalogSyncPayload,
   buildV2TransactionSyncPayload,
 } from "./V2SyncPayload.js";
+import type { PushCloudSyncInput, PushCloudSyncResult } from "./syncTypes.js";
 
 export async function pushCloudSync({
   services,
@@ -13,7 +14,7 @@ export async function pushCloudSync({
   transactions = [],
   hydrateCatalog,
   parseLocalDate,
-} = {}) {
+}: PushCloudSyncInput = {}): Promise<PushCloudSyncResult> {
   if (!services) throw new Error("services e obrigatorio.");
   if (!userId) throw new Error("userId e obrigatorio.");
 

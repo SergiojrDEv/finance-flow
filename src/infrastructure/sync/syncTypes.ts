@@ -106,7 +106,7 @@ export type SupabaseTableQuery<TData = unknown> = {
 };
 
 export type SupabaseClientLike = {
-  from: (table: string) => SupabaseTableQuery;
+  from: (table: string) => any;
 };
 
 export type UserMetadata = {
@@ -130,4 +130,49 @@ export type UserProfileRow = {
   phone: string;
   birthdate: string | null;
   updated_at: string;
+};
+
+export type SyncServices = {
+  cloudSnapshotRepository: { fetchV2: (input: { userId: string }) => Promise<CloudSnapshotInput> };
+  catalogV2SyncRepository: { sync: (payload: { userId: string; catalog: CatalogSnapshot }) => Promise<V2Refs> };
+  transactionV2SyncRepository: { sync: (payload: { userId: string; transactions: LocalTransaction[]; refs: V2Refs }) => Promise<unknown> };
+  legacySyncRepository: {
+    sync: (payload: LegacySyncPayload) => Promise<unknown>;
+    fetch: (input: { userId: string }) => Promise<LegacyCloudSnapshotInput>;
+  };
+};
+
+export type PullCloudSyncInput = {
+  services?: SyncServices;
+  userId?: string;
+  supportsV2?: boolean;
+  silent?: boolean;
+  hasLocalTransactions?: boolean;
+  currentCatalog?: CatalogSnapshot | null;
+  mergeSettings?: (settings?: Record<string, unknown> | null) => Record<string, unknown>;
+  hydrateCatalog?: (settings?: Record<string, unknown> | null, currentCatalog?: CatalogSnapshot | null) => CatalogSnapshot;
+};
+
+export type PullCloudSyncResult = {
+  skipped: boolean;
+  source: "v2" | "legacy";
+  hydrated: HydratedCloudSnapshot | HydratedLegacyCloudSnapshot | null;
+  shouldSyncSettingsFromCatalog: boolean;
+};
+
+export type PushCloudSyncInput = {
+  services?: SyncServices;
+  userId?: string;
+  supportsV2?: boolean;
+  catalog?: CatalogSnapshot | null;
+  settings?: Record<string, unknown>;
+  transactions?: LocalTransaction[];
+  hydrateCatalog?: (settings?: unknown, catalog?: CatalogSnapshot | null) => CatalogSnapshot;
+  parseLocalDate?: ParseLocalDate;
+};
+
+export type PushCloudSyncResult = {
+  catalog: CatalogSnapshot | null;
+  supportsV2: boolean;
+  v2Refs: V2Refs | null;
 };

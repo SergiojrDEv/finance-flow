@@ -13,9 +13,19 @@ import {
   planBudgetSync,
   planGoalSync,
 } from "../../application/sync/planCloudCatalogSync.js";
+import type { AccountKind, CatalogSnapshot, SupabaseClientLike } from "./syncTypes.js";
 
 export class SupabaseCatalogV2SyncRepository extends CatalogV2SyncRepository {
-  constructor({ client, inferAccountKind } = {}) {
+  private readonly client: SupabaseClientLike;
+  private readonly inferAccountKind?: (name?: string) => AccountKind | string;
+
+  constructor({
+    client,
+    inferAccountKind,
+  }: {
+    client?: SupabaseClientLike;
+    inferAccountKind?: (name?: string) => AccountKind | string;
+  } = {}) {
     super();
 
     if (!client) {
@@ -26,7 +36,15 @@ export class SupabaseCatalogV2SyncRepository extends CatalogV2SyncRepository {
     this.inferAccountKind = inferAccountKind;
   }
 
-  async sync({ userId, catalog, now = new Date().toISOString() } = {}) {
+  async sync({
+    userId,
+    catalog,
+    now = new Date().toISOString(),
+  }: {
+    userId?: string;
+    catalog?: CatalogSnapshot;
+    now?: string;
+  } = {}) {
     if (!userId) throw new Error("userId e obrigatorio.");
     if (!catalog) throw new Error("catalog e obrigatorio.");
 

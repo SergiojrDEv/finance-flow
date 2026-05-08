@@ -1,5 +1,9 @@
+import type { LegacyCloudSnapshotInput, LegacySyncPayload, SupabaseClientLike } from "./syncTypes.js";
+
 export class SupabaseLegacySyncRepository {
-  constructor({ client } = {}) {
+  private readonly client: SupabaseClientLike;
+
+  constructor({ client }: { client?: SupabaseClientLike } = {}) {
     if (!client) {
       throw new Error("client e obrigatorio.");
     }
@@ -7,7 +11,7 @@ export class SupabaseLegacySyncRepository {
     this.client = client;
   }
 
-  async sync({ userId, rows = [], settings, localIds = [] } = {}) {
+  async sync({ userId, rows = [], settings, localIds = [] }: Partial<LegacySyncPayload> = {}): Promise<{ deletedIds: unknown[] }> {
     if (!userId) throw new Error("userId e obrigatorio.");
 
     if (rows.length) {
@@ -36,7 +40,7 @@ export class SupabaseLegacySyncRepository {
     return { deletedIds: idsToDelete };
   }
 
-  async fetch({ userId } = {}) {
+  async fetch({ userId }: { userId?: string } = {}): Promise<LegacyCloudSnapshotInput> {
     if (!userId) throw new Error("userId e obrigatorio.");
 
     const { data: transactions, error: txError } = await this.client

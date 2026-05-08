@@ -6,6 +6,7 @@ import {
   hydrateLegacyCloudSnapshot,
   shouldSkipSilentLegacySnapshot,
 } from "./LegacyCloudSnapshotHydrator.js";
+import type { PullCloudSyncInput, PullCloudSyncResult } from "./syncTypes.js";
 
 export async function pullCloudSync({
   services,
@@ -16,7 +17,7 @@ export async function pullCloudSync({
   currentCatalog,
   mergeSettings,
   hydrateCatalog,
-} = {}) {
+}: PullCloudSyncInput = {}): Promise<PullCloudSyncResult> {
   if (!services) throw new Error("services e obrigatorio.");
   if (!userId) throw new Error("userId e obrigatorio.");
 

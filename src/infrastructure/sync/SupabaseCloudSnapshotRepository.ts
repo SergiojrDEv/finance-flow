@@ -1,7 +1,17 @@
 import { CloudSnapshotRepository } from "../../application/sync/ports/CloudSnapshotRepository.js";
+import type { CloudSnapshotInput, MissingRelationError, SupabaseClientLike } from "./syncTypes.js";
 
 export class SupabaseCloudSnapshotRepository extends CloudSnapshotRepository {
-  constructor({ client, isMissingRelationError } = {}) {
+  private readonly client: SupabaseClientLike;
+  private readonly isMissingRelationError: (error?: MissingRelationError | Error | null) => boolean;
+
+  constructor({
+    client,
+    isMissingRelationError,
+  }: {
+    client?: SupabaseClientLike;
+    isMissingRelationError?: (error?: MissingRelationError | Error | null) => boolean;
+  } = {}) {
     super();
 
     if (!client) {
@@ -12,7 +22,7 @@ export class SupabaseCloudSnapshotRepository extends CloudSnapshotRepository {
     this.isMissingRelationError = isMissingRelationError || (() => false);
   }
 
-  async fetchV2({ userId } = {}) {
+  async fetchV2({ userId }: { userId?: string } = {}): Promise<CloudSnapshotInput> {
     if (!userId) throw new Error("userId e obrigatorio.");
 
     const [

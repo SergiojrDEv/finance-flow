@@ -1,8 +1,11 @@
 import { TransactionV2SyncRepository } from "../../application/sync/ports/TransactionV2SyncRepository.js";
 import { planTransactionV2Sync } from "../../application/sync/planTransactionSync.js";
+import type { LocalTransaction, SupabaseClientLike, V2Refs } from "./syncTypes.js";
 
 export class SupabaseTransactionV2SyncRepository extends TransactionV2SyncRepository {
-  constructor({ client } = {}) {
+  private readonly client: SupabaseClientLike;
+
+  constructor({ client }: { client?: SupabaseClientLike } = {}) {
     super();
 
     if (!client) {
@@ -12,7 +15,17 @@ export class SupabaseTransactionV2SyncRepository extends TransactionV2SyncReposi
     this.client = client;
   }
 
-  async sync({ userId, transactions = [], refs = {}, now = new Date().toISOString() } = {}) {
+  async sync({
+    userId,
+    transactions = [],
+    refs = {},
+    now = new Date().toISOString(),
+  }: {
+    userId?: string;
+    transactions?: LocalTransaction[];
+    refs?: V2Refs;
+    now?: string;
+  } = {}) {
     if (!userId) throw new Error("userId e obrigatorio.");
 
     const { data: currentTags, error: currentTagsError } = await this.client
