@@ -47,7 +47,7 @@ Evoluir o Finance Flow sem repetir o erro de acoplar arquitetura nova diretament
   - sanitizacao de cores em CSS inline;
   - Worker Cloudflare com endpoint `/api/config` para config Supabase por ambiente;
   - carregamento de config Supabase extraido para infraestrutura testavel;
-  - frontend tentando `/api/config` antes de fallback temporario.
+  - frontend tentando `/api/config` sem fallback fixo de Supabase no bundle.
 - Mapeamento legacy de transacoes Supabase extraido para infraestrutura testavel.
 - Sync legacy de transacoes/settings Supabase extraido para repositorio de infraestrutura testavel.
 - Persistencia de perfil do usuario Supabase extraida para repositorio de infraestrutura testavel.
@@ -76,7 +76,7 @@ Evoluir o Finance Flow sem repetir o erro de acoplar arquitetura nova diretament
 
 ## Ainda falta
 
-- Confirmar variaveis `SUPABASE_URL` e `SUPABASE_ANON_KEY` no Cloudflare Worker publicado e remover `SUPABASE_FALLBACK_CONFIG` do bundle.
+- Confirmar variaveis `SUPABASE_URL` e `SUPABASE_ANON_KEY` no Cloudflare Worker publicado apos cada deploy.
 - Migrar edicao/exclusao de lancamentos da UI para os casos de uso, com shadow mode ou comparacao.
   - Feito: edicao e exclusao da UI passam por `UpdateTransactionUseCase` e `DeleteTransactionUseCase`.
 - Migrar dashboard inteiro para selectors/application services puros.
@@ -101,4 +101,4 @@ A trilha SDD/DDD/TypeScript inicial sera considerada completa quando:
 - o guardrail automatico de fronteira da camada `src/application` continuar passando;
 - o guardrail automatico de contrato de resultado continuar passando;
 - o guardrail automatico de migracao TypeScript continuar protegendo modulos ainda nao promovidos a fonte principal;
-- houver plano aprovado para remover fallback Supabase do bundle.
+- nao houver fallback Supabase fixo no bundle.

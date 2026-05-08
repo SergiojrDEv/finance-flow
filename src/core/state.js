@@ -1,9 +1,5 @@
 export const STORAGE_KEY = "finance-flow-data-v1";
 export const APP_STORAGE_KEY = "finance-flow-state-v2";
-export const SUPABASE_FALLBACK_CONFIG = {
-  url: "https://gxwukctgfrquureyerli.supabase.co",
-  anonKey: "sb_publishable_SBwSuHSETeSd7mtl9-A7kQ_gS5Y2Y14",
-};
 
 export const defaultSettings = {
   accounts: ["Carteira", "Conta corrente", "Cartao de credito", "Corretora"],

@@ -1,4 +1,4 @@
-import { SUPABASE_FALLBACK_CONFIG, state } from "../core/state.js";
+import { state } from "../core/state.js";
 import {
   parseAuthHashType,
   planAuthHashState,
@@ -46,7 +46,6 @@ export function createSupabaseModule(deps) {
     return resolveSupabaseConfig({
       explicitConfig: window.FINANCE_FLOW_SUPABASE,
       fetchConfig: (endpoint) => fetchSupabaseConfig(endpoint, { fetchImpl: fetch }),
-      fallbackConfig: SUPABASE_FALLBACK_CONFIG,
       logger: console,
     });
   }
