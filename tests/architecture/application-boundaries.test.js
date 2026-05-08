@@ -27,6 +27,7 @@ const forbiddenImportPatterns = [
 
 const allowedManualResultFiles = new Set([
   "src/application/shared/result.js",
+  "src/application/shared/result.ts",
 ]);
 
 const typeScriptPrimarySourceFileSet = new Set(typeScriptPrimarySourceFiles);
