@@ -63,3 +63,4 @@ O typecheck esta configurado no CI por `.github/workflows/quality.yml`, mas nao 
 - Fase TypeScript forte da camada `src/application` concluida em 100% dentro do escopo definido: contratos centrais, drafts, entidades estruturais, dashboard, auth, sync e ports tipados sem alterar o runtime visual.
 - Nova fase `src/domain` iniciada: guardrail de fontes TypeScript principais agora permite `src/domain`, e `CategoryBudget` foi promovido como entidade TypeScript nativa piloto.
 - Entidades de catalogo `Category` e `CategoryTag` promovidas para TypeScript nativo com contratos estruturais compartilhados.
+- Entidade de metas `Goal` promovida para TypeScript nativo, preservando validacao de dominio e imutabilidade.
