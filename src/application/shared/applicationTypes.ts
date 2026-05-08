@@ -277,3 +277,9 @@ export type TransactionV2Row = {
   created_at: string;
   updated_at: string;
 };
+
+export type CloudSnapshot = Record<string, unknown>;
+
+export type SyncResult = {
+  [key: string]: unknown;
+};

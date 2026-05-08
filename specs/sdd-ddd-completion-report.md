@@ -59,3 +59,5 @@ O typecheck esta configurado no CI por `.github/workflows/quality.yml`, mas nao 
 - Tipos de saida do dashboard e lancamentos (`FinancialSummary`, `CategoryBreakdownRow`, `CashflowSeriesPoint` e `TransactionHighlights`) centralizados em `applicationTypes`.
 - Contratos de autenticacao tipados (`AuthUser`, `SignupProfile`, `AuthPlan` e `AuthClient`) sem alterar o fluxo de login, cadastro ou recuperacao.
 - Planos de sincronizacao e linhas `transactions_v2` tipados em `applicationTypes`, cobrindo status da nuvem, pull, ciclo de sync e mapeamento de transacoes.
+- Ports de sync passaram a retornar `CloudSnapshot`/`SyncResult`, e o guardrail arquitetural agora bloqueia `Promise<unknown>` em ports de aplicacao.
+- Fase TypeScript forte da camada `src/application` concluida em 100% dentro do escopo definido: contratos centrais, drafts, entidades estruturais, dashboard, auth, sync e ports tipados sem alterar o runtime visual.

@@ -141,3 +141,20 @@ test("fontes TypeScript principais existem dentro de src/application", async () 
 
   assert.deepEqual(violations, []);
 });
+
+test("ports de aplicacao nao retornam Promise<unknown>", async () => {
+  const files = await listApplicationSourceFiles(applicationDir);
+  const violations = [];
+
+  for (const filePath of files) {
+    const relativePath = path.relative(rootDir, filePath).replaceAll("\\", "/");
+    if (!relativePath.includes("/ports/") || path.extname(relativePath) !== ".ts") continue;
+
+    const source = await readFile(filePath, "utf8");
+    if (/Promise<unknown>/.test(source)) {
+      violations.push(`${relativePath}: use um contrato tipado no retorno do port`);
+    }
+  }
+
+  assert.deepEqual(violations, []);
+});
