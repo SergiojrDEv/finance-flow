@@ -1,8 +1,12 @@
 export const typeScriptPrimarySourceFiles = [
   "src/application/shared/result.ts",
+  "src/application/budget/ports/CategoryBudgetRepository.ts",
   "src/application/budget/validateCategoryBudgetDraft.ts",
+  "src/application/catalog/ports/CategoryRepository.ts",
+  "src/application/catalog/ports/CategoryTagRepository.ts",
   "src/application/catalog/validateCategoryDraft.ts",
   "src/application/catalog/validateCategoryTagDraft.ts",
+  "src/application/goals/ports/GoalRepository.ts",
   "src/application/goals/validateGoalDraft.ts",
   "src/application/sync/planCloudError.ts",
   "src/application/sync/ports/CatalogV2SyncRepository.ts",
@@ -17,6 +21,7 @@ export const typeScriptPrimarySourceFiles = [
   "src/application/dashboard/buildTransactionHighlights.ts",
   "src/application/transactions/buildMonthTransactionList.ts",
   "src/application/transactions/buildTransactionSeries.ts",
+  "src/application/transactions/ports/TransactionRepository.ts",
   "src/application/transactions/transactionFormRules.ts",
   "src/application/transactions/validateTransactionDraft.ts",
 ];

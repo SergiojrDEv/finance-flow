@@ -51,3 +51,4 @@ O typecheck esta configurado no CI por `.github/workflows/quality.yml`, mas nao 
 - Helper compartilhado `src/application/shared/result.ts` promovido como fonte TypeScript principal para padronizar contratos de sucesso, falha e mensagens de erro entre casos de uso.
 - Validadores puros de orcamento, categorias, etiquetas e metas promovidos para TypeScript primario antes dos casos de uso que dependem deles.
 - Funcoes puras de lancamentos `validateTransactionDraft`, `buildTransactionSeries` e `buildMonthTransactionList` promovidas para TypeScript primario, cobrindo validacao, parcelas/recorrencia e listagem mensal.
+- Ports de repositorios de orcamento, catalogo, metas e transacoes promovidos para TypeScript primario mantendo as falhas explicitas de contrato.
