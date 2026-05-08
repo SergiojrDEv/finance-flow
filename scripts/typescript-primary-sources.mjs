@@ -59,6 +59,14 @@ export const typeScriptPrimarySourceFiles = [
   "src/infrastructure/budget/LocalCategoryBudgetRepository.ts",
   "src/infrastructure/catalog/LocalCategoryRepository.ts",
   "src/infrastructure/catalog/LocalCategoryTagRepository.ts",
+  "src/infrastructure/composition/createBudgetServices.ts",
+  "src/infrastructure/composition/createCatalogServices.ts",
+  "src/infrastructure/composition/createGoalServices.ts",
+  "src/infrastructure/composition/createSyncServices.ts",
+  "src/infrastructure/composition/createTransactionServices.ts",
+  "src/infrastructure/config/SupabaseConfigProvider.ts",
+  "src/infrastructure/diagnostics/installDiagnosticsApi.ts",
+  "src/infrastructure/diagnostics/shadowDiagnostics.ts",
   "src/infrastructure/goals/LocalGoalRepository.ts",
   "src/infrastructure/transactions/LocalTransactionRepository.ts"
 ];

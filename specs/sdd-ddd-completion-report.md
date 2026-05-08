@@ -66,3 +66,4 @@ O typecheck esta configurado no CI por `.github/workflows/quality.yml`, mas nao 
 - Entidade de metas `Goal` promovida para TypeScript nativo, preservando validacao de dominio e imutabilidade.
 - Entidade de lancamentos `Transaction` promovida para TypeScript nativo, preservando campos exclusivos de despesa e limpeza de receita/investimento.
 - Nova fase `src/infrastructure` iniciada: guardrail de fontes TypeScript principais agora permite adapters de infraestrutura, com primeiro bloco nos repositorios locais de orcamentos, catalogo, metas e lancamentos.
+- Composicao de servicos, provider de configuracao Supabase e diagnosticos de shadow promovidos para TypeScript nativo sem alterar bootstrap ou UI.
