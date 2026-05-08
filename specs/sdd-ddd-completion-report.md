@@ -40,3 +40,4 @@ O typecheck esta configurado no CI por `.github/workflows/quality.yml`, mas nao 
 
 - `src/application/sync/planCloudError.ts` promovido como fonte TypeScript principal.
 - `src/application/transactions/transactionFormRules.ts` promovido como fonte TypeScript principal.
+- `src/application/dashboard/buildTransactionHighlights.ts` promovido como fonte TypeScript principal.
