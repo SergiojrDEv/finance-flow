@@ -71,3 +71,4 @@ O typecheck esta configurado no CI por `.github/workflows/quality.yml`, mas nao 
 - Modulos de sync/Supabase promovidos para fontes TypeScript primarias por equivalencia mecanica, preservando comportamento e preparando o endurecimento tipado dos adapters remotos.
 - Nova fase de endurecimento do sync iniciada: helpers, mapeadores legacy e payloads V2/legacy passaram a compartilhar contratos explicitos em `syncTypes`.
 - Hydrators de snapshot V2 e legacy receberam contratos de entrada/saida explicitos, reduzindo acoplamento solto entre nuvem e estado local.
+- Repositorios Supabase de schema e perfil de usuario receberam contratos explicitos para cliente, usuario autenticado e linha de perfil.

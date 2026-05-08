@@ -1,5 +1,20 @@
+import type {
+  SupabaseAuthUser,
+  SupabaseClientLike,
+  UserProfileRow,
+} from "./syncTypes.js";
+
 export class SupabaseUserProfileRepository {
-  constructor({ client, isEmailConfirmed } = {}) {
+  private readonly client: SupabaseClientLike;
+  private readonly isEmailConfirmed: (user?: SupabaseAuthUser) => boolean;
+
+  constructor({
+    client,
+    isEmailConfirmed,
+  }: {
+    client?: SupabaseClientLike;
+    isEmailConfirmed?: (user?: SupabaseAuthUser) => boolean;
+  } = {}) {
     if (!client) {
       throw new Error("client e obrigatorio.");
     }
@@ -11,7 +26,7 @@ export class SupabaseUserProfileRepository {
     this.isEmailConfirmed = isEmailConfirmed;
   }
 
-  async saveFromMetadata(user) {
+  async saveFromMetadata(user?: SupabaseAuthUser): Promise<{ skipped: true } | { skipped: false; row: UserProfileRow }> {
     if (!user?.id || !this.isEmailConfirmed(user)) return { skipped: true };
 
     const data = user.user_metadata || {};
@@ -19,7 +34,7 @@ export class SupabaseUserProfileRepository {
       return { skipped: true };
     }
 
-    const row = {
+    const row: UserProfileRow = {
       user_id: user.id,
       full_name: data.full_name || "",
       cpf: data.cpf || "",
@@ -28,7 +43,7 @@ export class SupabaseUserProfileRepository {
       updated_at: new Date().toISOString(),
     };
 
-    const { error } = await this.client.from("user_profiles").upsert(row);
+    const { error } = await this.client.from("user_profiles").upsert?.(row) || { error: new Error("Supabase upsert indisponivel.") };
     if (error) throw error;
 
     return { skipped: false, row };

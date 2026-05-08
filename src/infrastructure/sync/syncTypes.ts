@@ -94,3 +94,40 @@ export type HydratedLegacyCloudSnapshot = {
   catalog: CatalogSnapshot | null;
   dataMode: "legacy";
 };
+
+export type SupabaseQueryResult<TData = unknown> = {
+  data?: TData | null;
+  error?: Error | MissingRelationError | null;
+};
+
+export type SupabaseTableQuery<TData = unknown> = {
+  select?: (columns?: string) => { limit?: (value: number) => Promise<SupabaseQueryResult<TData>> };
+  upsert?: (row: Record<string, unknown> | Record<string, unknown>[]) => Promise<SupabaseQueryResult<TData>>;
+};
+
+export type SupabaseClientLike = {
+  from: (table: string) => SupabaseTableQuery;
+};
+
+export type UserMetadata = {
+  full_name?: string;
+  cpf?: string;
+  phone?: string;
+  birthdate?: string;
+};
+
+export type SupabaseAuthUser = {
+  id?: string;
+  email_confirmed_at?: string | null;
+  confirmed_at?: string | null;
+  user_metadata?: UserMetadata;
+};
+
+export type UserProfileRow = {
+  user_id: string;
+  full_name: string;
+  cpf: string;
+  phone: string;
+  birthdate: string | null;
+  updated_at: string;
+};
