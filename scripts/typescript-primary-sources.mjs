@@ -15,5 +15,8 @@ export const typeScriptPrimarySourceFiles = [
   "src/application/dashboard/buildDashboardInsights.ts",
   "src/application/dashboard/buildFinancialSummary.ts",
   "src/application/dashboard/buildTransactionHighlights.ts",
+  "src/application/transactions/buildMonthTransactionList.ts",
+  "src/application/transactions/buildTransactionSeries.ts",
   "src/application/transactions/transactionFormRules.ts",
+  "src/application/transactions/validateTransactionDraft.ts",
 ];
