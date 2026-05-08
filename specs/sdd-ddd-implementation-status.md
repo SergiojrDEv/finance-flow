@@ -29,6 +29,7 @@ Evoluir o Finance Flow sem repetir o erro de acoplar arquitetura nova diretament
 - TypeScript preparado em modo gradual para camadas DDD.
 - Primeiras contrapartes tipadas de ports de aplicacao criadas em TypeScript sem impacto no runtime.
 - Build estatico preparado para transpilar `.ts` para `.js` quando TypeScript estiver instalado.
+- Primeiro helper de aplicacao usado em runtime recebeu contraparte TypeScript para validar o caminho de migracao.
 - CI de qualidade criado para testes e typecheck.
 - Guardrail automatico de arquitetura criado para impedir que `src/application` dependa de DOM, Supabase, `localStorage`, UI ou infraestrutura.
 - Guardrail automatico de contrato criado para impedir retornos manuais `{ ok: ... }` fora de `src/application/shared/result.js`.
