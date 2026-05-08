@@ -32,9 +32,9 @@ export function buildCategoryBreakdown({
   const totals = transactions
     .filter((item) => item?.type === "expense")
     .reduce<Record<string, number>>((acc, item) => {
-      if (!item.category) return acc;
+      const categoryKey = String(item.category);
 
-      acc[item.category] = (acc[item.category] || 0) + toAmount(item.amount);
+      acc[categoryKey] = (acc[categoryKey] || 0) + toAmount(item.amount);
       return acc;
     }, {});
   const rows = Object.entries(totals).sort((a, b) => b[1] - a[1]);
