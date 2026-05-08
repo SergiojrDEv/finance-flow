@@ -50,5 +50,6 @@ export const typeScriptPrimarySourceFiles = [
   "src/application/transactions/CreateTransactionSeriesUseCase.ts",
   "src/application/transactions/CreateTransactionUseCase.ts",
   "src/application/transactions/DeleteTransactionUseCase.ts",
-  "src/application/transactions/UpdateTransactionUseCase.ts"
+  "src/application/transactions/UpdateTransactionUseCase.ts",
+  "src/domain/budget/CategoryBudget.ts"
 ];

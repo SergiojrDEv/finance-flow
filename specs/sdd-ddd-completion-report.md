@@ -61,3 +61,4 @@ O typecheck esta configurado no CI por `.github/workflows/quality.yml`, mas nao 
 - Planos de sincronizacao e linhas `transactions_v2` tipados em `applicationTypes`, cobrindo status da nuvem, pull, ciclo de sync e mapeamento de transacoes.
 - Ports de sync passaram a retornar `CloudSnapshot`/`SyncResult`, e o guardrail arquitetural agora bloqueia `Promise<unknown>` em ports de aplicacao.
 - Fase TypeScript forte da camada `src/application` concluida em 100% dentro do escopo definido: contratos centrais, drafts, entidades estruturais, dashboard, auth, sync e ports tipados sem alterar o runtime visual.
+- Nova fase `src/domain` iniciada: guardrail de fontes TypeScript principais agora permite `src/domain`, e `CategoryBudget` foi promovido como entidade TypeScript nativa piloto.
