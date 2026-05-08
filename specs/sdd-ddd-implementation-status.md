@@ -41,6 +41,7 @@ Evoluir o Finance Flow sem repetir o erro de acoplar arquitetura nova diretament
 - CI de qualidade criado para testes e typecheck.
 - Guardrail automatico de arquitetura criado para impedir que `src/application` dependa de DOM, Supabase, `localStorage`, UI ou infraestrutura.
 - Guardrail automatico de contrato criado para impedir retornos manuais `{ ok: ... }` fora de `src/application/shared/result.js`.
+- Guardrail automatico de migracao TypeScript criado para exigir contraparte `.js` enquanto o modulo ainda nao for fonte principal no build.
 - Hardening inicial:
   - sanitizacao de cores em CSS inline;
   - Worker Cloudflare com endpoint `/api/config` para config Supabase por ambiente;
@@ -78,7 +79,7 @@ Evoluir o Finance Flow sem repetir o erro de acoplar arquitetura nova diretament
 - Migrar edicao/exclusao de lancamentos da UI para os casos de uso, com shadow mode ou comparacao.
   - Feito: edicao e exclusao da UI passam por `UpdateTransactionUseCase` e `DeleteTransactionUseCase`.
 - Migrar dashboard inteiro para selectors/application services puros.
-  - Parcialmente feito: resumo financeiro, maiores despesas, alertas/insights, fluxo mensal, destaques, historico diario e orcamentos ja estao fora da UI.
+  - Feito na trilha inicial: resumo financeiro, maiores despesas, alertas/insights, fluxo mensal, destaques, historico diario e orcamentos ja estao fora da UI e possuem cobertura de teste.
 - Criar testes de integracao de auth com mocks do Supabase.
   - Feito: `AuthSessionService` cobre login, cadastro, recuperacao e troca de senha com cliente mockavel.
 - Converter arquivos da camada DDD para `.ts` por modulo.
@@ -98,4 +99,5 @@ A trilha SDD/DDD/TypeScript inicial sera considerada completa quando:
 - nenhuma parte nova depender diretamente de DOM, Supabase ou localStorage dentro de `src/domain` e `src/application`;
 - o guardrail automatico de fronteira da camada `src/application` continuar passando;
 - o guardrail automatico de contrato de resultado continuar passando;
+- o guardrail automatico de migracao TypeScript continuar protegendo modulos ainda nao promovidos a fonte principal;
 - houver plano aprovado para remover fallback Supabase do bundle.

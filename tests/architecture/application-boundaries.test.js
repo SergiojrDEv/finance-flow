@@ -1,5 +1,5 @@
 import assert from "node:assert/strict";
-import { readdir, readFile } from "node:fs/promises";
+import { access, readdir, readFile } from "node:fs/promises";
 import path from "node:path";
 import test from "node:test";
 import { fileURLToPath } from "node:url";
@@ -28,6 +28,8 @@ const allowedManualResultFiles = new Set([
   "src/application/shared/result.js",
 ]);
 
+const typeScriptPrimarySourceFiles = new Set([]);
+
 async function listApplicationSourceFiles(dir) {
   const entries = await readdir(dir, { withFileTypes: true });
   const files = await Promise.all(entries.map(async (entry) => {
@@ -37,6 +39,15 @@ async function listApplicationSourceFiles(dir) {
     return [];
   }));
   return files.flat();
+}
+
+async function exists(filePath) {
+  try {
+    await access(filePath);
+    return true;
+  } catch {
+    return false;
+  }
 }
 
 test("src/application nao depende de DOM, Supabase, storage concreto ou UI", async () => {
@@ -77,6 +88,24 @@ test("src/application usa helper compartilhado para resultados ok/fail", async (
 
     if (/return\s+\{\s*ok\s*:/m.test(source)) {
       violations.push(`${relativePath}: use ok(...) ou fail(...) de src/application/shared/result.js`);
+    }
+  }
+
+  assert.deepEqual(violations, []);
+});
+
+test("src/application mantem contraparte JavaScript durante migracao TypeScript", async () => {
+  const files = await listApplicationSourceFiles(applicationDir);
+  const typeScriptFiles = files.filter((filePath) => path.extname(filePath) === ".ts");
+  const violations = [];
+
+  for (const filePath of typeScriptFiles) {
+    const relativePath = path.relative(rootDir, filePath).replaceAll("\\", "/");
+    if (typeScriptPrimarySourceFiles.has(relativePath)) continue;
+
+    const javascriptPath = filePath.replace(/\.ts$/, ".js");
+    if (!(await exists(javascriptPath))) {
+      violations.push(`${relativePath}: mantenha a contraparte .js ate este modulo virar fonte principal no build`);
     }
   }
 
