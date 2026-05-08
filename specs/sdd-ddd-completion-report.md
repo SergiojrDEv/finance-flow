@@ -68,3 +68,4 @@ O typecheck esta configurado no CI por `.github/workflows/quality.yml`, mas nao 
 - Nova fase `src/infrastructure` iniciada: guardrail de fontes TypeScript principais agora permite adapters de infraestrutura, com primeiro bloco nos repositorios locais de orcamentos, catalogo, metas e lancamentos.
 - Composicao de servicos, provider de configuracao Supabase e diagnosticos de shadow promovidos para TypeScript nativo sem alterar bootstrap ou UI.
 - Shadow mode e comparadores de equivalencia promovidos para TypeScript nativo, mantendo a estrategia de migracao paralela segura.
+- Modulos de sync/Supabase promovidos para fontes TypeScript primarias por equivalencia mecanica, preservando comportamento e preparando o endurecimento tipado dos adapters remotos.
