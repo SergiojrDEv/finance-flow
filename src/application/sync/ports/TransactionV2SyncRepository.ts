@@ -1,3 +1,5 @@
-export abstract class TransactionV2SyncRepository {
-  abstract sync(): Promise<unknown>;
+export class TransactionV2SyncRepository {
+  async sync(): Promise<unknown> {
+    throw new Error("TransactionV2SyncRepository.sync precisa ser implementado.");
+  }
 }

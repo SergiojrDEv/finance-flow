@@ -1,3 +1,5 @@
-export abstract class CloudSnapshotRepository {
-  abstract fetchV2(): Promise<unknown>;
+export class CloudSnapshotRepository {
+  async fetchV2(): Promise<unknown> {
+    throw new Error("CloudSnapshotRepository.fetchV2 precisa ser implementado.");
+  }
 }

@@ -47,3 +47,4 @@ O typecheck esta configurado no CI por `.github/workflows/quality.yml`, mas nao 
 - `src/application/dashboard/buildDashboardInsights.ts` promovido como fonte TypeScript principal.
 - `src/application/dashboard/buildFinancialSummary.ts` promovido como fonte TypeScript principal.
 - `src/application/dashboard/buildCashflowSeries.ts` promovido como fonte TypeScript principal.
+- Ports de sync `CatalogV2SyncRepository`, `CloudSnapshotRepository` e `TransactionV2SyncRepository` promovidos como fontes TypeScript principais preservando os erros de contrato do runtime JavaScript.

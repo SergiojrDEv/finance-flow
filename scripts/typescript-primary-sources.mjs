@@ -1,5 +1,8 @@
 export const typeScriptPrimarySourceFiles = [
   "src/application/sync/planCloudError.ts",
+  "src/application/sync/ports/CatalogV2SyncRepository.ts",
+  "src/application/sync/ports/CloudSnapshotRepository.ts",
+  "src/application/sync/ports/TransactionV2SyncRepository.ts",
   "src/application/dashboard/buildBudgetOverview.ts",
   "src/application/dashboard/buildCashflowSeries.ts",
   "src/application/dashboard/buildCategoryBreakdown.ts",
