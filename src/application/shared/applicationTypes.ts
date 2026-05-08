@@ -158,3 +158,46 @@ export type TransactionHighlights = {
     outflow: number;
   };
 };
+
+export type AuthUser = {
+  id?: string;
+  email?: string;
+  email_confirmed_at?: string | null;
+  confirmed_at?: string | null;
+  [key: string]: unknown;
+};
+
+export type SignupProfile = {
+  fullName: string;
+  cpf: string;
+  phone: string;
+  birthdate: string;
+  email: string;
+  password: string;
+};
+
+export type AuthPlan = {
+  action: "active-session" | "password-recovery" | "sign-out-unconfirmed" | "ignore";
+  authGateMessage: string;
+  currentUser: AuthUser | null;
+  isPasswordRecovery: boolean;
+  shouldPull: boolean;
+  shouldSaveProfile: boolean;
+  shouldSignOut: boolean;
+  view: "" | "update-password";
+};
+
+export type AuthClient = {
+  signInWithPassword(payload: { email?: string; password?: string }): Promise<{ data?: { user?: AuthUser | null }; error?: { message: string } | null }>;
+  signUp(payload: {
+    email: string;
+    password: string;
+    options?: {
+      emailRedirectTo?: string;
+      data?: Record<string, unknown>;
+    };
+  }): Promise<{ data?: unknown; error?: { message: string } | null }>;
+  resetPasswordForEmail(email: string, options?: { redirectTo?: string }): Promise<{ data?: unknown; error?: { message: string } | null }>;
+  updateUser(payload: { password?: string }): Promise<{ data?: unknown; error?: { message: string } | null }>;
+  signOut?: () => Promise<unknown>;
+};
