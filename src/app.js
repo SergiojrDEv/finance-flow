@@ -17,15 +17,13 @@ import {
 } from "./core/utils.js";
 import { createStorageModule } from "./core/storage.js";
 import { createUiModule } from "./core/ui.js";
+import { createNavigationModule } from "./core/navigation.js";
 import { createDashboardModule } from "./dashboard/index.js";
 import { createTransactionsModule } from "./transactions/index.js";
 import { createSettingsModule } from "./settings/index.js";
 import { createAuthModule } from "./auth/index.js";
 import { createSupabaseModule } from "./supabase/index.js";
 import { installDiagnosticsApi } from "./infrastructure/diagnostics/installDiagnosticsApi.js";
-
-const LAST_SECTION_KEY = "finance-flow-last-section";
-const VALID_SECTIONS = new Set(["visao-geral", "novo-lancamento", "orcamentos", "metas", "relatorios", "ajustes"]);
 
 const deps = {
   els,
@@ -45,6 +43,7 @@ const deps = {
 };
 
 Object.assign(deps, createUiModule(deps));
+Object.assign(deps, createNavigationModule(deps));
 Object.assign(deps, createStorageModule(deps));
 state.settings = deps.mergeSettings();
 state.catalog = deps.hydrateCatalog(state.settings, state.catalog);
@@ -66,15 +65,15 @@ function bindEvents() {
   });
   document.querySelector("#go-to-new-transaction").addEventListener("click", () => {
     location.hash = "novo-lancamento";
-    setTransactionView("compose");
-    setSectionFromHash();
+    deps.setTransactionView("compose");
+    deps.setSectionFromHash();
     document.querySelector("#description").focus();
     document.querySelector("#transaction-form").scrollIntoView({ behavior: "smooth", block: "start" });
   });
   document.querySelector("#go-to-month-transactions").addEventListener("click", () => {
     location.hash = "novo-lancamento";
-    setTransactionView("month");
-    setSectionFromHash();
+    deps.setTransactionView("month");
+    deps.setSectionFromHash();
   });
   document.querySelector("#install-app").addEventListener("click", deps.promptInstallApp);
   document.querySelectorAll(".segment").forEach((button) =>
@@ -307,35 +306,8 @@ function bindEvents() {
       deps.editGoalFromCard(Number(editButton.dataset.goalEditCard));
     }
   });
-  window.addEventListener("hashchange", setSectionFromHash);
+  window.addEventListener("hashchange", deps.setSectionFromHash);
 }
-
-function setSectionFromHash() {
-  const savedSection = localStorage.getItem(LAST_SECTION_KEY);
-  const rawId = location.hash.replace("#", "") || (VALID_SECTIONS.has(savedSection) ? savedSection : "visao-geral");
-  const id = rawId === "lancamentos" || rawId === "lancamentos-mes" ? "novo-lancamento" : rawId;
-  if (rawId === "lancamentos-mes") setTransactionView("month");
-  if (id === "novo-lancamento" && !document.body.dataset.transactionView) setTransactionView(state.transactionView || "compose");
-  document.body.dataset.section = id;
-  if (VALID_SECTIONS.has(id)) localStorage.setItem(LAST_SECTION_KEY, id);
-  document.querySelectorAll(".section").forEach((section) => {
-    section.classList.toggle("active", section.id === id);
-  });
-  document.querySelectorAll(".nav-item").forEach((item) => {
-    item.classList.toggle("active", item.dataset.section === id);
-  });
-}
-
-function setTransactionView(view) {
-  state.transactionView = view === "month" ? "month" : "compose";
-  document.body.dataset.transactionView = state.transactionView;
-  document.querySelectorAll("[data-transaction-view]").forEach((button) => {
-    button.classList.toggle("is-active", button.dataset.transactionView === state.transactionView);
-  });
-}
-
-deps.setSectionFromHash = setSectionFromHash;
-deps.setTransactionView = setTransactionView;
 
 async function init() {
   deps.load();
@@ -346,8 +318,8 @@ async function init() {
   deps.updateCreditPaymentFields();
   deps.setupPwaSupport();
   bindEvents();
-  setTransactionView(state.transactionView);
-  setSectionFromHash();
+  deps.setTransactionView(state.transactionView);
+  deps.setSectionFromHash();
   deps.renderAll();
   state.supabaseInitPromise = deps.initSupabase();
   await state.supabaseInitPromise;
