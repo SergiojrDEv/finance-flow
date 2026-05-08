@@ -1,4 +1,27 @@
-export function normalizeRemoteDate(value, year, month, { now = () => new Date() } = {}) {
+import type {
+  Clock,
+  LegacyTransactionRow,
+  LocalTransaction,
+  ParseLocalDate,
+} from "./syncTypes.js";
+import type { TransactionDraft } from "../../application/shared/applicationTypes.js";
+
+type NormalizeDateOptions = {
+  now?: Clock;
+};
+
+type LocalToLegacyOptions = {
+  userId?: string;
+  parseLocalDate?: ParseLocalDate;
+  now?: Clock;
+};
+
+export function normalizeRemoteDate(
+  value?: unknown,
+  year?: number | null,
+  month?: number | null,
+  { now = () => new Date() }: NormalizeDateOptions = {},
+): string {
   if (typeof value === "string" && /^\d{4}-\d{2}-\d{2}/.test(value)) return value.slice(0, 10);
   if (typeof value === "string" && value.includes("/")) {
     const [day, localMonth, localYear] = value.split("/");
@@ -10,7 +33,10 @@ export function normalizeRemoteDate(value, year, month, { now = () => new Date()
   return now().toISOString().slice(0, 10);
 }
 
-export function mapLocalTransactionToLegacyRow(item, { userId, parseLocalDate, now = () => new Date() } = {}) {
+export function mapLocalTransactionToLegacyRow(
+  item: LocalTransaction,
+  { userId, parseLocalDate, now = () => new Date() }: LocalToLegacyOptions = {},
+): LegacyTransactionRow {
   if (!userId) throw new Error("userId e obrigatorio.");
   if (!parseLocalDate || typeof parseLocalDate !== "function") {
     throw new Error("parseLocalDate e obrigatorio.");
@@ -41,7 +67,10 @@ export function mapLocalTransactionToLegacyRow(item, { userId, parseLocalDate, n
   };
 }
 
-export function mapLegacyRowToLocalTransaction(row, options = {}) {
+export function mapLegacyRowToLocalTransaction(
+  row: LegacyTransactionRow,
+  options: NormalizeDateOptions = {},
+): TransactionDraft {
   return {
     id: row.id,
     type: row.type,

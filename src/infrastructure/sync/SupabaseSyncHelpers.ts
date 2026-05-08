@@ -1,9 +1,11 @@
-export function isMissingRelationError(error) {
+import type { AccountKind, MissingRelationError } from "./syncTypes.js";
+
+export function isMissingRelationError(error?: MissingRelationError | null): boolean {
   const message = String(error?.message || "").toLowerCase();
   return message.includes("does not exist") || message.includes("could not find") || error?.code === "PGRST205";
 }
 
-export function inferAccountKind(name) {
+export function inferAccountKind(name?: string): AccountKind {
   const lower = String(name || "").toLowerCase();
   if (lower.includes("cartao")) return "credit_card";
   if (lower.includes("corretora")) return "investment";

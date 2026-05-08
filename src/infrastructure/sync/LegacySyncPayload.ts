@@ -1,4 +1,5 @@
 import { mapLocalTransactionToLegacyRow } from "./LegacyTransactionMapper.js";
+import type { LegacySyncPayload, LocalTransaction, ParseLocalDate, Clock } from "./syncTypes.js";
 
 export function buildLegacySyncPayload({
   userId,
@@ -6,7 +7,13 @@ export function buildLegacySyncPayload({
   settings = {},
   parseLocalDate,
   now,
-} = {}) {
+}: {
+  userId?: string;
+  transactions?: LocalTransaction[];
+  settings?: Record<string, unknown>;
+  parseLocalDate?: ParseLocalDate;
+  now?: Clock;
+} = {}): LegacySyncPayload {
   if (!userId) throw new Error("userId e obrigatorio.");
   if (!parseLocalDate || typeof parseLocalDate !== "function") {
     throw new Error("parseLocalDate e obrigatorio.");

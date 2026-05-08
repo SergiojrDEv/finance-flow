@@ -69,3 +69,4 @@ O typecheck esta configurado no CI por `.github/workflows/quality.yml`, mas nao 
 - Composicao de servicos, provider de configuracao Supabase e diagnosticos de shadow promovidos para TypeScript nativo sem alterar bootstrap ou UI.
 - Shadow mode e comparadores de equivalencia promovidos para TypeScript nativo, mantendo a estrategia de migracao paralela segura.
 - Modulos de sync/Supabase promovidos para fontes TypeScript primarias por equivalencia mecanica, preservando comportamento e preparando o endurecimento tipado dos adapters remotos.
+- Nova fase de endurecimento do sync iniciada: helpers, mapeadores legacy e payloads V2/legacy passaram a compartilhar contratos explicitos em `syncTypes`.

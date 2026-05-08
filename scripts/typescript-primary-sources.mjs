@@ -85,6 +85,7 @@ export const typeScriptPrimarySourceFiles = [
   "src/infrastructure/sync/SupabaseSyncHelpers.ts",
   "src/infrastructure/sync/SupabaseTransactionV2SyncRepository.ts",
   "src/infrastructure/sync/SupabaseUserProfileRepository.ts",
+  "src/infrastructure/sync/syncTypes.ts",
   "src/infrastructure/sync/V2SyncPayload.ts",
   "src/infrastructure/transactions/LocalTransactionRepository.ts"
 ];
