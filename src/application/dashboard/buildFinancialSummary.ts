@@ -1,34 +1,6 @@
-interface FinancialTransaction {
-  type?: string;
-  amount?: number | string | null;
-  category?: string | null;
-}
+import type { FinancialHealth, FinancialSummary, TransactionDraft } from "../shared/applicationTypes.js";
 
-interface FinancialHealth {
-  score: number;
-  status: "empty" | "missing-income" | "negative" | "healthy" | "attention";
-  copy: string;
-}
-
-interface FinancialSummary {
-  totals: {
-    income: number;
-    expenses: number;
-    investments: number;
-    available: number;
-  };
-  counts: {
-    transactions: number;
-    income: number;
-    expenseCategories: number;
-    investments: number;
-  };
-  rates: {
-    investmentRate: number;
-    commitmentRate: number;
-  };
-  health: FinancialHealth;
-}
+type FinancialTransaction = Pick<TransactionDraft, "type" | "amount" | "category">;
 
 function toAmount(value: FinancialTransaction["amount"]): number {
   const number = Number(value);

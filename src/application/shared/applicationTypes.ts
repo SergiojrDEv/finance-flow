@@ -97,3 +97,64 @@ export type TransactionDraft = Partial<TransactionEntity> & {
   installmentNumber?: number | string | null;
   installmentTotal?: number | string | null;
 };
+
+export type FinancialHealth = {
+  score: number;
+  status: "empty" | "missing-income" | "negative" | "healthy" | "attention";
+  copy: string;
+};
+
+export type FinancialSummary = {
+  totals: {
+    income: number;
+    expenses: number;
+    investments: number;
+    available: number;
+  };
+  counts: {
+    transactions: number;
+    income: number;
+    expenseCategories: number;
+    investments: number;
+  };
+  rates: {
+    investmentRate: number;
+    commitmentRate: number;
+  };
+  health: FinancialHealth;
+};
+
+export type CategoryTuple = [key: string, label: string, color: string];
+
+export type CategoryBreakdownRow = {
+  key: string;
+  label: string;
+  color: string;
+  value: number;
+  width: number;
+};
+
+export type CashflowSeriesPoint = {
+  key: string;
+  label: string;
+  income: number;
+  expense: number;
+  investment: number;
+  free: number;
+};
+
+export type TransactionHighlights = {
+  count: number;
+  status: {
+    paid: number;
+    pending: number;
+  };
+  payments: {
+    pix: number;
+    credit: number;
+  };
+  totals: {
+    income: number;
+    outflow: number;
+  };
+};

@@ -1,26 +1,13 @@
 import { buildFinancialSummary } from "./buildFinancialSummary.js";
+import type { CashflowSeriesPoint, TransactionDraft } from "../shared/applicationTypes.js";
 
-interface CashflowTransaction {
-  date?: string | null;
-  type?: string;
-  amount?: number | string | null;
-  category?: string | null;
-}
+type CashflowTransaction = Pick<TransactionDraft, "date" | "type" | "amount" | "category">;
 
 interface CashflowSeriesInput {
   transactions?: CashflowTransaction[];
   currentDate?: Date;
   monthCount?: number;
   locale?: string;
-}
-
-interface CashflowSeriesPoint {
-  key: string;
-  label: string;
-  income: number;
-  expense: number;
-  investment: number;
-  free: number;
 }
 
 function parseTransactionMonth(value: CashflowTransaction["date"]): string | null {

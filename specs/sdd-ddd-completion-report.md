@@ -56,3 +56,4 @@ O typecheck esta configurado no CI por `.github/workflows/quality.yml`, mas nao 
 - Nova fase de TypeScript forte iniciada: tipos compartilhados de aplicacao criados em `src/application/shared/applicationTypes.ts` e aplicados nos validadores e funcoes puras de lancamentos.
 - Contratos dos repositorios de aplicacao tipados com entidades estruturais (`TransactionEntity`, `CategoryEntity`, `CategoryTagEntity`, `CategoryBudgetEntity` e `GoalEntity`) no lugar de `Promise<unknown>`.
 - Drafts de entrada compartilhados (`TransactionDraft`, `CategoryDraft`, `CategoryTagDraft`, `CategoryBudgetDraft` e `GoalDraft`) passaram a alimentar validadores e funcoes puras.
+- Tipos de saida do dashboard e lancamentos (`FinancialSummary`, `CategoryBreakdownRow`, `CashflowSeriesPoint` e `TransactionHighlights`) centralizados em `applicationTypes`.

@@ -1,25 +1,6 @@
-interface TransactionHighlightItem {
-  type?: string;
-  amount?: number | string | null;
-  status?: string;
-  paymentMethod?: string;
-}
+import type { TransactionDraft, TransactionHighlights } from "../shared/applicationTypes.js";
 
-interface TransactionHighlights {
-  count: number;
-  status: {
-    paid: number;
-    pending: number;
-  };
-  payments: {
-    pix: number;
-    credit: number;
-  };
-  totals: {
-    income: number;
-    outflow: number;
-  };
-}
+type TransactionHighlightItem = Pick<TransactionDraft, "type" | "amount" | "status" | "paymentMethod">;
 
 function toAmount(value: TransactionHighlightItem["amount"]): number {
   const number = Number(value);

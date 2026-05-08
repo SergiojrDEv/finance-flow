@@ -1,22 +1,10 @@
-interface CategoryBreakdownTransaction {
-  type?: string;
-  category?: string | null;
-  amount?: number | string | null;
-}
+import type { CategoryBreakdownRow, CategoryTuple, TransactionDraft } from "../shared/applicationTypes.js";
 
-type CategoryTuple = [key: string, label: string, color: string];
+type CategoryBreakdownTransaction = Pick<TransactionDraft, "type" | "amount" | "category">;
 
 interface CategoryBreakdownInput {
   transactions?: CategoryBreakdownTransaction[];
   categories?: CategoryTuple[];
-}
-
-interface CategoryBreakdownRow {
-  key: string;
-  label: string;
-  color: string;
-  value: number;
-  width: number;
 }
 
 function toAmount(value: CategoryBreakdownTransaction["amount"]): number {
