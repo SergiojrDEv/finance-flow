@@ -159,3 +159,12 @@ test("ports de aplicacao nao retornam Promise<unknown>", async () => {
 
   assert.deepEqual(violations, []);
 });
+
+test("src/app.js permanece como entrada pequena do runtime", async () => {
+  const appPath = path.join(rootDir, "src", "app.js");
+  const source = await readFile(appPath, "utf8");
+  const lines = source.split(/\r?\n/).filter((line) => line.trim()).length;
+
+  assert.ok(source.includes("./core/runtime.js"), "src/app.js deve delegar composicao para src/core/runtime.js");
+  assert.ok(lines <= 25, `src/app.js deve continuar pequeno; linhas atuais: ${lines}`);
+});

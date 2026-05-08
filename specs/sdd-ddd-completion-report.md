@@ -74,3 +74,4 @@ O typecheck esta configurado no CI por `.github/workflows/quality.yml`, mas nao 
 - Repositorios Supabase de schema e perfil de usuario receberam contratos explicitos para cliente, usuario autenticado e linha de perfil.
 - Servicos de push/pull e repositorios Supabase de snapshot, legacy, catalogo V2 e transacoes V2 receberam contratos explicitos nas bordas publicas, preservando flexibilidade interna do query builder Supabase.
 - Nova fase de reducao do runtime iniciada: navegacao, bindings de eventos e composicao do bootstrap foram extraidos de `src/app.js` para modulos de `src/core`, mantendo o arquivo de entrada pequeno e estavel.
+- Guardrail arquitetural adicionado para manter `src/app.js` como entrada pequena delegando a composicao para `src/core/runtime.js`.
