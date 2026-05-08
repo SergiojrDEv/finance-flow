@@ -1,12 +1,4 @@
-import type { TransactionKind, ValidationResult, ValidationErrors } from "../shared/applicationTypes.js";
-
-type CategoryDraft = {
-  kind?: unknown;
-  name?: unknown;
-  slug?: unknown;
-  color?: unknown;
-  monthlyLimit?: unknown;
-};
+import type { CategoryDraft, TransactionKind, ValidationResult, ValidationErrors } from "../shared/applicationTypes.js";
 
 const VALID_KINDS = new Set<TransactionKind>(["income", "expense", "investment"]);
 const HEX_COLOR = /^#[0-9a-f]{6}$/i;

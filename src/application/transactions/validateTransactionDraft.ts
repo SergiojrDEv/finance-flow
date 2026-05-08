@@ -1,17 +1,5 @@
 import { TRANSACTION_TYPES, shouldShowTransactionField } from "./transactionFormRules.js";
-import type { TransactionStatus, ValidationResult, ValidationErrors } from "../shared/applicationTypes.js";
-
-type TransactionDraft = Record<string, unknown> & {
-  type?: unknown;
-  userId?: unknown;
-  description?: unknown;
-  category?: unknown;
-  account?: unknown;
-  amount?: unknown;
-  date?: unknown;
-  status?: unknown;
-  dueDate?: unknown;
-};
+import type { TransactionDraft, TransactionStatus, ValidationResult, ValidationErrors } from "../shared/applicationTypes.js";
 
 const VALID_TYPES = new Set(Object.values(TRANSACTION_TYPES));
 const VALID_STATUSES = new Set<TransactionStatus>(["paid", "pending", "planned"]);

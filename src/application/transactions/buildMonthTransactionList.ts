@@ -1,18 +1,10 @@
-import type { AmountPresentation, PaymentMethod, TransactionKind, TransactionStatus } from "../shared/applicationTypes.js";
+import type { AmountPresentation, PaymentMethod, TransactionDraft, TransactionKind, TransactionStatus } from "../shared/applicationTypes.js";
 
-type TransactionListItem = Record<string, unknown> & {
+type TransactionListItem = TransactionDraft & {
   type?: unknown;
   transaction_kind?: unknown;
   kind?: unknown;
-  description?: unknown;
-  category?: unknown;
-  subcategory?: unknown;
-  account?: unknown;
   paymentMethod?: unknown;
-  date?: unknown;
-  dueDate?: unknown;
-  status?: unknown;
-  amount?: unknown;
 };
 
 type BuildMonthTransactionListInput = {

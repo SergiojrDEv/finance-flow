@@ -1,18 +1,12 @@
-import type { PaymentMethod, TransactionKind } from "../shared/applicationTypes.js";
+import type { PaymentMethod, TransactionDraft, TransactionKind } from "../shared/applicationTypes.js";
 
-type TransactionSeriesValues = Record<string, unknown> & {
+type TransactionSeriesValues = TransactionDraft & {
   paymentMethod?: PaymentMethod;
-  installments?: unknown;
-  repeatCount?: unknown;
+  installments?: number | string;
   recurrence?: string;
-  amount?: unknown;
   subcategory?: string | null;
-  description?: unknown;
   date?: string;
   dueDate?: string;
-  category?: unknown;
-  account?: unknown;
-  status?: string;
   creditCardId?: string | null;
 };
 

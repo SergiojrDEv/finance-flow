@@ -55,3 +55,4 @@ O typecheck esta configurado no CI por `.github/workflows/quality.yml`, mas nao 
 - Fase de promocao TypeScript segura concluida em 100% para `src/application`: todos os modulos de aplicacao agora possuem contraparte `.ts` e estao registrados em `scripts/typescript-primary-sources.mjs` para transpilacao controlada no build estatico.
 - Nova fase de TypeScript forte iniciada: tipos compartilhados de aplicacao criados em `src/application/shared/applicationTypes.ts` e aplicados nos validadores e funcoes puras de lancamentos.
 - Contratos dos repositorios de aplicacao tipados com entidades estruturais (`TransactionEntity`, `CategoryEntity`, `CategoryTagEntity`, `CategoryBudgetEntity` e `GoalEntity`) no lugar de `Promise<unknown>`.
+- Drafts de entrada compartilhados (`TransactionDraft`, `CategoryDraft`, `CategoryTagDraft`, `CategoryBudgetDraft` e `GoalDraft`) passaram a alimentar validadores e funcoes puras.

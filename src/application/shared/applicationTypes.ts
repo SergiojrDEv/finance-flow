@@ -73,3 +73,27 @@ export type GoalEntity = BaseEntity & {
   color: string;
   isArchived: boolean;
 };
+
+export type CategoryBudgetDraft = Partial<CategoryBudgetEntity>;
+
+export type CategoryDraft = Partial<CategoryEntity> & {
+  kind?: TransactionKind | string;
+  monthlyLimit?: number | string | null;
+};
+
+export type CategoryTagDraft = Partial<CategoryTagEntity> & {
+  kind?: TransactionKind | string;
+};
+
+export type GoalDraft = Partial<GoalEntity> & {
+  target?: number | string;
+  currentAmount?: number | string;
+};
+
+export type TransactionDraft = Partial<TransactionEntity> & {
+  type?: TransactionKind | string;
+  amount?: number | string;
+  repeatCount?: number | string;
+  installmentNumber?: number | string | null;
+  installmentTotal?: number | string | null;
+};

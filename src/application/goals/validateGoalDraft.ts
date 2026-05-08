@@ -1,10 +1,4 @@
-import type { ValidationResult, ValidationErrors } from "../shared/applicationTypes.js";
-
-type GoalDraft = {
-  name?: unknown;
-  key?: unknown;
-  target?: unknown;
-};
+import type { GoalDraft, ValidationResult, ValidationErrors } from "../shared/applicationTypes.js";
 
 function isNonEmpty(value: unknown): boolean {
   return String(value || "").trim().length > 0;

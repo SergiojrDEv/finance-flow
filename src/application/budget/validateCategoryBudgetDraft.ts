@@ -1,10 +1,4 @@
-import type { ValidationResult, ValidationErrors } from "../shared/applicationTypes.js";
-
-type CategoryBudgetDraft = {
-  categorySlug?: unknown;
-  weeklyLimit?: unknown;
-  monthlyLimit?: unknown;
-};
+import type { CategoryBudgetDraft, ValidationResult, ValidationErrors } from "../shared/applicationTypes.js";
 
 function isNonEmpty(value: unknown): boolean {
   return String(value || "").trim().length > 0;
