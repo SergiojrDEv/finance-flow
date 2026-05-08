@@ -68,5 +68,9 @@ export const typeScriptPrimarySourceFiles = [
   "src/infrastructure/diagnostics/installDiagnosticsApi.ts",
   "src/infrastructure/diagnostics/shadowDiagnostics.ts",
   "src/infrastructure/goals/LocalGoalRepository.ts",
+  "src/infrastructure/shadow/compareCatalogSnapshot.ts",
+  "src/infrastructure/shadow/compareTransactionCreation.ts",
+  "src/infrastructure/shadow/runCatalogShadow.ts",
+  "src/infrastructure/shadow/runTransactionCreationShadow.ts",
   "src/infrastructure/transactions/LocalTransactionRepository.ts"
 ];
