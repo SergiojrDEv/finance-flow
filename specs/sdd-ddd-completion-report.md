@@ -58,3 +58,4 @@ O typecheck esta configurado no CI por `.github/workflows/quality.yml`, mas nao 
 - Drafts de entrada compartilhados (`TransactionDraft`, `CategoryDraft`, `CategoryTagDraft`, `CategoryBudgetDraft` e `GoalDraft`) passaram a alimentar validadores e funcoes puras.
 - Tipos de saida do dashboard e lancamentos (`FinancialSummary`, `CategoryBreakdownRow`, `CashflowSeriesPoint` e `TransactionHighlights`) centralizados em `applicationTypes`.
 - Contratos de autenticacao tipados (`AuthUser`, `SignupProfile`, `AuthPlan` e `AuthClient`) sem alterar o fluxo de login, cadastro ou recuperacao.
+- Planos de sincronizacao e linhas `transactions_v2` tipados em `applicationTypes`, cobrindo status da nuvem, pull, ciclo de sync e mapeamento de transacoes.

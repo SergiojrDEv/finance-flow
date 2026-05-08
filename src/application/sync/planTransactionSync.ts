@@ -1,11 +1,28 @@
+import type { TransactionDraft, TransactionKind, TransactionV2Row } from "../shared/applicationTypes.js";
+
 const VALID_TRANSACTION_KINDS = new Set(["income", "expense", "investment"]);
 
-function normalizeTransactionKind(transaction) {
+function normalizeTransactionKind(transaction?: TransactionDraft & { transaction_kind?: string; kind?: string }): TransactionKind {
   const kind = transaction?.type || transaction?.transaction_kind || transaction?.kind;
-  return VALID_TRANSACTION_KINDS.has(kind) ? kind : "expense";
+  return VALID_TRANSACTION_KINDS.has(String(kind)) ? kind as TransactionKind : "expense";
 }
 
-export function mapTransactionToV2Row(transaction, { userId, categories, accounts, tagIds, now = new Date().toISOString() } = {}) {
+export function mapTransactionToV2Row(
+  transaction?: TransactionDraft,
+  {
+    userId,
+    categories,
+    accounts,
+    tagIds,
+    now = new Date().toISOString(),
+  }: {
+    userId?: string;
+    categories?: Map<string, { id?: string }>;
+    accounts?: Map<string, string>;
+    tagIds?: Map<string, string>;
+    now?: string;
+  } = {},
+): TransactionV2Row | null {
   if (!transaction?.id) return null;
 
   const transactionKind = normalizeTransactionKind(transaction);
@@ -38,7 +55,15 @@ export function mapTransactionToV2Row(transaction, { userId, categories, account
   };
 }
 
-export function planTransactionV2Sync({ localTransactions = [], remoteTransactions = [], refs = {} } = {}) {
+export function planTransactionV2Sync({
+  localTransactions = [],
+  remoteTransactions = [],
+  refs = {},
+}: {
+  localTransactions?: TransactionDraft[];
+  remoteTransactions?: Array<{ id?: string }>;
+  refs?: Parameters<typeof mapTransactionToV2Row>[1];
+} = {}) {
   const upserts = localTransactions
     .map((transaction) => mapTransactionToV2Row(transaction, refs))
     .filter(Boolean);

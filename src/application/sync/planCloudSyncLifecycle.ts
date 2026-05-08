@@ -1,15 +1,25 @@
+import type { CloudSyncCompletionPlan, CloudSyncStartPlan, CloudSyncState } from "../shared/applicationTypes.js";
+
 export function hasUnsyncedLocalChanges({
   transactions = [],
   lastLocalChangeAt = null,
   lastCloudSyncAt = null,
-} = {}) {
+}: Pick<CloudSyncState, "transactions" | "lastLocalChangeAt" | "lastCloudSyncAt"> = {}): boolean {
   if (!transactions.length) return false;
   if (!lastLocalChangeAt) return false;
   if (!lastCloudSyncAt) return true;
   return new Date(lastLocalChangeAt).getTime() > new Date(lastCloudSyncAt).getTime();
 }
 
-export function planCloudSyncStart({ hasUser = false, hasClient = false, isSyncing = false } = {}) {
+export function planCloudSyncStart({
+  hasUser = false,
+  hasClient = false,
+  isSyncing = false,
+}: {
+  hasUser?: boolean;
+  hasClient?: boolean;
+  isSyncing?: boolean;
+} = {}): CloudSyncStartPlan {
   if (!hasUser || !hasClient) {
     return { shouldStart: false, shouldMarkPending: false };
   }
@@ -19,7 +29,13 @@ export function planCloudSyncStart({ hasUser = false, hasClient = false, isSynci
   return { shouldStart: true, shouldMarkPending: false };
 }
 
-export function planCloudSyncCompletion({ pendingCloudSync = false, now = () => new Date() } = {}) {
+export function planCloudSyncCompletion({
+  pendingCloudSync = false,
+  now = () => new Date(),
+}: {
+  pendingCloudSync?: boolean;
+  now?: () => Date;
+} = {}): CloudSyncCompletionPlan {
   return {
     pendingCloudSync: false,
     lastCloudSyncAt: now().toISOString(),
@@ -27,7 +43,7 @@ export function planCloudSyncCompletion({ pendingCloudSync = false, now = () => 
   };
 }
 
-export function planCloudSyncCompletionEffects({ shouldRunAgain = false } = {}) {
+export function planCloudSyncCompletionEffects({ shouldRunAgain = false }: { shouldRunAgain?: boolean } = {}) {
   return {
     shouldSave: true,
     shouldRenderStatus: true,
@@ -35,7 +51,7 @@ export function planCloudSyncCompletionEffects({ shouldRunAgain = false } = {}) 
   };
 }
 
-export function applyCloudSyncStart(currentState, startPlan) {
+export function applyCloudSyncStart(currentState: CloudSyncState, startPlan: CloudSyncStartPlan) {
   if (!currentState) throw new Error("currentState e obrigatorio.");
   if (!startPlan) throw new Error("startPlan e obrigatorio.");
 
@@ -52,7 +68,7 @@ export function applyCloudSyncStart(currentState, startPlan) {
   return { started: true, pending: false };
 }
 
-export function applyCloudSyncCompletion(currentState, completionPlan) {
+export function applyCloudSyncCompletion(currentState: CloudSyncState, completionPlan: CloudSyncCompletionPlan) {
   if (!currentState) throw new Error("currentState e obrigatorio.");
   if (!completionPlan) throw new Error("completionPlan e obrigatorio.");
 

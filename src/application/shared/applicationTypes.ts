@@ -201,3 +201,79 @@ export type AuthClient = {
   updateUser(payload: { password?: string }): Promise<{ data?: unknown; error?: { message: string } | null }>;
   signOut?: () => Promise<unknown>;
 };
+
+export type CloudStatusInput = {
+  forcedText?: string;
+  cloudReady?: boolean;
+  isSyncing?: boolean;
+  userEmail?: string;
+};
+
+export type CloudPullStartPlan = {
+  action: "confirm-replace" | "sync-local-first" | "pull";
+  shouldAskConfirmation: boolean;
+  shouldRenderStatus: boolean;
+  statusText: string;
+  shouldScheduleAutoSync: boolean;
+  shouldContinue: boolean;
+};
+
+export type CloudPullConfirmationPlan = {
+  action: "pull" | "cancel";
+  shouldContinue: boolean;
+  shouldRenderStatus: boolean;
+  statusText: string;
+};
+
+export type CloudPullCompletionPlan = {
+  action: "skipped" | "applied";
+  shouldSave: boolean;
+  shouldUpdateOptions: boolean;
+  shouldRenderAll: boolean;
+  shouldRenderStatus: boolean;
+  shouldNotify: boolean;
+};
+
+export type CloudSyncState = {
+  transactions?: TransactionDraft[];
+  lastLocalChangeAt?: string | null;
+  lastCloudSyncAt?: string | null;
+  isSyncing?: boolean;
+  pendingCloudSync?: boolean;
+  settings?: unknown;
+  catalog?: unknown;
+  dataMode?: string;
+};
+
+export type CloudSyncStartPlan = {
+  shouldStart: boolean;
+  shouldMarkPending: boolean;
+};
+
+export type CloudSyncCompletionPlan = {
+  pendingCloudSync: boolean;
+  lastCloudSyncAt: string;
+  shouldRunAgain: boolean;
+};
+
+export type TransactionV2Row = {
+  id: string;
+  user_id?: string;
+  transaction_kind: TransactionKind;
+  status: string;
+  description?: string;
+  amount: number;
+  transaction_date?: string;
+  due_date?: string;
+  category_id: string | null;
+  category_tag_id: string | null;
+  account_id: string | null;
+  credit_card_id: string | null;
+  payment_method: string;
+  recurring_rule_id: string | null;
+  installment_group_id: string | null;
+  installment_number: number | string | null;
+  installment_total: number | string | null;
+  created_at: string;
+  updated_at: string;
+};

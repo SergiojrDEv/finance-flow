@@ -1,8 +1,14 @@
+import type { CloudPullCompletionPlan, CloudPullConfirmationPlan, CloudPullStartPlan } from "../shared/applicationTypes.js";
+
 export function planCloudPullStart({
   silent = false,
   hasLocalTransactions = false,
   hasUnsyncedLocalChanges = false,
-} = {}) {
+}: {
+  silent?: boolean;
+  hasLocalTransactions?: boolean;
+  hasUnsyncedLocalChanges?: boolean;
+} = {}): CloudPullStartPlan {
   if (!silent && hasLocalTransactions) {
     return {
       action: "confirm-replace",
@@ -35,7 +41,7 @@ export function planCloudPullStart({
   };
 }
 
-export function planCloudPullAfterConfirmation({ confirmed = false } = {}) {
+export function planCloudPullAfterConfirmation({ confirmed = false }: { confirmed?: boolean } = {}): CloudPullConfirmationPlan {
   return {
     action: confirmed ? "pull" : "cancel",
     shouldContinue: Boolean(confirmed),
@@ -44,7 +50,7 @@ export function planCloudPullAfterConfirmation({ confirmed = false } = {}) {
   };
 }
 
-export function planCloudPullCompletion({ skipped = false, silent = false } = {}) {
+export function planCloudPullCompletion({ skipped = false, silent = false }: { skipped?: boolean; silent?: boolean } = {}): CloudPullCompletionPlan {
   if (skipped) {
     return {
       action: "skipped",
