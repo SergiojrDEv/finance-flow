@@ -1,16 +1,37 @@
 import { mapLegacyRowToLocalTransaction } from "./LegacyTransactionMapper.js";
+import type {
+  CatalogSnapshot,
+  HydratedLegacyCloudSnapshot,
+  LegacyCloudSnapshotInput,
+} from "./syncTypes.js";
 
-export function shouldSkipSilentLegacySnapshot({ snapshot, hasLocalTransactions, silent = false } = {}) {
+export function shouldSkipSilentLegacySnapshot({
+  snapshot,
+  hasLocalTransactions,
+  silent = false,
+}: {
+  snapshot?: LegacyCloudSnapshotInput | null;
+  hasLocalTransactions?: boolean;
+  silent?: boolean;
+} = {}): boolean {
   if (!silent || !hasLocalTransactions) return false;
   return !snapshot?.transactions?.length;
 }
 
 export function hydrateLegacyCloudSnapshot(
-  snapshot = {},
-  { mergeSettings, hydrateCatalog, currentCatalog } = {}
-) {
+  snapshot: LegacyCloudSnapshotInput = {},
+  {
+    mergeSettings,
+    hydrateCatalog,
+    currentCatalog,
+  }: {
+    mergeSettings?: (settings?: Record<string, unknown> | null) => Record<string, unknown>;
+    hydrateCatalog?: (settings?: Record<string, unknown> | null, currentCatalog?: CatalogSnapshot | null) => CatalogSnapshot;
+    currentCatalog?: CatalogSnapshot | null;
+  } = {},
+): HydratedLegacyCloudSnapshot {
   const transactions = (snapshot.transactions || []).map((row) => mapLegacyRowToLocalTransaction(row));
-  const result = {
+  const result: HydratedLegacyCloudSnapshot = {
     transactions,
     hasSettings: Boolean(snapshot.settings),
     settings: null,

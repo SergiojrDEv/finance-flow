@@ -58,3 +58,39 @@ export type CatalogSnapshot = {
 };
 
 export type V2Refs = Record<string, unknown>;
+
+export type CloudSnapshotRefs = {
+  accountById: Map<string, Record<string, unknown>>;
+  categoryById: Map<string, Record<string, unknown>>;
+  tagById: Map<string, Record<string, unknown>>;
+};
+
+export type CloudSnapshotInput = {
+  accounts?: Array<Record<string, unknown>>;
+  creditCards?: Array<Record<string, unknown>>;
+  categories?: Array<Record<string, unknown>>;
+  categoryTags?: Array<Record<string, unknown>>;
+  budgets?: Array<Record<string, unknown>>;
+  goals?: Array<Record<string, unknown>>;
+  transactions?: Array<Record<string, unknown>>;
+  legacyTransactions?: LegacyTransactionRow[];
+};
+
+export type HydratedCloudSnapshot = {
+  catalog: CatalogSnapshot;
+  dataMode: "v2";
+  transactions: TransactionDraft[];
+};
+
+export type LegacyCloudSnapshotInput = {
+  transactions?: LegacyTransactionRow[];
+  settings?: Record<string, unknown> | null;
+};
+
+export type HydratedLegacyCloudSnapshot = {
+  transactions: TransactionDraft[];
+  hasSettings: boolean;
+  settings: Record<string, unknown> | null;
+  catalog: CatalogSnapshot | null;
+  dataMode: "legacy";
+};
