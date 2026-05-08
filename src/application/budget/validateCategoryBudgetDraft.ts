@@ -1,10 +1,10 @@
+import type { ValidationResult, ValidationErrors } from "../shared/applicationTypes.js";
+
 type CategoryBudgetDraft = {
   categorySlug?: unknown;
   weeklyLimit?: unknown;
   monthlyLimit?: unknown;
 };
-
-type ValidationErrors = Record<string, string>;
 
 function isNonEmpty(value: unknown): boolean {
   return String(value || "").trim().length > 0;
@@ -15,7 +15,7 @@ function isValidAmount(value: unknown): boolean {
   return Number.isFinite(number) && number >= 0;
 }
 
-export function validateCategoryBudgetDraft(draft: CategoryBudgetDraft = {}) {
+export function validateCategoryBudgetDraft(draft: CategoryBudgetDraft = {}): ValidationResult {
   const errors: ValidationErrors = {};
 
   if (!isNonEmpty(draft.categorySlug)) {

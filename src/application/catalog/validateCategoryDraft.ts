@@ -1,3 +1,5 @@
+import type { TransactionKind, ValidationResult, ValidationErrors } from "../shared/applicationTypes.js";
+
 type CategoryDraft = {
   kind?: unknown;
   name?: unknown;
@@ -6,16 +8,14 @@ type CategoryDraft = {
   monthlyLimit?: unknown;
 };
 
-type ValidationErrors = Record<string, string>;
-
-const VALID_KINDS = new Set(["income", "expense", "investment"]);
+const VALID_KINDS = new Set<TransactionKind>(["income", "expense", "investment"]);
 const HEX_COLOR = /^#[0-9a-f]{6}$/i;
 
 function isNonEmpty(value: unknown): boolean {
   return String(value || "").trim().length > 0;
 }
 
-export function validateCategoryDraft(draft: CategoryDraft = {}) {
+export function validateCategoryDraft(draft: CategoryDraft = {}): ValidationResult {
   const errors: ValidationErrors = {};
 
   if (!VALID_KINDS.has(String(draft.kind))) {

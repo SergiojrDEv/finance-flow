@@ -1,4 +1,5 @@
 import { TRANSACTION_TYPES, shouldShowTransactionField } from "./transactionFormRules.js";
+import type { TransactionStatus, ValidationResult, ValidationErrors } from "../shared/applicationTypes.js";
 
 type TransactionDraft = Record<string, unknown> & {
   type?: unknown;
@@ -12,10 +13,8 @@ type TransactionDraft = Record<string, unknown> & {
   dueDate?: unknown;
 };
 
-type ValidationErrors = Record<string, string>;
-
 const VALID_TYPES = new Set(Object.values(TRANSACTION_TYPES));
-const VALID_STATUSES = new Set(["paid", "pending", "planned"]);
+const VALID_STATUSES = new Set<TransactionStatus>(["paid", "pending", "planned"]);
 
 function isNonEmpty(value: unknown): boolean {
   return String(value || "").trim().length > 0;
@@ -32,7 +31,7 @@ function normalizeAmount(value: unknown): number {
   return Number.isFinite(number) ? number : 0;
 }
 
-export function validateTransactionDraft(draft: TransactionDraft = {}) {
+export function validateTransactionDraft(draft: TransactionDraft = {}): ValidationResult {
   const errors: ValidationErrors = {};
   const type = draft.type;
 

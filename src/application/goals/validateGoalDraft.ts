@@ -1,10 +1,10 @@
+import type { ValidationResult, ValidationErrors } from "../shared/applicationTypes.js";
+
 type GoalDraft = {
   name?: unknown;
   key?: unknown;
   target?: unknown;
 };
-
-type ValidationErrors = Record<string, string>;
 
 function isNonEmpty(value: unknown): boolean {
   return String(value || "").trim().length > 0;
@@ -15,7 +15,7 @@ function isValidAmount(value: unknown): boolean {
   return Number.isFinite(number) && number > 0;
 }
 
-export function validateGoalDraft(draft: GoalDraft = {}) {
+export function validateGoalDraft(draft: GoalDraft = {}): ValidationResult {
   const errors: ValidationErrors = {};
 
   if (!isNonEmpty(draft.name)) {

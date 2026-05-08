@@ -1,5 +1,6 @@
 export const typeScriptPrimarySourceFiles = [
   "src/application/shared/result.ts",
+  "src/application/shared/applicationTypes.ts",
   "src/application/budget/ports/CategoryBudgetRepository.ts",
   "src/application/budget/validateCategoryBudgetDraft.ts",
   "src/application/catalog/ports/CategoryRepository.ts",

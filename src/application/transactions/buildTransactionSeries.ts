@@ -1,5 +1,7 @@
+import type { PaymentMethod, TransactionKind } from "../shared/applicationTypes.js";
+
 type TransactionSeriesValues = Record<string, unknown> & {
-  paymentMethod?: string;
+  paymentMethod?: PaymentMethod;
   installments?: unknown;
   repeatCount?: unknown;
   recurrence?: string;
@@ -16,7 +18,7 @@ type TransactionSeriesValues = Record<string, unknown> & {
 
 type BuildTransactionSeriesInput = {
   values?: TransactionSeriesValues;
-  type?: string;
+  type?: TransactionKind;
   createId?: () => string;
   now?: string;
   resolveAccount?: (value: unknown) => unknown;
@@ -42,11 +44,11 @@ function addMonths(dateValue: unknown, amount: number): string {
   return toDateInput(next);
 }
 
-function shouldUseExpenseFields(type: string): boolean {
+function shouldUseExpenseFields(type: TransactionKind): boolean {
   return type === EXPENSE_ONLY_TYPE;
 }
 
-function defaultPaymentMethodForType(type: string): string {
+function defaultPaymentMethodForType(type: TransactionKind): PaymentMethod {
   if (type === "income") return "transfer";
   if (type === "investment") return "transfer";
   return "pix";

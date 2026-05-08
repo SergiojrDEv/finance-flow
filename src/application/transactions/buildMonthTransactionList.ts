@@ -1,3 +1,5 @@
+import type { AmountPresentation, PaymentMethod, TransactionKind, TransactionStatus } from "../shared/applicationTypes.js";
+
 type TransactionListItem = Record<string, unknown> & {
   type?: unknown;
   transaction_kind?: unknown;
@@ -20,21 +22,21 @@ type BuildMonthTransactionListInput = {
   search?: string;
 };
 
-const VALID_TYPES = new Set(["income", "expense", "investment"]);
+const VALID_TYPES = new Set<TransactionKind>(["income", "expense", "investment"]);
 
-const TYPE_LABELS: Record<string, string> = {
+const TYPE_LABELS: Record<TransactionKind, string> = {
   income: "Receita",
   expense: "Despesa",
   investment: "Investimento",
 };
 
-const STATUS_LABELS: Record<string, string> = {
+const STATUS_LABELS: Record<TransactionStatus, string> = {
   paid: "Pago",
   pending: "Pendente",
   planned: "Previsto",
 };
 
-const PAYMENT_METHOD_LABELS: Record<string, string> = {
+const PAYMENT_METHOD_LABELS: Record<PaymentMethod, string> = {
   pix: "Pix",
   debit: "Debito",
   credit: "Credito",
@@ -64,7 +66,7 @@ export function getPaymentMethodLabel(paymentMethod: unknown): string {
   return PAYMENT_METHOD_LABELS[String(paymentMethod)] || "Outro";
 }
 
-export function getTransactionAmountPresentation(type: unknown) {
+export function getTransactionAmountPresentation(type: unknown): AmountPresentation {
   const normalizedType = normalizeTransactionType(type);
   return {
     sign: normalizedType === "income" ? "+" : "-",
