@@ -43,3 +43,5 @@ O typecheck esta configurado no CI por `.github/workflows/quality.yml`, mas nao 
 - `src/application/dashboard/buildTransactionHighlights.ts` promovido como fonte TypeScript principal.
 - `src/application/dashboard/buildCategoryBreakdown.ts` promovido como fonte TypeScript principal.
 - `src/application/dashboard/buildDailyHistory.ts` promovido como fonte TypeScript principal.
+- `src/application/dashboard/buildBudgetOverview.ts` promovido como fonte TypeScript principal.
+- `src/application/dashboard/buildDashboardInsights.ts` promovido como fonte TypeScript principal.
