@@ -64,3 +64,4 @@ O typecheck esta configurado no CI por `.github/workflows/quality.yml`, mas nao 
 - Nova fase `src/domain` iniciada: guardrail de fontes TypeScript principais agora permite `src/domain`, e `CategoryBudget` foi promovido como entidade TypeScript nativa piloto.
 - Entidades de catalogo `Category` e `CategoryTag` promovidas para TypeScript nativo com contratos estruturais compartilhados.
 - Entidade de metas `Goal` promovida para TypeScript nativo, preservando validacao de dominio e imutabilidade.
+- Entidade de lancamentos `Transaction` promovida para TypeScript nativo, preservando campos exclusivos de despesa e limpeza de receita/investimento.
