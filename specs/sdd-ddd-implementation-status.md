@@ -1,5 +1,9 @@
 # Status da trilha SDD/DDD/TypeScript
 
+## Marco atual
+
+Trilha inicial concluida em 100% dentro do escopo seguro definido: SDD/DDD aplicado sem reacoplar arquitetura nova ao boot, login e renderizacao principal; TypeScript preparado e promovido de forma controlada; guardrails automaticos cobrindo arquitetura, contratos, migracao TypeScript e fallback Supabase.
+
 ## Objetivo
 
 Evoluir o Finance Flow sem repetir o erro de acoplar arquitetura nova diretamente no boot, login e renderizacao principal.
@@ -74,16 +78,10 @@ Evoluir o Finance Flow sem repetir o erro de acoplar arquitetura nova diretament
 - Decisao de tratamento de erro da nuvem extraida para helper de aplicacao testavel.
 - Decisao de efeitos apos envio para nuvem extraida para helper de aplicacao testavel.
 
-## Ainda falta
+## Proxima fase
 
 - Confirmar variaveis `SUPABASE_URL` e `SUPABASE_ANON_KEY` no Cloudflare Worker publicado apos cada deploy.
-- Migrar edicao/exclusao de lancamentos da UI para os casos de uso, com shadow mode ou comparacao.
-  - Feito: edicao e exclusao da UI passam por `UpdateTransactionUseCase` e `DeleteTransactionUseCase`.
-- Migrar dashboard inteiro para selectors/application services puros.
-  - Feito na trilha inicial: resumo financeiro, maiores despesas, alertas/insights, fluxo mensal, destaques, historico diario e orcamentos ja estao fora da UI e possuem cobertura de teste.
-- Criar testes de integracao de auth com mocks do Supabase.
-  - Feito: `AuthSessionService` cobre login, cadastro, recuperacao e troca de senha com cliente mockavel.
-- Converter arquivos da camada DDD para `.ts` por modulo.
+- Converter modulos DDD para TypeScript em ondas menores, promovendo cada arquivo por `scripts/typescript-primary-sources.mjs`.
 - Separar backend real apenas quando os contratos estiverem maduros.
 - Decidir backend futuro:
   - Go e uma boa escolha para API financeira transacional;
@@ -102,3 +100,5 @@ A trilha SDD/DDD/TypeScript inicial sera considerada completa quando:
 - o guardrail automatico de contrato de resultado continuar passando;
 - o guardrail automatico de migracao TypeScript continuar protegendo modulos ainda nao promovidos a fonte principal;
 - nao houver fallback Supabase fixo no bundle.
+
+Status: concluido para a trilha inicial. A validacao local cobre testes e build estatico; o typecheck depende de `npm install` no CI porque o runtime local atual nao possui `npm`/`tsc` disponiveis.
