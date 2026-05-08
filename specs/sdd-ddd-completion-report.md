@@ -49,3 +49,4 @@ O typecheck esta configurado no CI por `.github/workflows/quality.yml`, mas nao 
 - `src/application/dashboard/buildCashflowSeries.ts` promovido como fonte TypeScript principal.
 - Ports de sync `CatalogV2SyncRepository`, `CloudSnapshotRepository` e `TransactionV2SyncRepository` promovidos como fontes TypeScript principais preservando os erros de contrato do runtime JavaScript.
 - Helper compartilhado `src/application/shared/result.ts` promovido como fonte TypeScript principal para padronizar contratos de sucesso, falha e mensagens de erro entre casos de uso.
+- Validadores puros de orcamento, categorias, etiquetas e metas promovidos para TypeScript primario antes dos casos de uso que dependem deles.
