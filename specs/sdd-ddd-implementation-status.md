@@ -31,6 +31,7 @@ Evoluir o Finance Flow sem repetir o erro de acoplar arquitetura nova diretament
 - Build estatico preparado para transpilar `.ts` para `.js` quando TypeScript estiver instalado.
 - Primeiro helper de aplicacao usado em runtime recebeu contraparte TypeScript para validar o caminho de migracao.
 - Regras de formulario de lancamento receberam contraparte TypeScript com tipos explicitos, mantendo o runtime atual em JavaScript.
+- Resumo financeiro do dashboard recebeu contraparte TypeScript com contrato tipado para totais, contagens, taxas e saude financeira.
 - CI de qualidade criado para testes e typecheck.
 - Guardrail automatico de arquitetura criado para impedir que `src/application` dependa de DOM, Supabase, `localStorage`, UI ou infraestrutura.
 - Guardrail automatico de contrato criado para impedir retornos manuais `{ ok: ... }` fora de `src/application/shared/result.js`.
