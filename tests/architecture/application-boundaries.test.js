@@ -116,12 +116,12 @@ test("src/application mantem contraparte JavaScript durante migracao TypeScript"
 
 test("fontes TypeScript principais existem em camadas permitidas", async () => {
   const violations = [];
-  const allowedPrefixes = ["src/application/", "src/domain/"];
+  const allowedPrefixes = ["src/application/", "src/domain/", "src/infrastructure/"];
 
   for (const relativePath of typeScriptPrimarySourceFiles) {
     const fullPath = path.join(rootDir, relativePath);
     if (!allowedPrefixes.some((prefix) => relativePath.startsWith(prefix))) {
-      violations.push(`${relativePath}: fonte TypeScript principal deve ficar em src/application ou src/domain nesta fase`);
+      violations.push(`${relativePath}: fonte TypeScript principal deve ficar em src/application, src/domain ou src/infrastructure nesta fase`);
       continue;
     }
 

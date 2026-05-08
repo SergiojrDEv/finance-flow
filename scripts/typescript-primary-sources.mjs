@@ -55,5 +55,10 @@ export const typeScriptPrimarySourceFiles = [
   "src/domain/catalog/Category.ts",
   "src/domain/catalog/CategoryTag.ts",
   "src/domain/goals/Goal.ts",
-  "src/domain/transactions/Transaction.ts"
+  "src/domain/transactions/Transaction.ts",
+  "src/infrastructure/budget/LocalCategoryBudgetRepository.ts",
+  "src/infrastructure/catalog/LocalCategoryRepository.ts",
+  "src/infrastructure/catalog/LocalCategoryTagRepository.ts",
+  "src/infrastructure/goals/LocalGoalRepository.ts",
+  "src/infrastructure/transactions/LocalTransactionRepository.ts"
 ];
