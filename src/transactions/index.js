@@ -18,12 +18,14 @@ import { firstErrorMessage } from "../application/shared/result.js";
 import { createTransactionServices } from "../infrastructure/composition/createTransactionServices.js";
 import { runTransactionCreationShadow } from "../infrastructure/shadow/runTransactionCreationShadow.js";
 import { renderTransactionTableHtml } from "./tableTemplate.js";
+import { createTransactionsDom } from "./transactionsDom.js";
 import { getTypeExperience } from "./typeExperience.js";
 
 export function createTransactionsModule(deps) {
   let transactionServices = null;
   let shadowServices = null;
   let shadowTransactions = [];
+  const dom = createTransactionsDom();
 
   function getTransactionServices() {
     if (transactionServices) return transactionServices;
@@ -492,20 +494,11 @@ export function createTransactionsModule(deps) {
     setTransactionModalType(item.type);
     updateTransactionModalAccounts();
     updateCreditCardOptions();
-    document.querySelector("#transaction-modal-description").value = item.description;
-    document.querySelector("#transaction-modal-category").value = item.category;
+    dom.fillTransactionModal(item);
     updateTransactionModalSubcategoryOptions(item.subcategory || "");
-    document.querySelector("#transaction-modal-account").value = item.account;
-    document.querySelector("#transaction-modal-amount").value = item.amount;
-    document.querySelector("#transaction-modal-date").value = item.date;
-    document.querySelector("#transaction-modal-due-date").value = item.dueDate || item.date;
-    document.querySelector("#transaction-modal-status").value = item.status || "paid";
-    document.querySelector("#transaction-modal-payment-method").value = item.paymentMethod || "pix";
     syncTransactionModalTypeFields();
-    document.querySelector("#transaction-modal-credit-card").value = item.creditCardId || "";
-    document.querySelector("#transaction-modal-overlay").classList.remove("is-hidden");
-    document.body.classList.add("modal-open");
-    document.querySelector("#transaction-modal-description").focus();
+    dom.setValue("#transaction-modal-credit-card", item.creditCardId || "");
+    dom.openTransactionModal();
   }
 
   function resetTransactionForm() {
@@ -524,9 +517,7 @@ export function createTransactionsModule(deps) {
 
   function closeTransactionModal() {
     state.activeTransactionEditId = null;
-    document.querySelector("#transaction-modal-form").reset();
-    document.querySelector("#transaction-modal-overlay").classList.add("is-hidden");
-    document.body.classList.remove("modal-open");
+    dom.closeTransactionModal();
   }
 
   async function saveTransactionFromModal(event) {
@@ -534,18 +525,10 @@ export function createTransactionsModule(deps) {
     const item = state.transactions.find((transaction) => transaction.id === state.activeTransactionEditId);
     if (!item) return closeTransactionModal();
 
+    const form = dom.readTransactionModalForm();
     const draft = buildTransactionDraftFromValues({
       type: state.transactionModalType,
-      description: document.querySelector("#transaction-modal-description").value,
-      category: document.querySelector("#transaction-modal-category").value,
-      subcategory: document.querySelector("#transaction-modal-subcategory").value,
-      account: document.querySelector("#transaction-modal-account").value,
-      amount: document.querySelector("#transaction-modal-amount").value,
-      date: document.querySelector("#transaction-modal-date").value,
-      dueDate: document.querySelector("#transaction-modal-due-date").value,
-      status: document.querySelector("#transaction-modal-status").value,
-      paymentMethod: document.querySelector("#transaction-modal-payment-method").value,
-      creditCardId: document.querySelector("#transaction-modal-credit-card").value,
+      ...form,
       recurrence: item.recurrence,
       recurrenceId: item.recurrenceId,
       installmentGroup: item.installmentGroup,
