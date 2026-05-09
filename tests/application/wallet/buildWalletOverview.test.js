@@ -50,3 +50,26 @@ test("mantem valores zerados quando nao ha dados locais", () => {
   assert.deepEqual(overview.accountCards, []);
   assert.deepEqual(overview.creditCardRows, []);
 });
+
+test("monta resumo Open Finance quando ha conexao mock e transacoes importadas", () => {
+  const overview = buildWalletOverview({
+    currentDate,
+    settings: { accounts: [], creditCards: [] },
+    transactions: [],
+    openFinance: {
+      connections: [{ id: "conn-1", institutionId: "nubank", institutionName: "Nubank", status: "connected" }],
+      importedTransactions: [
+        { id: "imp-1", connectionId: "conn-1", type: "income", amount: 4500, status: "pending_review" },
+        { id: "imp-2", connectionId: "conn-1", type: "expense", amount: 300, status: "pending_review" },
+        { id: "imp-3", connectionId: "conn-1", type: "expense", amount: 200, status: "matched" },
+      ],
+    },
+  });
+
+  assert.equal(overview.hasOpenFinance, true);
+  assert.equal(overview.patrimony, 4000);
+  assert.equal(overview.creditCardInUse, 500);
+  assert.equal(overview.institutionRows[0].name, "Nubank");
+  assert.equal(overview.review.imported, 2);
+  assert.equal(overview.review.matched, 1);
+});

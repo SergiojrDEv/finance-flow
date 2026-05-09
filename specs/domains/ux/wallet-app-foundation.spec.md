@@ -23,6 +23,8 @@ Criar a base visual de uma experiencia mais parecida com aplicativo financeiro, 
 - Os saldos devem refletir dados locais do mes selecionado quando existirem.
 - O dominio Open Finance deve existir em paralelo com conexoes bancarias e transacoes importadas.
 - Os casos de uso devem conectar provider mock, importar transacoes e revisar pendencias sem acessar Supabase.
+- A tela deve permitir conectar/desconectar banco mock local com modal de instituicoes.
+- O estado vazio deve educar o usuario antes de pedir uma conexao.
 - Mobile deve manter leitura compacta e app-like.
 - Build e testes devem continuar passando.
 

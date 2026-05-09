@@ -50,9 +50,14 @@ function accountBalance({ accountName, tone, transactions, currentDate }) {
 export function buildWalletOverview({
   settings = {},
   transactions = [],
+  openFinance = {},
   currentDate = new Date(),
 } = {}) {
+  const connections = openFinance.connections || [];
+  const importedTransactions = openFinance.importedTransactions || [];
   const monthTransactions = transactions.filter((transaction) => isSameMonth(transaction, currentDate));
+  const pendingImported = importedTransactions.filter((transaction) => transaction.status === "pending_review");
+  const matchedImported = importedTransactions.filter((transaction) => transaction.status === "matched");
   const income = monthTransactions
     .filter((transaction) => transaction.type === "income")
     .reduce((total, transaction) => total + toNumber(transaction.amount), 0);
@@ -86,17 +91,46 @@ export function buildWalletOverview({
     };
   });
 
+  const importedIncome = importedTransactions
+    .filter((transaction) => transaction.type === "income")
+    .reduce((total, transaction) => total + toNumber(transaction.amount), 0);
+  const importedExpenses = importedTransactions
+    .filter((transaction) => transaction.type === "expense")
+    .reduce((total, transaction) => total + toNumber(transaction.amount), 0);
+  const importedInvestments = importedTransactions
+    .filter((transaction) => transaction.type === "investment")
+    .reduce((total, transaction) => total + toNumber(transaction.amount), 0);
+  const importedAvailable = importedIncome - importedExpenses - importedInvestments;
+  const hasOpenFinance = connections.length > 0;
+  const patrimony = hasOpenFinance ? importedAvailable + importedInvestments : available + investments;
+  const creditCardInUse = hasOpenFinance ? importedExpenses : creditCardRows.reduce((total, card) => total + card.amount, 0);
+
+  const institutionRows = connections.map((connection) => ({
+    id: connection.id,
+    institutionId: connection.institutionId,
+    name: connection.institutionName,
+    status: connection.status || "connected",
+    lastSyncAt: connection.lastSyncAt,
+    balance: patrimony,
+    accountBalance: Math.max(0, patrimony + creditCardInUse),
+    creditBalance: creditCardInUse,
+  }));
+
   return {
-    patrimony: available + investments,
+    hasOpenFinance,
+    patrimony,
     available,
     investments,
     income,
     expenses,
+    creditCardInUse,
     accountCards,
     creditCardRows,
+    institutionRows,
+    pendingImported,
     review: {
-      imported: 0,
-      matched: 0,
+      imported: pendingImported.length,
+      matched: matchedImported.length,
       manualAccounts: accountCards.length,
     },
   };

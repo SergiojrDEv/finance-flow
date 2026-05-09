@@ -46,6 +46,21 @@ export function bindAppEvents({
     deps.setTransactionView("month");
     deps.setSectionFromHash();
   });
+  documentRef.querySelector("#wallet-connect-bank").addEventListener("click", deps.openWalletBankModal);
+  documentRef.querySelector("#wallet-bank-modal-close").addEventListener("click", deps.closeWalletBankModal);
+  documentRef.querySelector("#wallet-bank-modal-cancel").addEventListener("click", deps.closeWalletBankModal);
+  documentRef.querySelector("#wallet-bank-modal-overlay").addEventListener("click", (event) => {
+    if (event.target.id === "wallet-bank-modal-overlay") deps.closeWalletBankModal();
+  });
+  documentRef.querySelector("#wallet-bank-options").addEventListener("click", (event) => {
+    const button = event.target.closest("[data-wallet-bank]");
+    if (button) deps.connectMockBank(button.dataset.walletBank);
+  });
+  documentRef.querySelector("#carteira").addEventListener("click", (event) => {
+    if (event.target.closest("#wallet-empty-connect-bank")) deps.openWalletBankModal();
+    const disconnectButton = event.target.closest("[data-wallet-disconnect]");
+    if (disconnectButton) deps.disconnectMockBank(disconnectButton.dataset.walletDisconnect);
+  });
   documentRef.querySelector("#install-app").addEventListener("click", deps.promptInstallApp);
   documentRef.querySelectorAll(".segment").forEach((button) =>
     button.addEventListener("click", () => deps.setActiveType(button.dataset.type))

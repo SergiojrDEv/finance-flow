@@ -273,16 +273,29 @@
     <section class="section" id="carteira">
       <article class="wallet-hero" aria-label="Resumo da carteira">
         <div>
-          <p class="eyebrow">Carteira</p>
-          <h2>Suas contas em um unico lugar</h2>
-          <span>Base visual para bancos conectados, contas, cartoes e investimentos.</span>
+          <p class="eyebrow">Open Finance</p>
+          <h2>Conecte seus bancos em um unico lugar</h2>
+          <span>Veja saldo, transacoes e cartoes com controle sobre o que cada instituicao compartilha.</span>
         </div>
         <div class="wallet-balance-card">
-          <span>Patrimonio acompanhado</span>
+          <span>Patrimonio agregado</span>
           <strong id="wallet-patrimony">R$ 0,00</strong>
-          <small>Disponivel: <span id="wallet-available">R$ 0,00</span> | Investido: <span id="wallet-investments">R$ 0,00</span></small>
+          <small><span id="wallet-connected-count">0 instituicoes</span> | Disponivel: <span id="wallet-available">R$ 0,00</span></small>
         </div>
       </article>
+
+      <div id="wallet-openfinance-empty-slot"></div>
+
+      <div class="wallet-top-grid">
+        <article class="wallet-mini-card">
+          <span>Cartao em uso</span>
+          <strong class="negative" id="wallet-credit-in-use">R$ 0,00</strong>
+        </article>
+        <article class="wallet-mini-card">
+          <span>Investido local</span>
+          <strong id="wallet-investments">R$ 0,00</strong>
+        </article>
+      </div>
 
       <div class="wallet-grid" id="wallet-account-cards" aria-label="Contas e ativos"></div>
 
@@ -290,11 +303,11 @@
         <article class="panel wallet-panel">
           <div class="panel-header">
             <div>
-              <p class="eyebrow">Bancos</p>
-              <h2>Instituicoes</h2>
-              <p class="section-copy">Nesta primeira etapa a tela fica pronta para receber conexoes Open Finance sem ativar provider real.</p>
+              <p class="eyebrow">Instituicoes conectadas</p>
+              <h2>Bancos</h2>
+              <p class="section-copy">Conexao mock local para validar a experiencia antes do provider real.</p>
             </div>
-            <span class="status-pill">Mock local</span>
+            <button class="primary-btn" id="wallet-connect-bank" type="button">+ Conectar banco</button>
           </div>
           <div class="wallet-institution-list" id="wallet-institution-list"></div>
         </article>
@@ -303,8 +316,9 @@
           <div class="panel-header">
             <div>
               <p class="eyebrow">Revisao</p>
-              <h2>Pendencias</h2>
+              <h2>Transacoes pendentes</h2>
             </div>
+            <span class="status-pill">Mock local</span>
           </div>
           <div class="wallet-review-list" id="wallet-review-list"></div>
         </article>
@@ -898,6 +912,23 @@
           <button class="primary-btn" type="submit">Salvar alteracoes</button>
         </div>
       </form>
+    </div>
+  </div>
+
+  <div class="modal-overlay is-hidden" id="wallet-bank-modal-overlay">
+    <div class="modal-card wallet-bank-modal" role="dialog" aria-modal="true" aria-labelledby="wallet-bank-modal-title">
+      <div class="panel-header">
+        <div>
+          <p class="eyebrow">Open Finance</p>
+          <h2 id="wallet-bank-modal-title">Escolha a instituicao</h2>
+          <p class="section-copy">Voce seria redirecionado ao banco para autorizar o compartilhamento. Nesta fase, a conexao e mock local.</p>
+        </div>
+        <button class="icon-btn" id="wallet-bank-modal-close" type="button" aria-label="Fechar">X</button>
+      </div>
+      <div class="wallet-bank-options" id="wallet-bank-options"></div>
+      <div class="modal-actions">
+        <button class="ghost-btn" id="wallet-bank-modal-cancel" type="button">Cancelar</button>
+      </div>
     </div>
   </div>
 

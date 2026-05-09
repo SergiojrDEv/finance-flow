@@ -119,7 +119,7 @@ test("styles suportam tela carteira app-like", async () => {
     ".wallet-empty-state {\n  display: grid;",
     ".wallet-institution-row {\n  display: grid;",
     ".wallet-review-row {\n  display: grid;",
-    ".wallet-hero,\n  .wallet-grid,\n  .wallet-panels,",
+    ".wallet-hero,\n  .wallet-top-grid,\n  .wallet-grid,\n  .wallet-panels,\n  .wallet-bank-options,",
   ];
   const missing = requiredSnippets.filter((snippet) => !source.includes(snippet));
 

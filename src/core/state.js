@@ -83,6 +83,10 @@ export const state = {
   pendingCloudSync: false,
   supabaseInitPromise: null,
   pendingImport: null,
+  openFinance: {
+    connections: [],
+    importedTransactions: [],
+  },
   authView: "login",
   isPasswordRecovery: false,
   activeGoalEditIndex: null,

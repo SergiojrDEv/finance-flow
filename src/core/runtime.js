@@ -23,6 +23,7 @@ import { createSettingsModule } from "../settings/index.js";
 import { createWalletModule } from "../wallet/index.js";
 import { createAuthModule } from "../auth/index.js";
 import { createSupabaseModule } from "../supabase/index.js";
+import { createOpenFinanceServices } from "../infrastructure/composition/createOpenFinanceServices.js";
 import { installDiagnosticsApi } from "../infrastructure/diagnostics/installDiagnosticsApi.js";
 
 export function createFinanceFlowRuntime({ windowRef = window } = {}) {
@@ -52,6 +53,16 @@ export function createFinanceFlowRuntime({ windowRef = window } = {}) {
   Object.assign(deps, createStorageModule(deps));
   state.settings = deps.mergeSettings();
   state.catalog = deps.hydrateCatalog(state.settings, state.catalog);
+  deps.openFinanceServices = createOpenFinanceServices({
+    readConnections: () => state.openFinance.connections,
+    writeConnections: (connections) => {
+      state.openFinance.connections = connections;
+    },
+    readImportedTransactions: () => state.openFinance.importedTransactions,
+    writeImportedTransactions: (importedTransactions) => {
+      state.openFinance.importedTransactions = importedTransactions;
+    },
+  });
   Object.assign(deps, createTransactionsModule(deps));
   Object.assign(deps, createSettingsModule(deps));
   Object.assign(deps, createWalletModule(deps));

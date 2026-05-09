@@ -13,6 +13,7 @@ export function createStorageModule(deps) {
         transactions: state.transactions,
         settings: state.settings,
         catalog: state.catalog,
+        openFinance: state.openFinance,
         meta: {
           lastLocalChangeAt: state.lastLocalChangeAt,
           lastCloudSyncAt: state.lastCloudSyncAt,
@@ -43,6 +44,10 @@ export function createStorageModule(deps) {
         state.transactions = Array.isArray(saved.transactions) ? saved.transactions : [];
         state.settings = mergeSettings(saved.settings);
         state.catalog = buildCatalogFromSettings(state.settings, saved.catalog || {});
+        state.openFinance = {
+          connections: Array.isArray(saved.openFinance?.connections) ? saved.openFinance.connections : [],
+          importedTransactions: Array.isArray(saved.openFinance?.importedTransactions) ? saved.openFinance.importedTransactions : [],
+        };
         state.lastLocalChangeAt = saved.meta?.lastLocalChangeAt || null;
         state.lastCloudSyncAt = saved.meta?.lastCloudSyncAt || null;
         return;
@@ -52,6 +57,7 @@ export function createStorageModule(deps) {
       state.transactions = legacy ? JSON.parse(legacy) : [];
       state.settings = mergeSettings();
       state.catalog = buildCatalogFromSettings(state.settings);
+      state.openFinance = { connections: [], importedTransactions: [] };
     } catch (error) {
       console.error("Erro ao ler cache local", error);
       localStorage.removeItem(APP_STORAGE_KEY);
@@ -59,6 +65,7 @@ export function createStorageModule(deps) {
       state.transactions = [];
       state.settings = mergeSettings();
       state.catalog = buildCatalogFromSettings(state.settings);
+      state.openFinance = { connections: [], importedTransactions: [] };
       deps.notify?.("Os dados locais estavam corrompidos e foram reinicializados neste navegador.");
     }
   }
