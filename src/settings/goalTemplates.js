@@ -17,7 +17,14 @@ function money(value) {
 }
 
 export function renderGoalsHtml(goals) {
-  if (!goals.length) return '<article class="goal-card empty-state">Nenhuma meta criada ainda.</article>';
+  if (!goals.length) {
+    return `
+          <article class="goal-card empty-state app-empty-state">
+            <strong class="empty-state-title">Nenhuma meta criada ainda</strong>
+            <span class="empty-state-copy">Crie uma meta para acompanhar aportes, progresso e quanto falta para chegar no valor desejado.</span>
+          </article>
+        `;
+  }
 
   return goals
     .map((goal, index) => `

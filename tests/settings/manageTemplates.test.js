@@ -37,6 +37,8 @@ test("renderiza metas gerenciaveis e estado vazio", () => {
   ], (selected) => `<option value="${selected}" selected>Renda fixa</option>`);
 
   assert.match(emptyHtml, /Nenhuma meta cadastrada/);
+  assert.match(emptyHtml, /app-empty-state/);
+  assert.match(emptyHtml, /Adicione uma meta/);
   assert.match(html, /Reserva/);
   assert.match(html, /data-save-goal="0"/);
 });

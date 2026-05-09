@@ -10,6 +10,8 @@ test("renderiza metas e estado vazio", () => {
   ]);
 
   assert.match(emptyHtml, /Nenhuma meta criada/);
+  assert.match(emptyHtml, /app-empty-state/);
+  assert.match(emptyHtml, /acompanhar aportes/);
   assert.match(html, /Reserva/);
   assert.match(html, /Renda fixa/);
   assert.match(html, /data-goal-contribute="0"/);

@@ -76,7 +76,14 @@ export function renderCardManagerHtml(cards) {
 }
 
 export function renderGoalManagerHtml(goals, categoryOptions) {
-  if (!goals.length) return '<div class="empty-state">Nenhuma meta cadastrada.</div>';
+  if (!goals.length) {
+    return `
+          <div class="empty-state app-empty-state">
+            <strong class="empty-state-title">Nenhuma meta cadastrada</strong>
+            <span class="empty-state-copy">Adicione uma meta na tela de Metas para editar e acompanhar por aqui.</span>
+          </div>
+        `;
+  }
 
   return goals
     .map((goal, index) => `
