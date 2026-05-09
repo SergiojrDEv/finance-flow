@@ -17,6 +17,7 @@ Esta matriz liga especificacao, implementacao e validacao.
 | `adr/0004-supabase-config-from-environment.md` | Seguranca | `functions/api/config.js`, `netlify/functions/config.js`, `src/worker.js`, `src/supabase/index.js` | `tests/worker/config.test.js`, `tests/security/noBundledSupabaseConfig.test.js` | Worker serve `/api/config`; frontend sem fallback Supabase fixo no bundle |
 | `domains/design-system/app-experience.spec.md` | Experiencia | `src/styles.css` | `tests/architecture/design-system.test.js` | Tokens base de design system e guardrail visual inicial |
 | `domains/ux/guided-app-flows.spec.md` | Experiencia | `src/dashboard/viewTemplates.js`, `src/transactions/typeExperience.js`, `src/transactions/transactionsDom.js`, `src/transactions/tableTemplate.js`, `src/settings/goalTemplates.js`, `src/settings/manageTemplates.js`, `src/styles.css` | `tests/dashboard/viewTemplates.test.js`, `tests/transactions/typeExperience.test.js`, `tests/transactions/transactionsDom.test.js`, `tests/transactions/tableTemplate.test.js`, `tests/settings/goalTemplates.test.js`, `tests/settings/manageTemplates.test.js`, `tests/architecture/design-system.test.js` | Pronto: UX funcional guiada concluida em 100% para estados vazios, orientacao por tipo e resumo mensal |
+| `domains/ux/mobile-app-shell.spec.md` | Experiencia mobile | `index.html`, `src/styles.css` | `tests/architecture/design-system.test.js` | Em andamento: shell mobile com topo de app, menu inferior rotulado e resumo compacto |
 
 ## Definicao de pronto
 

@@ -6,6 +6,7 @@ import { fileURLToPath } from "node:url";
 
 const rootDir = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../..");
 const stylesPath = path.join(rootDir, "src", "styles.css");
+const indexPath = path.join(rootDir, "index.html");
 
 test("styles define tokens base do design system", async () => {
   const source = await readFile(stylesPath, "utf8");
@@ -61,11 +62,29 @@ test("styles preparam navegacao mobile com barra inferior de app", async () => {
   const source = await readFile(stylesPath, "utf8");
   const requiredSnippets = [
     "@media (max-width: 760px)",
-    "body {\n    padding-bottom: 82px;",
+    "body {\n    padding-bottom: 92px;",
     ".sidebar {\n    position: fixed;\n    inset: auto 0 0;",
     "backdrop-filter: blur(16px);",
     ".nav-list {\n    grid-template-columns: repeat(6, minmax(0, 1fr));",
     ".nav-item {\n    min-height: 54px;",
+    ".nav-item::before {\n    content: attr(data-mobile-icon);",
+    ".nav-item::after {\n    content: attr(data-mobile-label);",
+  ];
+  const missing = requiredSnippets.filter((snippet) => !source.includes(snippet));
+
+  assert.deepEqual(missing, []);
+});
+
+test("html oferece rotulos curtos para navegacao mobile", async () => {
+  const source = await readFile(indexPath, "utf8");
+  const requiredSnippets = [
+    'data-mobile-label="Inicio"',
+    'data-mobile-label="Lancar"',
+    'data-mobile-label="Limites"',
+    'data-mobile-label="Metas"',
+    'data-mobile-label="Historico"',
+    'data-mobile-label="Ajustes"',
+    'data-mobile-icon="+"',
   ];
   const missing = requiredSnippets.filter((snippet) => !source.includes(snippet));
 
@@ -78,7 +97,23 @@ test("styles mantem resumo principal compacto", async () => {
     ".summary-grid {\n  display: grid;\n  grid-template-columns: repeat(4, minmax(0, 1fr));\n  gap: 12px;",
     ".metric-card {\n  position: relative;\n  overflow: hidden;\n  padding: 16px 16px 15px;",
     "box-shadow: var(--shadow-soft);",
-    ".metric-card {\n    padding: 14px 14px 13px;",
+    ".summary-grid {\n    grid-template-columns: repeat(2, minmax(0, 1fr));",
+    ".metric-card {\n    min-height: 112px;",
+  ];
+  const missing = requiredSnippets.filter((snippet) => !source.includes(snippet));
+
+  assert.deepEqual(missing, []);
+});
+
+test("styles reforcam topo mobile como barra de aplicativo", async () => {
+  const source = await readFile(stylesPath, "utf8");
+  const requiredSnippets = [
+    ".topbar {\n    gap: 14px;\n    margin: 0 -14px 18px;",
+    "background: #152238;",
+    ".topbar h1 {\n    font-size: 1.36rem;",
+    ".topbar .eyebrow {\n    color: rgba(255, 255, 255, 0.72);",
+    ".topbar .icon-btn {\n    border-color: rgba(255, 255, 255, 0.16);",
+    ".topbar .danger-btn {\n    flex: 0 0 auto;",
   ];
   const missing = requiredSnippets.filter((snippet) => !source.includes(snippet));
 

@@ -1568,11 +1568,11 @@ tbody tr:last-child td {
 
 @media (max-width: 760px) {
   body {
-    padding-bottom: 82px;
+    padding-bottom: 92px;
   }
 
   .app-shell {
-    padding: 18px 14px 22px;
+    padding: 0 14px 22px;
   }
 
   .sidebar {
@@ -1622,11 +1622,21 @@ tbody tr:last-child td {
 
   .topbar {
     gap: 14px;
-    margin-bottom: 18px;
+    margin: 0 -14px 18px;
+    padding: 18px 14px 16px;
+    border-radius: 0 0 var(--radius-md) var(--radius-md);
+    background: #152238;
+    color: #ffffff;
+    box-shadow: 0 14px 34px rgba(17, 24, 39, 0.18);
   }
 
   .topbar h1 {
-    font-size: 1.9rem;
+    font-size: 1.36rem;
+    line-height: 1.18;
+  }
+
+  .topbar .eyebrow {
+    color: rgba(255, 255, 255, 0.72);
   }
 
   .topbar-actions {
@@ -1637,11 +1647,27 @@ tbody tr:last-child td {
 
   .month-switcher {
     justify-content: space-between;
+    border-color: rgba(255, 255, 255, 0.16);
+    background: rgba(255, 255, 255, 0.1);
   }
 
   .month-switcher strong {
     min-width: 0;
     font-size: 0.88rem;
+    color: #ffffff;
+  }
+
+  .topbar .icon-btn {
+    border-color: rgba(255, 255, 255, 0.16);
+    background: rgba(255, 255, 255, 0.12);
+    color: #ffffff;
+  }
+
+  .topbar .danger-btn {
+    flex: 0 0 auto;
+    border-color: transparent;
+    background: rgba(255, 255, 255, 0.94);
+    color: #be123c;
   }
 
   .topbar-actions #install-app {
@@ -1669,15 +1695,18 @@ tbody tr:last-child td {
   }
 
   .summary-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: 10px;
   }
 
   .metric-card {
-    padding: 14px 14px 13px;
+    min-height: 112px;
+    padding: 13px;
   }
 
   .metric-card strong {
-    font-size: 1.45rem;
+    font-size: 1.24rem;
+    line-height: 1.1;
   }
 
   .modal-actions {
@@ -1708,19 +1737,45 @@ tbody tr:last-child td {
   .nav-item {
     min-height: 54px;
     display: grid;
+    gap: 3px;
     place-items: center;
     padding: 6px 4px;
     border-radius: var(--radius-md);
     color: var(--muted);
-    font-size: 0.68rem;
+    font-size: 0;
     line-height: 1.15;
     text-align: center;
+  }
+
+  .nav-item::before {
+    content: attr(data-mobile-icon);
+    width: 25px;
+    height: 23px;
+    display: grid;
+    place-items: center;
+    border-radius: var(--radius-sm);
+    background: #eef3f8;
+    color: var(--muted);
+    font-size: 0.72rem;
+    font-weight: 900;
+  }
+
+  .nav-item::after {
+    content: attr(data-mobile-label);
+    font-size: 0.64rem;
+    font-weight: 800;
   }
 
   .nav-item:hover,
   .nav-item.active {
     background: #eef4ff;
     color: var(--text);
+  }
+
+  .nav-item:hover::before,
+  .nav-item.active::before {
+    background: #152238;
+    color: #ffffff;
   }
 
   .budget-rule-form,
