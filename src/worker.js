@@ -20,6 +20,13 @@ function getSupabaseConfig(env) {
   return { url, anonKey };
 }
 
+function getMissingSupabaseConfigKeys(env) {
+  return [
+    ["SUPABASE_URL", env?.SUPABASE_URL],
+    ["SUPABASE_ANON_KEY", env?.SUPABASE_ANON_KEY],
+  ].filter(([, value]) => !value).map(([key]) => key);
+}
+
 export default {
   fetch(request, env) {
     const url = new URL(request.url);
@@ -27,7 +34,10 @@ export default {
     if (url.pathname === "/api/config") {
       const config = getSupabaseConfig(env);
       if (!config) {
-        return json({ error: "Supabase config is missing." }, { status: 500 });
+        return json({
+          error: "Supabase config is missing.",
+          missing: getMissingSupabaseConfigKeys(env),
+        }, { status: 500 });
       }
       return json(config);
     }
@@ -36,4 +46,4 @@ export default {
   },
 };
 
-export { getSupabaseConfig };
+export { getMissingSupabaseConfigKeys, getSupabaseConfig };

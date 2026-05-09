@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import test from "node:test";
-import worker, { getSupabaseConfig } from "../../src/worker.js";
+import worker, { getMissingSupabaseConfigKeys, getSupabaseConfig } from "../../src/worker.js";
 
 test("retorna config Supabase publica a partir do ambiente", () => {
   assert.deepEqual(getSupabaseConfig({
@@ -14,6 +14,11 @@ test("retorna config Supabase publica a partir do ambiente", () => {
 
 test("recusa config ausente", () => {
   assert.equal(getSupabaseConfig({}), null);
+});
+
+test("informa quais variaveis Supabase estao ausentes", () => {
+  assert.deepEqual(getMissingSupabaseConfigKeys({}), ["SUPABASE_URL", "SUPABASE_ANON_KEY"]);
+  assert.deepEqual(getMissingSupabaseConfigKeys({ SUPABASE_URL: "https://example.supabase.co" }), ["SUPABASE_ANON_KEY"]);
 });
 
 test("serve /api/config sem cache quando ambiente existe", async () => {
@@ -37,7 +42,10 @@ test("serve erro 500 em /api/config quando ambiente esta incompleto", async () =
   });
 
   assert.equal(response.status, 500);
-  assert.deepEqual(await response.json(), { error: "Supabase config is missing." });
+  assert.deepEqual(await response.json(), {
+    error: "Supabase config is missing.",
+    missing: ["SUPABASE_URL", "SUPABASE_ANON_KEY"],
+  });
 });
 
 test("delega demais rotas para assets estaticos", async () => {

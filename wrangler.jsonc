@@ -3,6 +3,7 @@
   "name": "finance-flow",
   "main": "src/worker.js",
   "compatibility_date": "2026-05-06",
+  "keep_vars": true,
   "observability": {
     "enabled": true
   },

@@ -29,6 +29,23 @@
 3. Abra o site.
 4. Crie a conta, confirme o e-mail e entre normalmente.
 
+## Variaveis do Supabase no Worker
+
+O Worker publicado precisa destas variaveis em `Workers & Pages > finance-flow > Settings > Variables and Secrets`:
+
+- `SUPABASE_URL`
+- `SUPABASE_ANON_KEY`
+
+O `wrangler.jsonc` usa `keep_vars: true` para preservar as variaveis criadas pelo painel nos proximos deploys. Sem isso, um `wrangler deploy` pode substituir variaveis do painel e o app volta a mostrar `Conexao com Supabase indisponivel`.
+
+Para validar depois do deploy, abra:
+
+```text
+https://finance-flow.sergio-info19.workers.dev/api/config
+```
+
+Se retornar `500`, o corpo da resposta informa quais variaveis estao faltando no campo `missing`.
+
 ## Dominio customizado
 
 1. No projeto do Cloudflare Pages, abra `Custom domains`.
