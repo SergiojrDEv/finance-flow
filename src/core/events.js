@@ -1,5 +1,19 @@
 import { formatCpf, formatPhone } from "./utils.js";
 
+export function openTransactionComposer({
+  deps,
+  documentRef = document,
+  locationRef = location,
+  type = "",
+} = {}) {
+  locationRef.hash = "novo-lancamento";
+  deps.setTransactionView("compose");
+  if (type) deps.setActiveType(type);
+  deps.setSectionFromHash();
+  documentRef.querySelector("#description")?.focus();
+  documentRef.querySelector("#transaction-form")?.scrollIntoView({ behavior: "smooth", block: "start" });
+}
+
 export function bindAppEvents({
   deps,
   state,
@@ -19,11 +33,13 @@ export function bindAppEvents({
     deps.renderAll();
   });
   documentRef.querySelector("#go-to-new-transaction").addEventListener("click", () => {
-    locationRef.hash = "novo-lancamento";
-    deps.setTransactionView("compose");
-    deps.setSectionFromHash();
-    documentRef.querySelector("#description").focus();
-    documentRef.querySelector("#transaction-form").scrollIntoView({ behavior: "smooth", block: "start" });
+    openTransactionComposer({ deps, documentRef, locationRef });
+  });
+  documentRef.querySelectorAll("[data-quick-type]").forEach((button) => {
+    button.addEventListener("click", (event) => {
+      event.preventDefault();
+      openTransactionComposer({ deps, documentRef, locationRef, type: button.dataset.quickType });
+    });
   });
   documentRef.querySelector("#go-to-month-transactions").addEventListener("click", () => {
     locationRef.hash = "novo-lancamento";
