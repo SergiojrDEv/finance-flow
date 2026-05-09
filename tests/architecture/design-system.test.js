@@ -188,6 +188,7 @@ test("styles suportam estados vazios guiados", async () => {
     "border: 1px dashed var(--line);",
     ".empty-state-title {\n  color: var(--text);\n  font-size: 0.95rem;",
     ".empty-state-copy {\n  max-width: 420px;\n  line-height: 1.45;",
+    ".table-empty-state {\n  min-width: 360px;",
   ];
   const missing = requiredSnippets.filter((snippet) => !source.includes(snippet));
 

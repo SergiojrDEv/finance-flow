@@ -14,7 +14,14 @@ export function renderTransactionTableHtml(items, helpers = {}) {
   const formatCategoryLabel = helpers.formatCategoryLabel || (() => "Sem categoria");
 
   if (!items.length) {
-    return '<tr><td colspan="10" class="empty-state">Nenhum lancamento encontrado.</td></tr>';
+    return `
+          <tr>
+            <td colspan="10" class="empty-state app-empty-state table-empty-state">
+              <strong class="empty-state-title">Nenhum lancamento encontrado</strong>
+              <span class="empty-state-copy">Cadastre um novo movimento ou ajuste os filtros para ver os lancamentos do mes.</span>
+            </td>
+          </tr>
+        `;
   }
 
   return items

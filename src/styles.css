@@ -917,6 +917,10 @@ tbody tr:last-child td {
   font-size: 0.9rem;
 }
 
+.table-empty-state {
+  min-width: 360px;
+}
+
 .budget-grid,
 .goals-grid,
 .settings-grid,

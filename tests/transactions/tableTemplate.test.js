@@ -14,6 +14,9 @@ test("renderiza estado vazio da tabela de lancamentos", () => {
   const html = renderTransactionTableHtml([]);
 
   assert.match(html, /Nenhum lancamento encontrado/);
+  assert.match(html, /Cadastre um novo movimento/);
+  assert.match(html, /app-empty-state/);
+  assert.match(html, /table-empty-state/);
   assert.match(html, /colspan="10"/);
 });
 
