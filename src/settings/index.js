@@ -20,6 +20,12 @@ import {
   renderGoalManagerHtml,
   renderSubcategoryManagerHtml,
 } from "./manageTemplates.js";
+import {
+  buildCategoryManagerRows,
+  buildGoalCardRows,
+  buildGoalsSummary,
+  buildSubcategoryGroups,
+} from "./settingsPresenter.js";
 
 export function createSettingsModule(deps) {
   let budgetServices = null;
@@ -145,16 +151,11 @@ export function createSettingsModule(deps) {
   function renderGoals() {
     const investments = state.transactions.filter((item) => item.type === "investment");
     const target = document.querySelector("#goals-list");
-    const goals = getGoals();
-    const rows = goals
-      .map((goal) => {
-        const current = investments
-          .filter((item) => item.category === goal.key)
-          .reduce((sum, item) => sum + Number(item.amount), 0) || Number(goal.currentAmount || 0);
-        const pct = Math.min((current / goal.target) * 100, 100);
-        const category = getCategoryRecord("investment", goal.key) || { name: goal.key };
-        return { ...goal, current, percent: pct, categoryName: category.name };
-      });
+    const rows = buildGoalCardRows({
+      goals: getGoals(),
+      investments,
+      findCategoryName: (key) => (getCategoryRecord("investment", key) || { name: key }).name,
+    });
 
     target.innerHTML = renderGoalsHtml(rows);
   }
@@ -164,28 +165,10 @@ export function createSettingsModule(deps) {
     if (!target) return;
 
     const investments = state.transactions.filter((item) => item.type === "investment");
-    const totals = getGoals().map((goal) => {
-      const current = investments
-        .filter((item) => item.category === goal.key)
-        .reduce((sum, item) => sum + Number(item.amount), 0) || Number(goal.currentAmount || 0);
-      return { goal, current };
-    });
-
-    const totalTarget = totals.reduce((sum, item) => sum + Number(item.goal.target || 0), 0);
-    const totalCurrent = totals.reduce((sum, item) => sum + Number(item.current || 0), 0);
-    const closest = totals
-      .map((item) => ({
-        ...item,
-        progress: item.goal.target ? (item.current / item.goal.target) * 100 : 0,
-      }))
-      .sort((a, b) => b.progress - a.progress)[0];
-
-    target.innerHTML = renderGoalsSummaryHtml({
-      activeCount: getGoals().length,
-      totalTarget,
-      totalCurrent,
-      closest: closest ? { name: closest.goal.name, progress: closest.progress } : null,
-    });
+    target.innerHTML = renderGoalsSummaryHtml(buildGoalsSummary({
+      goals: getGoals(),
+      investments,
+    }));
   }
 
   function openGoalContribution(index) {
@@ -270,16 +253,10 @@ export function createSettingsModule(deps) {
   }
 
   function renderCategoryManager() {
-    const rows = getCatalog().categories
-      .filter((item) => !item.isArchived)
-      .map((item) => ({
-        type: item.kind,
-        key: item.slug,
-        label: item.name,
-        color: item.color,
-        limit: item.monthlyLimit,
-        tagCount: getTags(item.kind, item.slug).length,
-      }));
+    const rows = buildCategoryManagerRows(
+      getCatalog().categories,
+      (type, key) => getTags(type, key).length
+    );
     const target = document.querySelector("#category-manage-list");
 
     target.innerHTML = renderCategoryManagerHtml(rows);
@@ -335,15 +312,11 @@ export function createSettingsModule(deps) {
   function renderSubcategoryManager() {
     const target = document.querySelector("#subcategory-manage-list");
     if (!target) return;
-    const groups = getCatalog().categories
-      .filter((item) => !item.isArchived)
-      .map((item) => ({
-        type: item.kind,
-        categoryKey: item.slug,
-        categoryLabel: item.name,
-        fallbackColor: getCategoryColorFromList(item.kind, item.slug, state.settings.categories),
-        tags: getTags(item.kind, item.slug).map((tag) => [tag.slug, tag.name, tag.color]),
-      }));
+    const groups = buildSubcategoryGroups(
+      getCatalog().categories,
+      getTags,
+      (type, key) => getCategoryColorFromList(type, key, state.settings.categories)
+    );
 
     target.innerHTML = renderSubcategoryManagerHtml(groups);
   }
