@@ -13,6 +13,7 @@ function createElement() {
     },
     focusCalled: false,
     resetCalled: false,
+    disabled: true,
     value: "",
     focus() { this.focusCalled = true; },
     reset() { this.resetCalled = true; },
@@ -113,4 +114,20 @@ test("centraliza leitura do formulario principal de lancamento", () => {
     repeatCount: "1",
     installments: "1",
   });
+});
+
+test("centraliza reset e controles do formulario principal", () => {
+  const documentRef = createFakeDocument();
+  const dom = createTransactionsDom(documentRef);
+  const form = createElement();
+
+  dom.enableTransactionSeriesControls();
+  dom.hideCancelEdit();
+  dom.resetTransactionForm(form);
+
+  assert.equal(dom.get("#installments").disabled, false);
+  assert.equal(dom.get("#recurrence").disabled, false);
+  assert.equal(dom.get("#repeat-count").disabled, false);
+  assert.equal(dom.get("#cancel-edit").classList.contains("is-hidden"), true);
+  assert.equal(form.resetCalled, true);
 });

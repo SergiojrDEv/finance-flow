@@ -431,7 +431,7 @@ export function createTransactionsModule(deps) {
     }
 
     deps.persist();
-    event.currentTarget.reset();
+    dom.resetTransactionForm(event.currentTarget);
     setDefaultDate();
     updateCategoryOptions();
     deps.renderAll();
@@ -480,15 +480,13 @@ export function createTransactionsModule(deps) {
 
   function resetTransactionForm() {
     state.editingId = null;
-    els.form.reset();
+    dom.resetTransactionForm(els.form);
     setDefaultDate();
     updateCategoryOptions();
     updateAccountOptions();
     updateCreditCardOptions();
-    document.querySelector("#installments").disabled = false;
-    document.querySelector("#recurrence").disabled = false;
-    document.querySelector("#repeat-count").disabled = false;
-    document.querySelector("#cancel-edit").classList.add("is-hidden");
+    dom.enableTransactionSeriesControls();
+    dom.hideCancelEdit();
     syncTransactionTypeFields();
   }
 

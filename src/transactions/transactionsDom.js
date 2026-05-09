@@ -86,13 +86,31 @@ export function createTransactionsDom(documentRef = document) {
     };
   }
 
+  function resetTransactionForm(form) {
+    form?.reset();
+  }
+
+  function enableTransactionSeriesControls() {
+    ["#installments", "#recurrence", "#repeat-count"].forEach((selector) => {
+      const target = get(selector);
+      if (target) target.disabled = false;
+    });
+  }
+
+  function hideCancelEdit() {
+    get("#cancel-edit")?.classList.add("is-hidden");
+  }
+
   return {
     closeTransactionModal,
+    enableTransactionSeriesControls,
     fillTransactionModal,
     get,
+    hideCancelEdit,
     openTransactionModal,
     readTransactionForm,
     readTransactionModalForm,
+    resetTransactionForm,
     setValue,
     value,
   };
