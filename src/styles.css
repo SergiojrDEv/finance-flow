@@ -903,13 +903,13 @@ tbody tr:last-child td {
 .settings-lists {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 14px;
+  gap: 12px;
 }
 
 .metas-shell {
   display: grid;
-  grid-template-columns: minmax(320px, 420px) minmax(0, 1fr);
-  gap: 18px;
+  grid-template-columns: minmax(300px, 380px) minmax(0, 1fr);
+  gap: 16px;
   align-items: start;
 }
 
@@ -920,7 +920,7 @@ tbody tr:last-child td {
 
 .metas-content {
   display: grid;
-  gap: 18px;
+  gap: 14px;
 }
 
 .goal-create-panel {
@@ -934,18 +934,18 @@ tbody tr:last-child td {
 .goal-summary-grid {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 12px;
+  gap: 10px;
 }
 
 .budget-card,
 .goal-card,
 .manage-item {
-  padding: 16px;
+  padding: 14px;
 }
 
 .budget-card {
   display: grid;
-  gap: 10px;
+  gap: 9px;
 }
 
 .budget-card header,
@@ -975,13 +975,13 @@ tbody tr:last-child td {
   display: flex;
   flex-wrap: wrap;
   justify-content: flex-end;
-  gap: 6px;
+  gap: 5px;
 }
 
 .budget-badge {
   display: inline-flex;
   align-items: center;
-  min-height: 24px;
+  min-height: 22px;
   padding: 0 8px;
   border-radius: var(--radius-pill);
   background: #f3f6fb;
@@ -1016,12 +1016,11 @@ tbody tr:last-child td {
 .budget-rule-form {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 10px;
+  gap: 8px;
   align-items: end;
-  padding-top: 4px;
   margin-top: 2px;
   border-top: 1px solid var(--line);
-  padding-top: 10px;
+  padding-top: 8px;
 }
 
 .budget-rule-form label {
@@ -1034,11 +1033,11 @@ tbody tr:last-child td {
 
 .budget-rule-form input {
   min-width: 0;
-  min-height: 38px;
+  min-height: 36px;
 }
 
 .budget-rule-form.compact .mini-btn {
-  min-height: 38px;
+  min-height: 36px;
   align-self: stretch;
 }
 
@@ -1100,7 +1099,7 @@ tbody tr:last-child td {
 
 .goal-card {
   display: grid;
-  gap: 12px;
+  gap: 10px;
   min-height: 100%;
 }
 
@@ -1120,7 +1119,7 @@ tbody tr:last-child td {
 .goal-card-actions {
   display: flex;
   flex-wrap: wrap;
-  gap: 8px;
+  gap: 6px;
 }
 
 .modal-overlay {

@@ -130,3 +130,20 @@ test("styles deixam historico em tabela mais limpo", async () => {
 
   assert.deepEqual(missing, []);
 });
+
+test("styles compactam orcamentos e metas sem mudar layout estrutural", async () => {
+  const source = await readFile(stylesPath, "utf8");
+  const requiredSnippets = [
+    ".budget-grid,\n.goals-grid,\n.settings-grid,\n.settings-lists {\n  display: grid;\n  grid-template-columns: repeat(3, minmax(0, 1fr));\n  gap: 12px;",
+    ".metas-shell {\n  display: grid;\n  grid-template-columns: minmax(300px, 380px) minmax(0, 1fr);\n  gap: 16px;",
+    ".metas-content {\n  display: grid;\n  gap: 14px;",
+    ".goal-summary-grid {\n  display: grid;\n  grid-template-columns: repeat(3, minmax(0, 1fr));\n  gap: 10px;",
+    ".budget-card,\n.goal-card,\n.manage-item {\n  padding: 14px;",
+    ".budget-rule-form {\n  display: grid;\n  grid-template-columns: repeat(3, minmax(0, 1fr));\n  gap: 8px;",
+    ".budget-rule-form input {\n  min-width: 0;\n  min-height: 36px;",
+    ".goal-card {\n  display: grid;\n  gap: 10px;",
+  ];
+  const missing = requiredSnippets.filter((snippet) => !source.includes(snippet));
+
+  assert.deepEqual(missing, []);
+});
