@@ -12,6 +12,9 @@
   --color-invest: #635bff;
   --color-balance: #0b7285;
   --color-accent: #f4b740;
+  --color-focus: rgba(11, 114, 133, 0.14);
+  --shadow-soft: 0 10px 28px rgba(20, 32, 50, 0.07);
+  --shadow-raised: 0 16px 40px rgba(20, 32, 50, 0.08);
   --radius-xs: 4px;
   --radius-sm: 7px;
   --radius-md: 8px;
@@ -23,19 +26,19 @@
   --space-5: 12px;
   --space-6: 14px;
   --space-7: 18px;
-  --bg: #f5f7fb;
-  --surface: #ffffff;
-  --surface-soft: #eef3f8;
-  --surface-strong: #13202f;
-  --text: #172033;
-  --muted: #667085;
-  --line: #d9e2ec;
-  --income: #168a5b;
-  --expense: #c43d4b;
-  --invest: #635bff;
-  --balance: #0b7285;
-  --accent: #f4b740;
-  --shadow: 0 16px 40px rgba(20, 32, 50, 0.08);
+  --bg: var(--color-bg);
+  --surface: var(--color-surface);
+  --surface-soft: var(--color-surface-soft);
+  --surface-strong: var(--color-surface-strong);
+  --text: var(--color-text);
+  --muted: var(--color-muted);
+  --line: var(--color-line);
+  --income: var(--color-income);
+  --expense: var(--color-expense);
+  --invest: var(--color-invest);
+  --balance: var(--color-balance);
+  --accent: var(--color-accent);
+  --shadow: var(--shadow-raised);
 }
 
 * {
@@ -701,7 +704,7 @@ select {
 input:focus,
 select:focus {
   border-color: var(--balance);
-  box-shadow: 0 0 0 3px rgba(11, 114, 133, 0.12);
+  box-shadow: 0 0 0 3px var(--color-focus);
 }
 
 .field-row {

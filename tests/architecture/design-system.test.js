@@ -18,6 +18,9 @@ test("styles define tokens base do design system", async () => {
     "--color-income",
     "--color-expense",
     "--color-invest",
+    "--color-focus",
+    "--shadow-soft",
+    "--shadow-raised",
     "--radius-xs",
     "--radius-sm",
     "--radius-md",
@@ -27,6 +30,22 @@ test("styles define tokens base do design system", async () => {
   ];
 
   const missing = requiredTokens.filter((token) => !source.includes(token));
+
+  assert.deepEqual(missing, []);
+});
+
+test("legacy visual tokens apontam para tokens semanticos", async () => {
+  const source = await readFile(stylesPath, "utf8");
+  const expectedAliases = [
+    "--bg: var(--color-bg)",
+    "--surface: var(--color-surface)",
+    "--text: var(--color-text)",
+    "--income: var(--color-income)",
+    "--expense: var(--color-expense)",
+    "--invest: var(--color-invest)",
+    "--shadow: var(--shadow-raised)",
+  ];
+  const missing = expectedAliases.filter((alias) => !source.includes(alias));
 
   assert.deepEqual(missing, []);
 });
