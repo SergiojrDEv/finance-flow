@@ -83,6 +83,16 @@ export function createSettingsDom(documentRef = document) {
     setValue("#new-card-due", 10);
   }
 
+  function readNewAccountForm() {
+    return {
+      name: value("#new-account-name").trim(),
+    };
+  }
+
+  function resetNewAccountForm() {
+    setValue("#new-account-name", "");
+  }
+
   function readNewSubcategoryForm() {
     return {
       type: value("#new-subcategory-type"),
@@ -106,18 +116,54 @@ export function createSettingsDom(documentRef = document) {
     };
   }
 
+  function readGoalModalForm() {
+    return {
+      name: value("#goal-modal-name").trim(),
+      key: value("#goal-modal-category"),
+      target: numberValue("#goal-modal-target"),
+    };
+  }
+
+  function readInlineGoalForm(index) {
+    return {
+      name: value(`[data-goal-name="${index}"]`).trim(),
+      key: value(`[data-goal-category="${index}"]`),
+      target: numberValue(`[data-goal-target="${index}"]`),
+    };
+  }
+
+  function hasInlineGoalForm(index) {
+    return Boolean(get(`[data-goal-name="${index}"]`) && get(`[data-goal-category="${index}"]`) && get(`[data-goal-target="${index}"]`));
+  }
+
+  function readSettingsItemModalForm() {
+    return {
+      name: value("#settings-item-modal-name").trim(),
+      color: value("#settings-item-modal-color"),
+      monthlyLimit: Math.max(0, numberValue("#settings-item-modal-limit") || 0),
+      closingDay: Math.max(1, Math.min(31, numberValue("#settings-item-modal-closing", 25) || 25)),
+      dueDay: Math.max(1, Math.min(31, numberValue("#settings-item-modal-due", 10) || 10)),
+    };
+  }
+
   return {
     focus,
     get,
     getAll,
+    hasInlineGoalForm,
     hideModal,
     html,
     numberValue,
+    readGoalModalForm,
+    readInlineGoalForm,
+    readNewAccountForm,
     readNewCardForm,
     readNewCategoryForm,
     readNewGoalForm,
     readNewSubcategoryForm,
+    readSettingsItemModalForm,
     reset,
+    resetNewAccountForm,
     resetNewCardForm,
     resetNewCategoryForm,
     resetNewSubcategoryForm,

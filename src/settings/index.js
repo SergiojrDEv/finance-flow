@@ -214,9 +214,7 @@ export function createSettingsModule(deps) {
     const goal = getGoalRecord(index);
     if (!goal) return closeGoalModal();
 
-    const name = dom.value("#goal-modal-name").trim();
-    const key = dom.value("#goal-modal-category");
-    const target = dom.numberValue("#goal-modal-target");
+    const { name, key, target } = dom.readGoalModalForm();
     if (!name || target <= 0) return deps.notify("Preencha a meta corretamente.");
 
     const result = await getGoalServices().updateGoal.execute(goal.id, { name, key, target });
@@ -365,14 +363,15 @@ export function createSettingsModule(deps) {
     const edit = state.settingsItemEdit;
     if (!edit) return closeSettingsItemModal();
 
-    const name = dom.value("#settings-item-modal-name").trim();
+    const form = dom.readSettingsItemModalForm();
+    const name = form.name;
     if (!name) return deps.notify("Informe um nome valido.");
 
     if (edit.kind === "category") {
       const item = getCategoryRecord(edit.type, edit.key);
       if (!item) return closeSettingsItemModal();
-      const color = dom.value("#settings-item-modal-color");
-      const monthly = Math.max(0, dom.numberValue("#settings-item-modal-limit") || 0);
+      const color = form.color;
+      const monthly = form.monthlyLimit;
       const result = await getCatalogServices().updateCategory.execute(item.id, {
         name,
         color,
@@ -415,8 +414,8 @@ export function createSettingsModule(deps) {
       const card = cards[edit.index];
       if (!card) return closeSettingsItemModal();
       card.name = name;
-      card.closingDay = Math.max(1, Math.min(31, dom.numberValue("#settings-item-modal-closing", 25) || 25));
-      card.dueDay = Math.max(1, Math.min(31, dom.numberValue("#settings-item-modal-due", 10) || 10));
+      card.closingDay = form.closingDay;
+      card.dueDay = form.dueDay;
     }
 
     if (edit.kind === "tag") {
@@ -424,7 +423,7 @@ export function createSettingsModule(deps) {
       if (!item) return closeSettingsItemModal();
       const result = await getCatalogServices().updateCategoryTag.execute(item.id, {
         name,
-        color: dom.value("#settings-item-modal-color"),
+        color: form.color,
       });
       if (!result.ok) {
         deps.notify(firstErrorMessage(result.errors, "Nao foi possivel atualizar a etiqueta."));
@@ -471,8 +470,7 @@ export function createSettingsModule(deps) {
 
   function addAccount(event) {
     event.preventDefault();
-    const input = dom.get("#new-account-name");
-    const name = input.value.trim();
+    const { name } = dom.readNewAccountForm();
     if (!name) return deps.notify("Informe o nome da conta.");
     if (getAccounts().some((item) => item.name.toLowerCase() === name.toLowerCase())) {
       return deps.notify("Esta conta ja existe.");
@@ -486,7 +484,7 @@ export function createSettingsModule(deps) {
       institution: "",
       isArchived: false,
     });
-    input.value = "";
+    dom.resetNewAccountForm();
     commitCatalogChanges("Conta criada.");
     deps.updateAccountOptions();
   }
@@ -551,14 +549,9 @@ export function createSettingsModule(deps) {
   async function updateGoal(index) {
     const goal = getGoalRecord(index);
     if (!goal) return;
-    const nameInput = document.querySelector(`[data-goal-name="${index}"]`);
-    const categoryInput = document.querySelector(`[data-goal-category="${index}"]`);
-    const targetInput = document.querySelector(`[data-goal-target="${index}"]`);
-    if (!nameInput || !categoryInput || !targetInput) return;
+    if (!dom.hasInlineGoalForm(index)) return;
 
-    const name = nameInput.value.trim();
-    const key = categoryInput.value;
-    const target = Number(targetInput.value);
+    const { name, key, target } = dom.readInlineGoalForm(index);
     if (!name || target <= 0) return deps.notify("Preencha a meta corretamente.");
 
     const result = await getGoalServices().updateGoal.execute(goal.id, { name, key, target });

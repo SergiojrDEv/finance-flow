@@ -83,6 +83,7 @@ test("centraliza leitura de formularios de criacao", () => {
   dom.setValue("#new-card-name", "Cartao");
   dom.setValue("#new-card-closing", "25");
   dom.setValue("#new-card-due", "10");
+  dom.setValue("#new-account-name", " Conta corrente ");
   dom.setValue("#new-subcategory-type", "expense");
   dom.setValue("#new-subcategory-category", "alimentacao");
   dom.setValue("#new-subcategory-name", " Mercado ");
@@ -92,7 +93,36 @@ test("centraliza leitura de formularios de criacao", () => {
   dom.setValue("#new-goal-target", "30000");
 
   assert.deepEqual(dom.readNewCategoryForm(), { type: "expense", name: "Moradia", color: "#0b7285", limit: 2200 });
+  assert.deepEqual(dom.readNewAccountForm(), { name: "Conta corrente" });
   assert.deepEqual(dom.readNewCardForm(), { name: "Cartao", closingDay: 25, dueDay: 10 });
   assert.deepEqual(dom.readNewSubcategoryForm(), { type: "expense", categoryKey: "alimentacao", name: "Mercado", color: "#c43d4b" });
   assert.deepEqual(dom.readNewGoalForm(), { name: "Reserva", key: "renda-fixa", target: 30000 });
+});
+
+test("centraliza leitura de modais e metas inline", () => {
+  const documentRef = createFakeDocument();
+  const dom = createSettingsDom(documentRef);
+
+  dom.setValue("#goal-modal-name", " Viagem ");
+  dom.setValue("#goal-modal-category", "renda-fixa");
+  dom.setValue("#goal-modal-target", "9000");
+  dom.setValue("#settings-item-modal-name", " Alimentacao ");
+  dom.setValue("#settings-item-modal-color", "#c43d4b");
+  dom.setValue("#settings-item-modal-limit", "1400");
+  dom.setValue("#settings-item-modal-closing", "25");
+  dom.setValue("#settings-item-modal-due", "10");
+  dom.setValue('[data-goal-name="2"]', " Aposentadoria ");
+  dom.setValue('[data-goal-category="2"]', "previdencia");
+  dom.setValue('[data-goal-target="2"]', "120000");
+
+  assert.deepEqual(dom.readGoalModalForm(), { name: "Viagem", key: "renda-fixa", target: 9000 });
+  assert.deepEqual(dom.readSettingsItemModalForm(), {
+    name: "Alimentacao",
+    color: "#c43d4b",
+    monthlyLimit: 1400,
+    closingDay: 25,
+    dueDay: 10,
+  });
+  assert.equal(dom.hasInlineGoalForm(2), true);
+  assert.deepEqual(dom.readInlineGoalForm(2), { name: "Aposentadoria", key: "previdencia", target: 120000 });
 });
