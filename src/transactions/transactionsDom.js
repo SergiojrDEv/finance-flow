@@ -17,6 +17,11 @@ export function createTransactionsDom(documentRef = document) {
     if (target) target.textContent = nextValue;
   }
 
+  function placeholder(selector, nextValue) {
+    const target = get(selector);
+    if (target) target.placeholder = nextValue;
+  }
+
   function setHidden(selector, hidden) {
     const target = get(selector);
     if (!target) return;
@@ -199,11 +204,20 @@ export function createTransactionsDom(documentRef = document) {
     text("#transaction-guide-label", experience.guideLabel || "");
     text("#transaction-guide-text", experience.guideText || "");
     text("#transaction-submit", experience.submitLabel);
+    text("#description-label", experience.descriptionLabel || "Descricao");
+    text("#category-label", experience.categoryLabel || "Categoria");
+    text("#account-label", experience.accountLabel || "Conta");
+    text("#amount-label", experience.amountLabel || "Valor");
+    text("#date-label", experience.dateLabel || "Data");
+    text("#status-label", experience.statusLabel || "Status");
+    placeholder("#description", experience.descriptionPlaceholder || "Ex: supermercado, salario, Tesouro Direto");
+    setHidden("#due-date-field", !isExpense);
     ["#transaction-payment-row", "#transaction-recurrence-row", "#repeat-count-field"].forEach((selector) => {
       setHidden(selector, !isExpense);
     });
 
     if (!isExpense) {
+      setValue("#due-date", "");
       setValue("#payment-method", defaultPaymentMethod);
       setValue("#credit-card", "");
       setValue("#installments", 1);
@@ -216,9 +230,18 @@ export function createTransactionsDom(documentRef = document) {
   function syncTransactionModalTypeFields({ isExpense, experience, defaultPaymentMethod }) {
     text("#transaction-modal-title", experience.modalTitle);
     text("#transaction-modal-copy", experience.modalCopy);
+    text("#transaction-modal-description-label", experience.descriptionLabel || "Descricao");
+    text("#transaction-modal-category-label", experience.categoryLabel || "Categoria");
+    text("#transaction-modal-account-label", experience.accountLabel || "Conta");
+    text("#transaction-modal-amount-label", experience.amountLabel || "Valor");
+    text("#transaction-modal-date-label", experience.dateLabel || "Data");
+    text("#transaction-modal-status-label", experience.statusLabel || "Status");
+    placeholder("#transaction-modal-description", experience.descriptionPlaceholder || "");
+    setHidden("#transaction-modal-due-date-field", !isExpense);
     setHidden("#transaction-modal-payment-row", !isExpense);
 
     if (!isExpense) {
+      setValue("#transaction-modal-due-date", "");
       setValue("#transaction-modal-payment-method", defaultPaymentMethod);
       setValue("#transaction-modal-subcategory", "");
       setValue("#transaction-modal-credit-card", "");

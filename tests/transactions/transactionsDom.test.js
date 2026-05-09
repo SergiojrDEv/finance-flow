@@ -155,19 +155,32 @@ test("centraliza campos visuais por tipo de lancamento", () => {
       formCopy: "Receba sem campos de despesa.",
       heroTitle: "Cadastre uma receita",
       heroCopy: "Entrada do mes.",
-      guideLabel: "Entrada de dinheiro",
-      guideText: "Receitas aumentam o disponivel.",
-      tone: "income",
-      submitLabel: "Salvar receita",
-    },
-  });
+    guideLabel: "Entrada de dinheiro",
+    guideText: "Receitas aumentam o disponivel.",
+    tone: "income",
+    descriptionLabel: "Origem da receita",
+    descriptionPlaceholder: "Ex: salario",
+    categoryLabel: "Tipo de receita",
+    accountLabel: "Conta de destino",
+    amountLabel: "Valor recebido",
+    dateLabel: "Recebido em",
+    statusLabel: "Situacao",
+    submitLabel: "Salvar receita",
+  },
+});
 
   assert.equal(documentRef.body.dataset.transactionTypeTone, "income");
   assert.equal(dom.get("#transaction-form-title").textContent, "Nova receita");
   assert.equal(dom.get("#transaction-submit").textContent, "Salvar receita");
   assert.equal(dom.get("#transaction-guide-label").textContent, "Entrada de dinheiro");
   assert.equal(dom.get("#transaction-guide-text").textContent, "Receitas aumentam o disponivel.");
+  assert.equal(dom.get("#description-label").textContent, "Origem da receita");
+  assert.equal(dom.get("#description").placeholder, "Ex: salario");
+  assert.equal(dom.get("#account-label").textContent, "Conta de destino");
+  assert.equal(dom.get("#date-label").textContent, "Recebido em");
+  assert.equal(dom.get("#due-date-field").hidden, true);
   assert.equal(dom.get("#transaction-payment-row").hidden, true);
+  assert.equal(dom.value("#due-date"), "");
   assert.equal(dom.value("#payment-method"), "transfer");
   assert.equal(dom.value("#credit-card"), "");
   assert.equal(dom.value("#installments"), 1);
@@ -186,12 +199,24 @@ test("centraliza campos visuais do modal por tipo de lancamento", () => {
     experience: {
       modalTitle: "Editar receita",
       modalCopy: "Atualize a entrada.",
+      descriptionLabel: "Origem da receita",
+      descriptionPlaceholder: "Ex: salario",
+      categoryLabel: "Tipo de receita",
+      accountLabel: "Conta de destino",
+      amountLabel: "Valor recebido",
+      dateLabel: "Recebido em",
+      statusLabel: "Situacao",
     },
   });
 
   assert.equal(dom.get("#transaction-modal-title").textContent, "Editar receita");
   assert.equal(dom.get("#transaction-modal-copy").textContent, "Atualize a entrada.");
+  assert.equal(dom.get("#transaction-modal-description-label").textContent, "Origem da receita");
+  assert.equal(dom.get("#transaction-modal-description").placeholder, "Ex: salario");
+  assert.equal(dom.get("#transaction-modal-account-label").textContent, "Conta de destino");
+  assert.equal(dom.get("#transaction-modal-due-date-field").hidden, true);
   assert.equal(dom.get("#transaction-modal-payment-row").hidden, true);
+  assert.equal(dom.value("#transaction-modal-due-date"), "");
   assert.equal(dom.value("#transaction-modal-payment-method"), "transfer");
   assert.equal(dom.value("#transaction-modal-subcategory"), "");
   assert.equal(dom.value("#transaction-modal-credit-card"), "");

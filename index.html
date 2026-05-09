@@ -264,13 +264,13 @@
           </div>
 
           <label>
-            Descricao
+            <span id="description-label">Descricao</span>
             <input id="description" name="description" type="text" placeholder="Ex: supermercado, salario, Tesouro Direto" required>
           </label>
 
           <div class="field-row field-row-3">
             <label>
-              Categoria
+              <span id="category-label">Categoria</span>
               <select id="category" name="category" required></select>
             </label>
             <label id="subcategory-field" class="is-hidden" hidden>
@@ -278,32 +278,32 @@
               <select id="subcategory" name="subcategory"></select>
             </label>
             <label>
-              Conta
+              <span id="account-label">Conta</span>
               <select id="account" name="account" required></select>
             </label>
           </div>
 
           <div class="field-row">
             <label>
-              Valor
+              <span id="amount-label">Valor</span>
               <input id="amount" name="amount" type="number" min="0.01" step="0.01" placeholder="0,00" required>
             </label>
             <label>
-              Data
+              <span id="date-label">Data</span>
               <input id="date" name="date" type="date" required>
             </label>
           </div>
 
           <div class="field-row" id="transaction-status-row">
             <label>
-              Status
+              <span id="status-label">Status</span>
               <select id="status" name="status" required>
                 <option value="paid">Pago</option>
                 <option value="pending">Pendente</option>
                 <option value="planned">Previsto</option>
               </select>
             </label>
-            <label>
+            <label id="due-date-field">
               Vencimento
               <input id="due-date" name="dueDate" type="date">
             </label>
@@ -749,13 +749,13 @@
         </div>
 
         <label>
-          Descricao
+          <span id="transaction-modal-description-label">Descricao</span>
           <input id="transaction-modal-description" name="description" type="text" required>
         </label>
 
         <div class="field-row field-row-3">
           <label>
-            Categoria
+            <span id="transaction-modal-category-label">Categoria</span>
             <select id="transaction-modal-category" name="category" required></select>
           </label>
           <label id="transaction-modal-subcategory-field" class="is-hidden" hidden>
@@ -763,32 +763,32 @@
             <select id="transaction-modal-subcategory" name="subcategory"></select>
           </label>
           <label>
-            Conta
+            <span id="transaction-modal-account-label">Conta</span>
             <select id="transaction-modal-account" name="account" required></select>
           </label>
         </div>
 
         <div class="field-row">
           <label>
-            Valor
+            <span id="transaction-modal-amount-label">Valor</span>
             <input id="transaction-modal-amount" name="amount" type="number" min="0.01" step="0.01" required>
           </label>
           <label>
-            Data
+            <span id="transaction-modal-date-label">Data</span>
             <input id="transaction-modal-date" name="date" type="date" required>
           </label>
         </div>
 
         <div class="field-row" id="transaction-modal-status-row">
           <label>
-            Status
+            <span id="transaction-modal-status-label">Status</span>
             <select id="transaction-modal-status" name="status" required>
               <option value="paid">Pago</option>
               <option value="pending">Pendente</option>
               <option value="planned">Previsto</option>
             </select>
           </label>
-          <label>
+          <label id="transaction-modal-due-date-field">
             Vencimento
             <input id="transaction-modal-due-date" name="dueDate" type="date">
           </label>
