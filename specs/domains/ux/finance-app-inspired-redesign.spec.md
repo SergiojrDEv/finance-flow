@@ -18,6 +18,7 @@ Aplicar uma linguagem visual mais proxima de aplicativos financeiros mobile, usa
 - A visao geral deve ter um card principal de disponibilidade financeira.
 - A home deve oferecer atalhos rapidos para receita, despesa, investimento e metas.
 - Cards de resumo devem ganhar icones textuais discretos e melhor hierarquia.
+- Orcamentos e metas devem mostrar status/progresso em cards mais visuais, sem poluir a tela.
 - O mobile deve parecer mais app e menos site responsivo.
 - Build e testes devem continuar passando.
 

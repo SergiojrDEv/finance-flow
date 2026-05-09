@@ -76,18 +76,39 @@ export function renderTransactionHighlightsHtml(highlights) {
     `;
 }
 
+function budgetStatusTone(item) {
+  const monthly = Number(item.pct?.monthly || 0);
+  const weekly = Number(item.pct?.weekly || 0);
+  const peak = Math.max(monthly, weekly);
+  if (peak >= 100) return "danger";
+  if (peak >= 80) return "warning";
+  return "ok";
+}
+
+function budgetStatusLabel(tone) {
+  if (tone === "danger") return "Limite estourado";
+  if (tone === "warning") return "Perto do limite";
+  return "Dentro do plano";
+}
+
 export function renderBudgetOverviewHtml(rows) {
   if (!rows.length) {
     return renderEmptyState("Nenhuma categoria para acompanhar", "Crie categorias de despesa em Ajustes para definir limites semanais e mensais.");
   }
 
   return rows
-    .map((item) => `
-          <article class="budget-card">
+    .map((item) => {
+      const tone = budgetStatusTone(item);
+
+      return `
+          <article class="budget-card budget-card-${tone}">
             <header class="budget-card-header">
-              <strong>${esc(item.label)}</strong>
+              <div>
+                <strong>${esc(item.label)}</strong>
+                <small>${esc(budgetStatusLabel(tone))}</small>
+              </div>
               <div class="budget-badges">
-                <span class="budget-badge">Sem ${item.status.weekly}</span>
+                <span class="budget-badge">Semana ${item.status.weekly}</span>
                 <span class="budget-badge">Mes ${item.status.monthly}</span>
               </div>
             </header>
@@ -117,7 +138,8 @@ export function renderBudgetOverviewHtml(rows) {
               <button class="mini-btn" type="submit">Salvar regra</button>
             </form>
           </article>
-        `)
+        `;
+    })
     .join("");
 }
 

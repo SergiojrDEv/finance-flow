@@ -16,6 +16,13 @@ function money(value) {
   return formatter.format(value || 0);
 }
 
+function goalStatusLabel(goal) {
+  if (goal.percent >= 100) return "Meta concluida";
+  if (goal.percent >= 60) return "Quase la";
+  if (goal.current > 0) return "Em progresso";
+  return "Comece com um aporte";
+}
+
 export function renderGoalsHtml(goals) {
   if (!goals.length) {
     return `
@@ -28,10 +35,13 @@ export function renderGoalsHtml(goals) {
 
   return goals
     .map((goal, index) => `
-          <article class="goal-card">
+          <article class="goal-card goal-progress-card">
             <header>
-              <strong>${esc(goal.name)}</strong>
-              <small>${goal.percent.toFixed(0)}%</small>
+              <div>
+                <strong>${esc(goal.name)}</strong>
+                <small>${esc(goalStatusLabel(goal))}</small>
+              </div>
+              <small class="goal-percent">${goal.percent.toFixed(0)}%</small>
             </header>
             <div class="bar"><span style="--value:${goal.percent}%;--color:var(--invest)"></span></div>
             <p><span class="money purple">${money(goal.current)}</span> de ${money(goal.target)}</p>

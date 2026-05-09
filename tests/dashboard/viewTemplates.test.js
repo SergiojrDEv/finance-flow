@@ -56,3 +56,22 @@ test("resumo de lancamentos mostra saldo do mes em linguagem de app", () => {
   assert.match(html, /Forma mais usada/);
   assert.match(html, /R\$\s*200,00/);
 });
+
+test("orcamento mostra status de app por categoria", () => {
+  const html = renderBudgetOverviewHtml([
+    {
+      key: "alimentacao",
+      label: "Alimentacao",
+      color: "#c43d4b",
+      used: { weekly: 90, monthly: 1200 },
+      rule: { weekly: 100, monthly: 1000 },
+      pct: { weekly: 90, monthly: 120 },
+      status: { weekly: "90%", monthly: "120%" },
+    },
+  ]);
+
+  assert.match(html, /budget-card-danger/);
+  assert.match(html, /Limite estourado/);
+  assert.match(html, /Semana 90%/);
+  assert.match(html, /Mes 120%/);
+});

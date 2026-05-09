@@ -14,6 +14,9 @@ test("renderiza metas e estado vazio", () => {
   assert.match(emptyHtml, /acompanhar aportes/);
   assert.match(html, /Reserva/);
   assert.match(html, /Renda fixa/);
+  assert.match(html, /goal-progress-card/);
+  assert.match(html, /Em progresso/);
+  assert.match(html, /goal-percent/);
   assert.match(html, /data-goal-contribute="0"/);
 });
 
