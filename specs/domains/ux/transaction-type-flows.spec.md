@@ -1,6 +1,6 @@
 # Spec: Fluxos financeiros por tipo
 
-Status: em andamento
+Status: concluido
 
 ## Objetivo
 
