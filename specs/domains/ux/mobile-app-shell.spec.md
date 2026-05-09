@@ -1,5 +1,7 @@
 # Spec: Shell mobile de aplicativo
 
+Status: concluido
+
 ## Objetivo
 
 Dar ao Finance Flow uma experiencia mobile mais parecida com aplicativo financeiro, mantendo o desktop estavel e sem alterar regras financeiras, autenticacao, sincronizacao ou banco.
