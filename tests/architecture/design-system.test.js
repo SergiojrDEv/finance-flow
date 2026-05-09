@@ -84,3 +84,19 @@ test("styles mantem resumo principal compacto", async () => {
 
   assert.deepEqual(missing, []);
 });
+
+test("styles deixam lancamentos mais compactos em desktop e mobile", async () => {
+  const source = await readFile(stylesPath, "utf8");
+  const requiredSnippets = [
+    ".transactions-shell {\n  display: grid;\n  gap: 14px;",
+    ".transaction-hero {\n  display: flex;\n  align-items: center;\n  justify-content: space-between;\n  gap: 16px;\n  padding: 16px;",
+    ".transaction-view-tabs {\n  min-width: 196px;",
+    ".view-tab {\n  min-height: 34px;",
+    ".transaction-highlights {\n  display: grid;\n  grid-template-columns: repeat(3, minmax(0, 1fr));\n  gap: 10px;",
+    ".mini-stat-card {\n  display: grid;\n  gap: 5px;\n  padding: 12px;",
+    ".transaction-view-tabs {\n    width: 100%;\n    min-width: 0;",
+  ];
+  const missing = requiredSnippets.filter((snippet) => !source.includes(snippet));
+
+  assert.deepEqual(missing, []);
+});

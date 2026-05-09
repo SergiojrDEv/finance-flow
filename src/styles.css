@@ -453,29 +453,30 @@ h2 {
 
 .transactions-shell {
   display: grid;
-  gap: 18px;
+  gap: 14px;
 }
 
 .transaction-hero {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 20px;
+  gap: 16px;
+  padding: 16px;
 }
 
 .transaction-view-tabs {
-  min-width: 220px;
+  min-width: 196px;
   display: grid;
   grid-template-columns: repeat(2, 1fr);
-  gap: 6px;
-  padding: 5px;
+  gap: 4px;
+  padding: 4px;
   border: 1px solid var(--line);
   border-radius: var(--radius-md);
   background: #eef3f8;
 }
 
 .view-tab {
-  min-height: 36px;
+  min-height: 34px;
   border: 0;
   border-radius: var(--radius-sm);
   background: transparent;
@@ -487,7 +488,7 @@ h2 {
 .view-tab.is-active {
   background: var(--text);
   color: #ffffff;
-  box-shadow: 0 8px 16px rgba(15, 23, 42, 0.14);
+  box-shadow: 0 6px 14px rgba(15, 23, 42, 0.12);
 }
 
 .transaction-view {
@@ -500,10 +501,10 @@ body[data-transaction-view="month"] .transaction-view-month {
 }
 
 .section-copy {
-  margin: 8px 0 0;
-  max-width: 760px;
+  margin: 6px 0 0;
+  max-width: 680px;
   color: var(--muted);
-  line-height: 1.6;
+  line-height: 1.5;
 }
 
 .transaction-composer,
@@ -514,8 +515,8 @@ body[data-transaction-view="month"] .transaction-view-month {
 .transaction-highlights {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 12px;
-  margin-bottom: 16px;
+  gap: 10px;
+  margin-bottom: 14px;
 }
 
 .month-tools-drawer {
@@ -562,8 +563,8 @@ body[data-transaction-view="month"] .transaction-view-month {
 
 .mini-stat-card {
   display: grid;
-  gap: 6px;
-  padding: 14px;
+  gap: 5px;
+  padding: 12px;
   border: 1px solid var(--line);
   border-radius: var(--radius-md);
   background: #fbfcfe;
@@ -1505,6 +1506,19 @@ td {
   .panel-header.table-tools,
   .transaction-hero {
     display: grid;
+  }
+
+  .transaction-hero {
+    gap: 12px;
+  }
+
+  .transaction-view-tabs {
+    width: 100%;
+    min-width: 0;
+  }
+
+  .section-copy {
+    font-size: 0.94rem;
   }
 
   .topbar-actions,
