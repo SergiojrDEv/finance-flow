@@ -42,6 +42,17 @@ test("renderiza pendencias de revisao da carteira", () => {
   assert.match(html, />3</);
 });
 
+test("renderiza transacoes importadas pendentes com acao de conferencia", () => {
+  const html = renderWalletReviewHtml({}, [
+    { id: "imp-1", description: "Uber", date: "2026-05-08", type: "expense", amount: 23.4 },
+  ], money);
+
+  assert.match(html, /Uber/);
+  assert.match(html, /Importado do banco/);
+  assert.match(html, /data-wallet-review-imported="imp-1"/);
+  assert.match(html, /Conferido/);
+});
+
 test("renderiza estado vazio e opcoes de bancos", () => {
   const emptyHtml = renderWalletEmptyStateHtml();
   const optionsHtml = renderWalletInstitutionOptionsHtml([

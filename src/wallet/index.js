@@ -72,11 +72,24 @@ export function createWalletModule(deps) {
     deps.notify?.("Banco desconectado.");
   }
 
+  async function reviewImportedTransaction(importedTransactionId) {
+    const result = await deps.openFinanceServices.reviewImportedTransaction.execute(importedTransactionId);
+    if (!result.ok) {
+      deps.notify?.("Nao foi possivel marcar esta transacao.");
+      return;
+    }
+
+    deps.persist();
+    deps.renderAll();
+    deps.notify?.("Transacao importada marcada como conferida.");
+  }
+
   return {
     closeWalletBankModal,
     connectMockBank,
     disconnectMockBank,
     openWalletBankModal,
     renderWallet,
+    reviewImportedTransaction,
   };
 }

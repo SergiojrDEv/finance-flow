@@ -4,6 +4,7 @@ import {
   buildMonthTransactionList,
   getPaymentMethodLabel,
   getTransactionFlowLabel,
+  getTransactionOriginLabel,
   getTransactionAmountPresentation,
   getTransactionStatusLabel,
   getTransactionTypeLabel,
@@ -85,11 +86,32 @@ test("monta apresentacao de tipo status pagamento e valor", () => {
   assert.equal(list[0].presentation.statusLabel, "Previsto");
   assert.equal(list[0].presentation.paymentMethodLabel, "Transferencia");
   assert.equal(list[0].presentation.flowLabel, "Aporte");
+  assert.equal(list[0].presentation.originLabel, "Manual");
   assert.deepEqual(list[0].presentation.amount, { sign: "-", className: "purple" });
   assert.equal(getTransactionTypeLabel("foo"), "Despesa");
   assert.equal(getTransactionStatusLabel("x"), "Pago");
   assert.equal(getPaymentMethodLabel("boleto"), "Outro");
   assert.equal(getTransactionFlowLabel("income", "pix"), "Entrada");
   assert.equal(getTransactionFlowLabel("expense", "credit"), "Credito");
+  assert.equal(getTransactionOriginLabel("open_finance"), "Banco");
   assert.deepEqual(getTransactionAmountPresentation("income"), { sign: "+", className: "positive" });
+});
+
+test("marca origem bancaria quando lancamento veio de importacao", () => {
+  const [item] = buildMonthTransactionList({
+    transactions: [{
+      id: "tx-1",
+      type: "expense",
+      description: "Uber",
+      category: "transporte",
+      account: "Conta corrente",
+      amount: 23.4,
+      date: "2026-05-08",
+      importedTransactionId: "imp-1",
+    }],
+    monthKey: "2026-05",
+  });
+
+  assert.equal(item.origin, "open_finance");
+  assert.equal(item.presentation.originLabel, "Banco");
 });

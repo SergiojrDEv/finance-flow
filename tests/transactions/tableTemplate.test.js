@@ -9,6 +9,7 @@ const presentation = {
   statusLabel: "Pago",
   paymentMethodLabel: "Pix",
   flowLabel: "Pix",
+  originLabel: "Manual",
 };
 
 test("renderiza estado vazio da tabela de lancamentos", () => {
@@ -18,7 +19,7 @@ test("renderiza estado vazio da tabela de lancamentos", () => {
   assert.match(html, /Cadastre um novo movimento/);
   assert.match(html, /app-empty-state/);
   assert.match(html, /table-empty-state/);
-  assert.match(html, /colspan="10"/);
+  assert.match(html, /colspan="11"/);
 });
 
 test("renderiza linha de lancamento com helpers injetados", () => {
@@ -46,6 +47,8 @@ test("renderiza linha de lancamento com helpers injetados", () => {
   assert.match(html, /Alimentacao \/ Mercado/);
   assert.match(html, /transaction-row transaction-row-expense/);
   assert.match(html, /payment-pill expense/);
+  assert.match(html, /source-pill source-manual/);
+  assert.match(html, />Manual</);
   assert.match(html, /R\$ 56/);
   assert.match(html, /data-edit="tx-1"/);
 });
@@ -67,6 +70,7 @@ test("renderiza fluxo de receita e investimento sem parecer pagamento", () => {
         statusLabel: "Pago",
         paymentMethodLabel: "Transferencia",
         flowLabel: "Entrada",
+        originLabel: "Manual",
       },
     },
     {
@@ -84,7 +88,9 @@ test("renderiza fluxo de receita e investimento sem parecer pagamento", () => {
         statusLabel: "Pago",
         paymentMethodLabel: "Transferencia",
         flowLabel: "Aporte",
+        originLabel: "Banco",
       },
+      origin: "open_finance",
     },
   ]);
 
@@ -92,4 +98,6 @@ test("renderiza fluxo de receita e investimento sem parecer pagamento", () => {
   assert.match(html, /payment-pill investment">Aporte/);
   assert.match(html, /transaction-row-income/);
   assert.match(html, /transaction-row-investment/);
+  assert.match(html, /source-open_finance/);
+  assert.match(html, />Banco</);
 });

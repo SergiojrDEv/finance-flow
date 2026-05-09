@@ -16,7 +16,7 @@ export function renderTransactionTableHtml(items, helpers = {}) {
   if (!items.length) {
     return `
           <tr>
-            <td colspan="10" class="empty-state app-empty-state table-empty-state">
+            <td colspan="11" class="empty-state app-empty-state table-empty-state">
               <strong class="empty-state-title">Nenhum lancamento encontrado</strong>
               <span class="empty-state-copy">Cadastre um novo movimento ou ajuste os filtros para ver os lancamentos do mes.</span>
             </td>
@@ -38,6 +38,7 @@ export function renderTransactionTableHtml(items, helpers = {}) {
             <td>${dateLabel}</td>
             <td><strong>${escapeHtml(item.description)}</strong></td>
             <td><span class="category-pill">${escapeHtml(formatCategoryLabel(item))}</span></td>
+            <td><span class="source-pill source-${escapeHtml(item.origin || "manual")}">${escapeHtml(item.presentation.originLabel || "Manual")}</span></td>
             <td>${escapeHtml(item.account)}</td>
             <td><span class="type-pill ${item.status || "paid"}">${statusLabel}</span></td>
             <td><span class="payment-pill ${item.type}">${item.presentation.flowLabel || item.presentation.paymentMethodLabel}</span></td>
