@@ -279,37 +279,12 @@
         </div>
         <div class="wallet-balance-card">
           <span>Patrimonio acompanhado</span>
-          <strong>R$ 0,00</strong>
-          <small>Conecte contas ou use seus lancamentos manuais</small>
+          <strong id="wallet-patrimony">R$ 0,00</strong>
+          <small>Disponivel: <span id="wallet-available">R$ 0,00</span> | Investido: <span id="wallet-investments">R$ 0,00</span></small>
         </div>
       </article>
 
-      <div class="wallet-grid" aria-label="Contas e ativos">
-        <article class="wallet-account-card checking">
-          <span class="wallet-bank-mark">C</span>
-          <div>
-            <strong>Conta corrente</strong>
-            <small>Disponivel para movimentacao</small>
-          </div>
-          <b>R$ 0,00</b>
-        </article>
-        <article class="wallet-account-card credit">
-          <span class="wallet-bank-mark">Cr</span>
-          <div>
-            <strong>Cartao principal</strong>
-            <small>Fatura e compras do mes</small>
-          </div>
-          <b>R$ 0,00</b>
-        </article>
-        <article class="wallet-account-card investment">
-          <span class="wallet-bank-mark">I</span>
-          <div>
-            <strong>Investimentos</strong>
-            <small>Aportes e metas vinculadas</small>
-          </div>
-          <b>R$ 0,00</b>
-        </article>
-      </div>
+      <div class="wallet-grid" id="wallet-account-cards" aria-label="Contas e ativos"></div>
 
       <div class="wallet-panels">
         <article class="panel wallet-panel">
@@ -321,10 +296,7 @@
             </div>
             <span class="status-pill">Mock local</span>
           </div>
-          <div class="wallet-empty-state">
-            <strong>Nenhum banco conectado ainda</strong>
-            <span>O proximo passo sera ligar o modulo mock para simular conexoes com Nubank, Inter e outros bancos.</span>
-          </div>
+          <div class="wallet-institution-list" id="wallet-institution-list"></div>
         </article>
 
         <article class="panel wallet-panel">
@@ -334,24 +306,7 @@
               <h2>Pendencias</h2>
             </div>
           </div>
-          <div class="wallet-review-list">
-            <div class="wallet-review-row">
-              <span></span>
-              <div>
-                <strong>Transacoes importadas</strong>
-                <small>Aparecerao aqui antes de entrar no historico</small>
-              </div>
-              <b>0</b>
-            </div>
-            <div class="wallet-review-row">
-              <span></span>
-              <div>
-                <strong>Casamentos automaticos</strong>
-                <small>Evita duplicar lancamentos manuais</small>
-              </div>
-              <b>0</b>
-            </div>
-          </div>
+          <div class="wallet-review-list" id="wallet-review-list"></div>
         </article>
       </div>
     </section>

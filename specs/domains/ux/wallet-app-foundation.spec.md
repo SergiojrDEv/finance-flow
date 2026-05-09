@@ -11,6 +11,7 @@ Criar a base visual de uma experiencia mais parecida com aplicativo financeiro, 
 - A tela deve parecer uma carteira financeira, nao uma pagina tecnica.
 - Contas, cartoes e investimentos devem ser apresentados como blocos claros e acionaveis.
 - A fase inicial usa dados estaticos/locais para validar UX antes de qualquer integracao Open Finance.
+- A fase seguinte usa mock funcional derivado dos dados locais para validar comportamento antes de conectar banco real.
 - O visual deve reaproveitar tokens do design system atual.
 
 ## Criterios de aceite
@@ -19,6 +20,7 @@ Criar a base visual de uma experiencia mais parecida com aplicativo financeiro, 
 - A tela deve exibir um card principal de patrimonio/saldo conectado.
 - A tela deve exibir cards de contas, cartao e investimento em estilo app.
 - A tela deve ter uma area de revisao/pendencias inspirada em transacoes importadas.
+- Os saldos devem refletir dados locais do mes selecionado quando existirem.
 - Mobile deve manter leitura compacta e app-like.
 - Build e testes devem continuar passando.
 

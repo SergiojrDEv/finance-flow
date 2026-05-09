@@ -20,6 +20,7 @@ import { bindAppEvents } from "./events.js";
 import { createDashboardModule } from "../dashboard/index.js";
 import { createTransactionsModule } from "../transactions/index.js";
 import { createSettingsModule } from "../settings/index.js";
+import { createWalletModule } from "../wallet/index.js";
 import { createAuthModule } from "../auth/index.js";
 import { createSupabaseModule } from "../supabase/index.js";
 import { installDiagnosticsApi } from "../infrastructure/diagnostics/installDiagnosticsApi.js";
@@ -40,6 +41,10 @@ export function createFinanceFlowRuntime({ windowRef = window } = {}) {
     getBudgetRule,
     getSubcategories,
     getCategoryColorFromList,
+    formatter: new Intl.NumberFormat("pt-BR", {
+      style: "currency",
+      currency: "BRL",
+    }),
   };
 
   Object.assign(deps, createUiModule(deps));
@@ -49,6 +54,7 @@ export function createFinanceFlowRuntime({ windowRef = window } = {}) {
   state.catalog = deps.hydrateCatalog(state.settings, state.catalog);
   Object.assign(deps, createTransactionsModule(deps));
   Object.assign(deps, createSettingsModule(deps));
+  Object.assign(deps, createWalletModule(deps));
   Object.assign(deps, createDashboardModule(deps));
   Object.assign(deps, createAuthModule(deps));
   Object.assign(deps, createSupabaseModule(deps));

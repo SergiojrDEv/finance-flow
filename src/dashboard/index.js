@@ -158,6 +158,7 @@ export function createDashboardModule(deps) {
     renderSafely("lancamentos", deps.renderTable);
     renderSafely("orcamentos", renderBudgets);
     renderSafely("historico", renderDailyHistory);
+    renderSafely("carteira", deps.renderWallet);
     renderSafely("resumo de metas", deps.renderGoalsSummary);
     renderSafely("metas", deps.renderGoals);
     renderSafely("ajustes", deps.renderSettings);

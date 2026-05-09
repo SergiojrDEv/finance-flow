@@ -632,6 +632,33 @@ h2 {
   line-height: 1.45;
 }
 
+.wallet-institution-list {
+  display: grid;
+  gap: 10px;
+}
+
+.wallet-institution-row {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  gap: 12px;
+  align-items: center;
+  padding: 12px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-md);
+  background: #fbfcfe;
+}
+
+.wallet-institution-row small {
+  display: block;
+  margin-top: 3px;
+  color: var(--muted);
+  font-weight: 700;
+}
+
+.wallet-institution-row b {
+  font-family: "JetBrains Mono", monospace;
+}
+
 .wallet-review-list {
   display: grid;
   gap: 10px;
@@ -656,6 +683,10 @@ h2 {
 }
 
 .wallet-review-row:nth-child(2) > span {
+  background: var(--accent);
+}
+
+.wallet-review-row > span.accent {
   background: var(--accent);
 }
 

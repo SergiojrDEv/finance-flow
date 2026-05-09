@@ -98,11 +98,10 @@ test("html oferece base visual de carteira financeira", async () => {
     'id="carteira"',
     "wallet-hero",
     "wallet-balance-card",
-    "wallet-grid",
-    "wallet-account-card checking",
-    "wallet-account-card credit",
-    "wallet-account-card investment",
+    'id="wallet-account-cards"',
+    'id="wallet-institution-list"',
     "wallet-review-list",
+    'id="wallet-review-list"',
   ];
   const missing = requiredSnippets.filter((snippet) => !source.includes(snippet));
 
@@ -118,6 +117,7 @@ test("styles suportam tela carteira app-like", async () => {
     ".wallet-account-card {\n  display: grid;\n  grid-template-columns: auto minmax(0, 1fr) auto;",
     ".wallet-panels {\n  display: grid;\n  grid-template-columns: minmax(0, 1.1fr) minmax(300px, 0.9fr);",
     ".wallet-empty-state {\n  display: grid;",
+    ".wallet-institution-row {\n  display: grid;",
     ".wallet-review-row {\n  display: grid;",
     ".wallet-hero,\n  .wallet-grid,\n  .wallet-panels,",
   ];
