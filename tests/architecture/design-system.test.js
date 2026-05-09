@@ -176,6 +176,9 @@ test("styles deixam historico em tabela mais limpo", async () => {
     "tbody tr:last-child td {\n  border-bottom: 0;",
     ".row-actions {\n  display: inline-flex;\n  gap: 4px;",
     ".row-action {\n  min-width: 32px;\n  height: 30px;",
+    ".transaction-row td:first-child {\n  border-left: 4px solid transparent;",
+    ".transaction-row-income td:first-child {\n  border-left-color: var(--income);",
+    ".payment-pill.investment {\n  background: #efefff;",
   ];
   const missing = requiredSnippets.filter((snippet) => !source.includes(snippet));
 

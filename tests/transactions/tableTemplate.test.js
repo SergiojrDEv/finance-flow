@@ -8,6 +8,7 @@ const presentation = {
   typeLabel: "Despesa",
   statusLabel: "Pago",
   paymentMethodLabel: "Pix",
+  flowLabel: "Pix",
 };
 
 test("renderiza estado vazio da tabela de lancamentos", () => {
@@ -43,6 +44,52 @@ test("renderiza linha de lancamento com helpers injetados", () => {
   assert.match(html, /data:2026-04-23/);
   assert.match(html, /Mercado &lt;script&gt;/);
   assert.match(html, /Alimentacao \/ Mercado/);
+  assert.match(html, /transaction-row transaction-row-expense/);
+  assert.match(html, /payment-pill expense/);
   assert.match(html, /R\$ 56/);
   assert.match(html, /data-edit="tx-1"/);
+});
+
+test("renderiza fluxo de receita e investimento sem parecer pagamento", () => {
+  const html = renderTransactionTableHtml([
+    {
+      id: "tx-2",
+      type: "income",
+      status: "paid",
+      paymentMethod: "transfer",
+      date: "2026-04-23",
+      description: "Salario",
+      account: "Conta corrente",
+      amount: 3100,
+      presentation: {
+        amount: { className: "positive", sign: "+" },
+        typeLabel: "Receita",
+        statusLabel: "Pago",
+        paymentMethodLabel: "Transferencia",
+        flowLabel: "Entrada",
+      },
+    },
+    {
+      id: "tx-3",
+      type: "investment",
+      status: "paid",
+      paymentMethod: "transfer",
+      date: "2026-04-24",
+      description: "Tesouro",
+      account: "Corretora",
+      amount: 500,
+      presentation: {
+        amount: { className: "purple", sign: "-" },
+        typeLabel: "Investimento",
+        statusLabel: "Pago",
+        paymentMethodLabel: "Transferencia",
+        flowLabel: "Aporte",
+      },
+    },
+  ]);
+
+  assert.match(html, /payment-pill income">Entrada/);
+  assert.match(html, /payment-pill investment">Aporte/);
+  assert.match(html, /transaction-row-income/);
+  assert.match(html, /transaction-row-investment/);
 });

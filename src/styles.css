@@ -820,6 +820,22 @@ tbody tr:last-child td {
   border-bottom: 0;
 }
 
+.transaction-row td:first-child {
+  border-left: 4px solid transparent;
+}
+
+.transaction-row-income td:first-child {
+  border-left-color: var(--income);
+}
+
+.transaction-row-expense td:first-child {
+  border-left-color: var(--expense);
+}
+
+.transaction-row-investment td:first-child {
+  border-left-color: var(--invest);
+}
+
 .right {
   text-align: right;
 }
@@ -881,6 +897,21 @@ tbody tr:last-child td {
 .payment-pill.transfer {
   background: #ecfeff;
   color: #0f766e;
+}
+
+.payment-pill.income {
+  background: #e8f7ef;
+  color: var(--income);
+}
+
+.payment-pill.expense {
+  background: #fff1f2;
+  color: var(--expense);
+}
+
+.payment-pill.investment {
+  background: #efefff;
+  color: var(--invest);
 }
 
 .type-pill.pending,

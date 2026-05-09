@@ -3,6 +3,7 @@ import test from "node:test";
 import {
   buildMonthTransactionList,
   getPaymentMethodLabel,
+  getTransactionFlowLabel,
   getTransactionAmountPresentation,
   getTransactionStatusLabel,
   getTransactionTypeLabel,
@@ -83,9 +84,12 @@ test("monta apresentacao de tipo status pagamento e valor", () => {
   assert.equal(list[0].presentation.typeLabel, "Investimento");
   assert.equal(list[0].presentation.statusLabel, "Previsto");
   assert.equal(list[0].presentation.paymentMethodLabel, "Transferencia");
+  assert.equal(list[0].presentation.flowLabel, "Aporte");
   assert.deepEqual(list[0].presentation.amount, { sign: "-", className: "purple" });
   assert.equal(getTransactionTypeLabel("foo"), "Despesa");
   assert.equal(getTransactionStatusLabel("x"), "Pago");
   assert.equal(getPaymentMethodLabel("boleto"), "Outro");
+  assert.equal(getTransactionFlowLabel("income", "pix"), "Entrada");
+  assert.equal(getTransactionFlowLabel("expense", "credit"), "Credito");
   assert.deepEqual(getTransactionAmountPresentation("income"), { sign: "+", className: "positive" });
 });

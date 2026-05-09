@@ -34,13 +34,13 @@ export function renderTransactionTableHtml(items, helpers = {}) {
       const dueDateLabel = item.dueDate ? formatDate(item.dueDate) : "-";
 
       return `
-          <tr>
+          <tr class="transaction-row transaction-row-${item.type}">
             <td>${dateLabel}</td>
             <td><strong>${escapeHtml(item.description)}</strong></td>
             <td><span class="category-pill">${escapeHtml(formatCategoryLabel(item))}</span></td>
             <td>${escapeHtml(item.account)}</td>
             <td><span class="type-pill ${item.status || "paid"}">${statusLabel}</span></td>
-            <td><span class="payment-pill ${item.paymentMethod || "pix"}">${item.presentation.paymentMethodLabel}</span></td>
+            <td><span class="payment-pill ${item.type}">${item.presentation.flowLabel || item.presentation.paymentMethodLabel}</span></td>
             <td>${dueDateLabel}</td>
             <td><span class="type-pill ${item.type}">${typeLabel}</span></td>
             <td class="right money ${amountClass}">${sign} ${formatMoney(Number(item.amount))}</td>

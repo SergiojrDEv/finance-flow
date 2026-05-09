@@ -42,6 +42,13 @@ export function getPaymentMethodLabel(paymentMethod) {
   return PAYMENT_METHOD_LABELS[paymentMethod] || "Outro";
 }
 
+export function getTransactionFlowLabel(type, paymentMethod) {
+  const normalizedType = normalizeTransactionType(type);
+  if (normalizedType === "income") return "Entrada";
+  if (normalizedType === "investment") return "Aporte";
+  return getPaymentMethodLabel(paymentMethod);
+}
+
 export function getTransactionAmountPresentation(type) {
   const normalizedType = normalizeTransactionType(type);
   return {
@@ -80,6 +87,7 @@ export function buildMonthTransactionList({
         typeLabel: getTransactionTypeLabel(item.type),
         statusLabel: getTransactionStatusLabel(item.status),
         paymentMethodLabel: getPaymentMethodLabel(item.paymentMethod),
+        flowLabel: getTransactionFlowLabel(item.type, item.paymentMethod),
         amount: getTransactionAmountPresentation(item.type),
       },
     }))

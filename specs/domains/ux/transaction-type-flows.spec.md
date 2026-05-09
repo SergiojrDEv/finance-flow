@@ -17,6 +17,7 @@ O formulario de lancamento ainda parece muito parecido entre os tipos. Para usua
 - Despesa deve manter pagamento, vencimento, parcelas, subcategoria e recorrencia.
 - Receita e investimento nao devem mostrar subcategoria, pagamento, vencimento, parcelas ou recorrencia.
 - O modal de edicao deve seguir a mesma diferenciacao do formulario.
+- O historico do mes deve nomear receita como entrada e investimento como aporte, sem parecer forma de pagamento.
 - Build e testes devem continuar passando.
 
 ## Fora de escopo neste corte
