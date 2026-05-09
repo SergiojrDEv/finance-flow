@@ -117,6 +117,7 @@
 
     <nav class="nav-list">
       <a class="nav-item active" href="#visao-geral" data-section="visao-geral" data-mobile-icon="In" data-mobile-label="Inicio">Visao geral</a>
+      <a class="nav-item" href="#carteira" data-section="carteira" data-mobile-icon="Ca" data-mobile-label="Carteira">Carteira</a>
       <a class="nav-item" href="#novo-lancamento" data-section="novo-lancamento" data-mobile-icon="+" data-mobile-label="Lancar">Lancamentos</a>
       <a class="nav-item" href="#orcamentos" data-section="orcamentos" data-mobile-icon="%" data-mobile-label="Limites">Orcamentos</a>
       <a class="nav-item" href="#metas" data-section="metas" data-mobile-icon="M" data-mobile-label="Metas">Metas</a>
@@ -265,6 +266,92 @@
             </div>
           </div>
           <div class="stack-list" id="category-breakdown"></div>
+        </article>
+      </div>
+    </section>
+
+    <section class="section" id="carteira">
+      <article class="wallet-hero" aria-label="Resumo da carteira">
+        <div>
+          <p class="eyebrow">Carteira</p>
+          <h2>Suas contas em um unico lugar</h2>
+          <span>Base visual para bancos conectados, contas, cartoes e investimentos.</span>
+        </div>
+        <div class="wallet-balance-card">
+          <span>Patrimonio acompanhado</span>
+          <strong>R$ 0,00</strong>
+          <small>Conecte contas ou use seus lancamentos manuais</small>
+        </div>
+      </article>
+
+      <div class="wallet-grid" aria-label="Contas e ativos">
+        <article class="wallet-account-card checking">
+          <span class="wallet-bank-mark">C</span>
+          <div>
+            <strong>Conta corrente</strong>
+            <small>Disponivel para movimentacao</small>
+          </div>
+          <b>R$ 0,00</b>
+        </article>
+        <article class="wallet-account-card credit">
+          <span class="wallet-bank-mark">Cr</span>
+          <div>
+            <strong>Cartao principal</strong>
+            <small>Fatura e compras do mes</small>
+          </div>
+          <b>R$ 0,00</b>
+        </article>
+        <article class="wallet-account-card investment">
+          <span class="wallet-bank-mark">I</span>
+          <div>
+            <strong>Investimentos</strong>
+            <small>Aportes e metas vinculadas</small>
+          </div>
+          <b>R$ 0,00</b>
+        </article>
+      </div>
+
+      <div class="wallet-panels">
+        <article class="panel wallet-panel">
+          <div class="panel-header">
+            <div>
+              <p class="eyebrow">Bancos</p>
+              <h2>Instituicoes</h2>
+              <p class="section-copy">Nesta primeira etapa a tela fica pronta para receber conexoes Open Finance sem ativar provider real.</p>
+            </div>
+            <span class="status-pill">Mock local</span>
+          </div>
+          <div class="wallet-empty-state">
+            <strong>Nenhum banco conectado ainda</strong>
+            <span>O proximo passo sera ligar o modulo mock para simular conexoes com Nubank, Inter e outros bancos.</span>
+          </div>
+        </article>
+
+        <article class="panel wallet-panel">
+          <div class="panel-header">
+            <div>
+              <p class="eyebrow">Revisao</p>
+              <h2>Pendencias</h2>
+            </div>
+          </div>
+          <div class="wallet-review-list">
+            <div class="wallet-review-row">
+              <span></span>
+              <div>
+                <strong>Transacoes importadas</strong>
+                <small>Aparecerao aqui antes de entrar no historico</small>
+              </div>
+              <b>0</b>
+            </div>
+            <div class="wallet-review-row">
+              <span></span>
+              <div>
+                <strong>Casamentos automaticos</strong>
+                <small>Evita duplicar lancamentos manuais</small>
+              </div>
+              <b>0</b>
+            </div>
+          </div>
         </article>
       </div>
     </section>

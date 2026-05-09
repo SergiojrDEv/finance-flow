@@ -1,5 +1,5 @@
 export const LAST_SECTION_KEY = "finance-flow-last-section";
-export const VALID_SECTIONS = new Set(["visao-geral", "novo-lancamento", "orcamentos", "metas", "relatorios", "ajustes"]);
+export const VALID_SECTIONS = new Set(["visao-geral", "carteira", "novo-lancamento", "orcamentos", "metas", "relatorios", "ajustes"]);
 
 export function createNavigationModule({
   state,

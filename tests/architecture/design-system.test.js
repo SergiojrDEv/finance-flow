@@ -65,7 +65,7 @@ test("styles preparam navegacao mobile com barra inferior de app", async () => {
     "body {\n    padding-bottom: 92px;",
     ".sidebar {\n    position: fixed;\n    inset: auto 0 0;",
     "backdrop-filter: blur(16px);",
-    ".nav-list {\n    grid-template-columns: repeat(6, minmax(0, 1fr));",
+    ".nav-list {\n    grid-template-columns: repeat(7, minmax(0, 1fr));",
     ".nav-item {\n    min-height: 54px;",
     ".nav-item::before {\n    content: attr(data-mobile-icon);",
     ".nav-item::after {\n    content: attr(data-mobile-label);",
@@ -79,12 +79,47 @@ test("html oferece rotulos curtos para navegacao mobile", async () => {
   const source = await readFile(indexPath, "utf8");
   const requiredSnippets = [
     'data-mobile-label="Inicio"',
+    'data-mobile-label="Carteira"',
     'data-mobile-label="Lancar"',
     'data-mobile-label="Limites"',
     'data-mobile-label="Metas"',
     'data-mobile-label="Historico"',
     'data-mobile-label="Ajustes"',
     'data-mobile-icon="+"',
+  ];
+  const missing = requiredSnippets.filter((snippet) => !source.includes(snippet));
+
+  assert.deepEqual(missing, []);
+});
+
+test("html oferece base visual de carteira financeira", async () => {
+  const source = await readFile(indexPath, "utf8");
+  const requiredSnippets = [
+    'id="carteira"',
+    "wallet-hero",
+    "wallet-balance-card",
+    "wallet-grid",
+    "wallet-account-card checking",
+    "wallet-account-card credit",
+    "wallet-account-card investment",
+    "wallet-review-list",
+  ];
+  const missing = requiredSnippets.filter((snippet) => !source.includes(snippet));
+
+  assert.deepEqual(missing, []);
+});
+
+test("styles suportam tela carteira app-like", async () => {
+  const source = await readFile(stylesPath, "utf8");
+  const requiredSnippets = [
+    ".wallet-hero {\n  display: grid;\n  grid-template-columns: minmax(0, 1fr) minmax(280px, 0.42fr);",
+    ".wallet-balance-card {\n  display: grid;",
+    ".wallet-grid {\n  display: grid;\n  grid-template-columns: repeat(3, minmax(0, 1fr));",
+    ".wallet-account-card {\n  display: grid;\n  grid-template-columns: auto minmax(0, 1fr) auto;",
+    ".wallet-panels {\n  display: grid;\n  grid-template-columns: minmax(0, 1.1fr) minmax(300px, 0.9fr);",
+    ".wallet-empty-state {\n  display: grid;",
+    ".wallet-review-row {\n  display: grid;",
+    ".wallet-hero,\n  .wallet-grid,\n  .wallet-panels,",
   ];
   const missing = requiredSnippets.filter((snippet) => !source.includes(snippet));
 
