@@ -180,3 +180,16 @@ test("styles finalizam relatorios e responsividade da fase de app", async () => 
 
   assert.deepEqual(missing, []);
 });
+
+test("styles suportam estados vazios guiados", async () => {
+  const source = await readFile(stylesPath, "utf8");
+  const requiredSnippets = [
+    ".app-empty-state {\n  display: grid;\n  gap: 6px;\n  place-items: center;",
+    "border: 1px dashed var(--line);",
+    ".empty-state-title {\n  color: var(--text);\n  font-size: 0.95rem;",
+    ".empty-state-copy {\n  max-width: 420px;\n  line-height: 1.45;",
+  ];
+  const missing = requiredSnippets.filter((snippet) => !source.includes(snippet));
+
+  assert.deepEqual(missing, []);
+});

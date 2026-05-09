@@ -16,6 +16,7 @@ Esta matriz liga especificacao, implementacao e validacao.
 | `domains/auth/login-reset-signup.spec.md` | Autenticacao | `src/application/auth/AuthSessionService.js`, `src/application/auth/validateAuth.js`, `src/auth/index.js`, `src/supabase/index.js` | `tests/application/auth/AuthSessionService.test.js`, `tests/application/auth/validateAuth.test.js` | Servico de aplicacao coberto com mock Supabase |
 | `adr/0004-supabase-config-from-environment.md` | Seguranca | `functions/api/config.js`, `netlify/functions/config.js`, `src/worker.js`, `src/supabase/index.js` | `tests/worker/config.test.js`, `tests/security/noBundledSupabaseConfig.test.js` | Worker serve `/api/config`; frontend sem fallback Supabase fixo no bundle |
 | `domains/design-system/app-experience.spec.md` | Experiencia | `src/styles.css` | `tests/architecture/design-system.test.js` | Tokens base de design system e guardrail visual inicial |
+| `domains/ux/guided-app-flows.spec.md` | Experiencia | `src/dashboard/viewTemplates.js`, `src/styles.css` | `tests/dashboard/viewTemplates.test.js`, `tests/architecture/design-system.test.js` | Estados vazios guiados no dashboard, relatorios e orcamentos |
 
 ## Definicao de pronto
 

@@ -897,6 +897,26 @@ tbody tr:last-child td {
   text-align: center;
 }
 
+.app-empty-state {
+  display: grid;
+  gap: 6px;
+  place-items: center;
+  border: 1px dashed var(--line);
+  border-radius: var(--radius-md);
+  background: #fbfcfe;
+}
+
+.empty-state-title {
+  color: var(--text);
+  font-size: 0.95rem;
+}
+
+.empty-state-copy {
+  max-width: 420px;
+  line-height: 1.45;
+  font-size: 0.9rem;
+}
+
 .budget-grid,
 .goals-grid,
 .settings-grid,

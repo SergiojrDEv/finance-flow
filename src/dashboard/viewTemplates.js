@@ -14,8 +14,19 @@ export function formatInsightText(item) {
   return item.description || "";
 }
 
+export function renderEmptyState(title, copy) {
+  return `
+      <div class="empty-state app-empty-state">
+        <strong class="empty-state-title">${esc(title)}</strong>
+        <span class="empty-state-copy">${esc(copy)}</span>
+      </div>
+    `;
+}
+
 export function renderInsightsHtml(insights) {
-  if (!insights.length) return '<div class="empty-state">Sem alertas por enquanto.</div>';
+  if (!insights.length) {
+    return renderEmptyState("Tudo certo por enquanto", "Quando houver vencimentos ou limites perto do estouro, eles aparecem aqui.");
+  }
 
   return insights.slice(0, 5).map((item) => `
       <div class="insight-item">
@@ -26,7 +37,9 @@ export function renderInsightsHtml(insights) {
 }
 
 export function renderCategoryBreakdownHtml(rows) {
-  if (!rows.length) return '<div class="empty-state">Nenhuma despesa lancada neste mes.</div>';
+  if (!rows.length) {
+    return renderEmptyState("Sem despesas no mes", "Cadastre uma despesa para entender quais categorias pesam mais no seu dinheiro.");
+  }
 
   return rows
     .map((item) => `
@@ -61,6 +74,10 @@ export function renderTransactionHighlightsHtml(highlights) {
 }
 
 export function renderBudgetOverviewHtml(rows) {
+  if (!rows.length) {
+    return renderEmptyState("Nenhuma categoria para acompanhar", "Crie categorias de despesa em Ajustes para definir limites semanais e mensais.");
+  }
+
   return rows
     .map((item) => `
           <article class="budget-card">
@@ -102,7 +119,9 @@ export function renderBudgetOverviewHtml(rows) {
 }
 
 export function renderDailyHistoryHtml(history) {
-  if (!history.length) return '<div class="empty-state">Nenhum lancamento registrado neste mes ainda.</div>';
+  if (!history.length) {
+    return renderEmptyState("Seu historico ainda esta vazio", "Depois que voce cadastrar receitas, despesas ou investimentos, a rotina diaria aparece aqui.");
+  }
 
   return history
     .map((day) => `
