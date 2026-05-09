@@ -10,8 +10,8 @@ import {
   getBudgetRule,
   getMonthTransactions,
   money,
-  monthKey,
 } from "../core/utils.js";
+import { buildSmartDashboardView, buildSummaryView } from "./summaryPresenter.js";
 import {
   renderBudgetOverviewHtml,
   renderCategoryBreakdownHtml,
@@ -40,68 +40,36 @@ export function createDashboardModule(deps) {
   function renderSummary() {
     const transactions = getMonthTransactions();
     const summary = buildFinancialSummary(transactions);
-    const totals = {
-      income: summary.totals.income,
-      expense: summary.totals.expenses,
-      investment: summary.totals.investments,
-    };
-    const free = summary.totals.available;
+    const view = buildSummaryView({ transactions, summary });
 
-    document.querySelector("#income-total").textContent = money(summary.totals.income);
-    document.querySelector("#expense-total").textContent = money(summary.totals.expenses);
-    document.querySelector("#invest-total").textContent = money(summary.totals.investments);
-    document.querySelector("#free-balance").textContent = money(summary.totals.available);
-    document.querySelector("#income-count").textContent = `${summary.counts.income} lancamentos`;
-    document.querySelector("#expense-count").textContent = `${summary.counts.expenseCategories} categorias`;
-    document.querySelector("#invest-rate").textContent = `${summary.rates.investmentRate.toFixed(1)}% da receita direcionado para investimento`;
-    document.querySelector("#commitment-rate").textContent = `${summary.rates.commitmentRate.toFixed(1)}% da receita ja foi comprometida`;
-    document.querySelector("#health-score").textContent = `${summary.health.score}%`;
-    document.querySelector("#health-copy").textContent = summary.health.status === "negative"
-      ? `Mes no vermelho: depois de despesas e investimentos, faltam ${money(Math.abs(free))} para o disponivel imediato fechar positivo.`
-      : summary.health.copy;
-    renderSmartDashboard(transactions, totals, free);
+    document.querySelector("#income-total").textContent = view.totals.income;
+    document.querySelector("#expense-total").textContent = view.totals.expenses;
+    document.querySelector("#invest-total").textContent = view.totals.investments;
+    document.querySelector("#free-balance").textContent = view.totals.available;
+    document.querySelector("#income-count").textContent = view.counts.income;
+    document.querySelector("#expense-count").textContent = view.counts.expenseCategories;
+    document.querySelector("#invest-rate").textContent = view.rates.investment;
+    document.querySelector("#commitment-rate").textContent = view.rates.commitment;
+    document.querySelector("#health-score").textContent = view.health.score;
+    document.querySelector("#health-copy").textContent = view.health.copy;
+    renderSmartDashboard(transactions, view.totalsForInsights, view.free);
   }
 
   function renderSmartDashboard(transactions, totals, free) {
-    const today = new Date();
-    const currentMonth = monthKey(state.currentDate) === monthKey(today);
-    const daysInMonth = new Date(state.currentDate.getFullYear(), state.currentDate.getMonth() + 1, 0).getDate();
-    const dayRef = currentMonth ? today.getDate() : 1;
-    const remainingDays = Math.max(1, daysInMonth - dayRef + 1);
-    const dailySafe = Math.max(0, free / remainingDays);
     const previousDate = new Date(state.currentDate.getFullYear(), state.currentDate.getMonth() - 1, 1);
     const previousSummary = buildFinancialSummary(getMonthTransactions(previousDate));
-    const previousTotals = {
-      income: previousSummary.totals.income,
-      expense: previousSummary.totals.expenses,
-      investment: previousSummary.totals.investments,
-    };
-    const previousFree = previousSummary.totals.available;
-    const freeDelta = free - previousFree;
-    const commitment = totals.income ? ((totals.expense + totals.investment) / totals.income) * 100 : 0;
-    const investRate = totals.income ? (totals.investment / totals.income) * 100 : 0;
+    const view = buildSmartDashboardView({
+      transactions,
+      totals,
+      free,
+      currentDate: state.currentDate,
+      previousSummary,
+    });
 
-    document.querySelector("#daily-safe").textContent = money(dailySafe);
-    document.querySelector("#month-comparison").textContent = previousTotals.income || previousTotals.expense
-      ? `${freeDelta >= 0 ? "+" : ""}${money(freeDelta)}`
-      : "Sem historico";
-
-    let title = "Seu mes esta em construcao";
-    let copy = "Registre receitas, despesas e investimentos para entender o que ainda fica disponivel para movimentacao imediata.";
-    if (transactions.length) {
-      if (free < 0) {
-        title = "Atencao ao saldo do mes";
-        copy = `No ritmo atual, o mes fecha com ${money(Math.abs(free))} a menos no disponivel imediato. Revise gastos pendentes e categorias acima do limite.`;
-      } else if (commitment > 80) {
-        title = "Mes apertado, mas ainda controlavel";
-        copy = `Voce ainda tem ${money(free)} disponivel para movimentacao e pode usar cerca de ${money(dailySafe)} por dia ate o fim do mes.`;
-      } else {
-        title = "Seu mes esta sob controle";
-        copy = `Voce tem ${money(free)} disponivel para movimentacao, comprometeu ${commitment.toFixed(1)}% da receita e direcionou ${investRate.toFixed(1)}% para investimento.`;
-      }
-    }
-    document.querySelector("#smart-title").textContent = title;
-    document.querySelector("#smart-copy").textContent = copy;
+    document.querySelector("#daily-safe").textContent = view.dailySafe;
+    document.querySelector("#month-comparison").textContent = view.monthComparison;
+    document.querySelector("#smart-title").textContent = view.title;
+    document.querySelector("#smart-copy").textContent = view.copy;
     renderInsights(transactions, totals);
   }
 
