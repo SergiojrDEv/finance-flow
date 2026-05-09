@@ -67,11 +67,31 @@ export function createTransactionsDom(documentRef = document) {
     };
   }
 
+  function readTransactionForm(formOrData) {
+    const formData = typeof formOrData?.get === "function" ? formOrData : new FormData(formOrData);
+    return {
+      description: formData.get("description"),
+      category: formData.get("category"),
+      subcategory: formData.get("subcategory"),
+      account: formData.get("account"),
+      amount: formData.get("amount"),
+      date: formData.get("date"),
+      dueDate: formData.get("dueDate"),
+      status: formData.get("status"),
+      paymentMethod: formData.get("paymentMethod"),
+      creditCardId: formData.get("creditCardId"),
+      recurrence: formData.get("recurrence"),
+      repeatCount: formData.get("repeatCount"),
+      installments: formData.get("installments"),
+    };
+  }
+
   return {
     closeTransactionModal,
     fillTransactionModal,
     get,
     openTransactionModal,
+    readTransactionForm,
     readTransactionModalForm,
     setValue,
     value,

@@ -405,30 +405,16 @@ export function createTransactionsModule(deps) {
 
   async function addTransaction(event) {
     event.preventDefault();
-    const formData = new FormData(event.currentTarget);
+    const values = dom.readTransactionForm(event.currentTarget);
     if (state.editingId) {
-      updateTransaction(formData);
+      updateTransaction(values);
       return;
     }
     const transactions = buildTransactionSeries({
       type: state.activeType,
       createId,
       resolveAccount: resolveAccountValue,
-      values: {
-        description: formData.get("description"),
-        category: formData.get("category"),
-        subcategory: formData.get("subcategory"),
-        account: formData.get("account"),
-        amount: formData.get("amount"),
-        date: formData.get("date"),
-        dueDate: formData.get("dueDate"),
-        status: formData.get("status"),
-        paymentMethod: formData.get("paymentMethod"),
-        creditCardId: formData.get("creditCardId"),
-        recurrence: formData.get("recurrence"),
-        repeatCount: formData.get("repeatCount"),
-        installments: formData.get("installments"),
-      },
+      values,
     });
     const totalItems = transactions.length;
 
@@ -452,22 +438,13 @@ export function createTransactionsModule(deps) {
     deps.notify(totalItems > 1 ? `${totalItems} lancamentos criados.` : "Lancamento salvo.");
   }
 
-  async function updateTransaction(formData) {
+  async function updateTransaction(values) {
     const item = state.transactions.find((transaction) => transaction.id === state.editingId);
     if (!item) return;
 
     const draft = buildTransactionDraftFromValues({
       type: state.activeType,
-      description: formData.get("description"),
-      category: formData.get("category"),
-      subcategory: formData.get("subcategory"),
-      account: formData.get("account"),
-      amount: formData.get("amount"),
-      date: formData.get("date"),
-      dueDate: formData.get("dueDate"),
-      status: formData.get("status"),
-      paymentMethod: formData.get("paymentMethod"),
-      creditCardId: formData.get("creditCardId"),
+      ...values,
       recurrence: item.recurrence,
       recurrenceId: item.recurrenceId,
       installmentGroup: item.installmentGroup,

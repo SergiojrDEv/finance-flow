@@ -79,3 +79,38 @@ test("centraliza abertura e fechamento do modal de lancamento", () => {
   assert.equal(dom.get("#transaction-modal-overlay").classList.contains("is-hidden"), true);
   assert.equal(documentRef.body.classList.contains("modal-open"), false);
 });
+
+test("centraliza leitura do formulario principal de lancamento", () => {
+  const dom = createTransactionsDom(createFakeDocument());
+  const values = new Map([
+    ["description", "Salario"],
+    ["category", "salario"],
+    ["subcategory", ""],
+    ["account", "Conta corrente"],
+    ["amount", "3100"],
+    ["date", "2026-05-08"],
+    ["dueDate", "2026-05-08"],
+    ["status", "paid"],
+    ["paymentMethod", "transfer"],
+    ["creditCardId", ""],
+    ["recurrence", "none"],
+    ["repeatCount", "1"],
+    ["installments", "1"],
+  ]);
+
+  assert.deepEqual(dom.readTransactionForm({ get: (key) => values.get(key) }), {
+    description: "Salario",
+    category: "salario",
+    subcategory: "",
+    account: "Conta corrente",
+    amount: "3100",
+    date: "2026-05-08",
+    dueDate: "2026-05-08",
+    status: "paid",
+    paymentMethod: "transfer",
+    creditCardId: "",
+    recurrence: "none",
+    repeatCount: "1",
+    installments: "1",
+  });
+});
