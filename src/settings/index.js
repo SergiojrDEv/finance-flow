@@ -12,6 +12,7 @@ import { firstErrorMessage } from "../application/shared/result.js";
 import { createBudgetServices } from "../infrastructure/composition/createBudgetServices.js";
 import { createCatalogServices } from "../infrastructure/composition/createCatalogServices.js";
 import { createGoalServices } from "../infrastructure/composition/createGoalServices.js";
+import { renderGoalsHtml, renderGoalsSummaryHtml } from "./goalTemplates.js";
 import {
   renderAccountManagerHtml,
   renderCardManagerHtml,
@@ -145,35 +146,17 @@ export function createSettingsModule(deps) {
     const investments = state.transactions.filter((item) => item.type === "investment");
     const target = document.querySelector("#goals-list");
     const goals = getGoals();
-    if (!goals.length) {
-      target.innerHTML = '<article class="goal-card empty-state">Nenhuma meta criada ainda.</article>';
-      return;
-    }
-
-    target.innerHTML = goals
-      .map((goal, index) => {
+    const rows = goals
+      .map((goal) => {
         const current = investments
           .filter((item) => item.category === goal.key)
           .reduce((sum, item) => sum + Number(item.amount), 0) || Number(goal.currentAmount || 0);
         const pct = Math.min((current / goal.target) * 100, 100);
         const category = getCategoryRecord("investment", goal.key) || { name: goal.key };
-        return `
-          <article class="goal-card">
-            <header>
-              <strong>${esc(goal.name)}</strong>
-              <small>${pct.toFixed(0)}%</small>
-            </header>
-            <div class="bar"><span style="--value:${pct}%;--color:var(--invest)"></span></div>
-            <p><span class="money purple">${money(current)}</span> de ${money(goal.target)}</p>
-            <small class="goal-card-note">Categoria: ${esc(category.name)}</small>
-            <div class="goal-card-actions">
-              <button class="mini-btn" type="button" data-goal-contribute="${index}">Lancar aporte</button>
-              <button class="mini-btn" type="button" data-goal-edit-card="${index}">Editar meta</button>
-            </div>
-          </article>
-        `;
-      })
-      .join("");
+        return { ...goal, current, percent: pct, categoryName: category.name };
+      });
+
+    target.innerHTML = renderGoalsHtml(rows);
   }
 
   function renderGoalsSummary() {
@@ -197,23 +180,12 @@ export function createSettingsModule(deps) {
       }))
       .sort((a, b) => b.progress - a.progress)[0];
 
-    target.innerHTML = `
-      <article class="mini-stat-card">
-        <span>Metas ativas</span>
-        <strong>${getGoals().length}</strong>
-        <small>${money(totalTarget)} planejados</small>
-      </article>
-      <article class="mini-stat-card">
-        <span>Ja acumulado</span>
-        <strong>${money(totalCurrent)}</strong>
-        <small>${totalTarget ? `${((totalCurrent / totalTarget) * 100).toFixed(1)}% do total` : "Comece pela primeira meta"}</small>
-      </article>
-      <article class="mini-stat-card">
-        <span>Mais avancada</span>
-        <strong>${closest ? esc(closest.goal.name) : "Sem metas"}</strong>
-        <small>${closest ? `${Math.min(closest.progress, 100).toFixed(0)}% concluido` : "Crie sua primeira meta"}</small>
-      </article>
-    `;
+    target.innerHTML = renderGoalsSummaryHtml({
+      activeCount: getGoals().length,
+      totalTarget,
+      totalCurrent,
+      closest: closest ? { name: closest.goal.name, progress: closest.progress } : null,
+    });
   }
 
   function openGoalContribution(index) {
