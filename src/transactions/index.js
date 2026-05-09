@@ -17,6 +17,7 @@ import { buildTransactionSeries } from "../application/transactions/buildTransac
 import { firstErrorMessage } from "../application/shared/result.js";
 import { createTransactionServices } from "../infrastructure/composition/createTransactionServices.js";
 import { runTransactionCreationShadow } from "../infrastructure/shadow/runTransactionCreationShadow.js";
+import { renderTransactionTableHtml } from "./tableTemplate.js";
 
 export function createTransactionsModule(deps) {
   let transactionServices = null;
@@ -425,42 +426,12 @@ export function createTransactionsModule(deps) {
       search: state.search,
     });
 
-    if (!filtered.length) {
-      els.table.innerHTML = '<tr><td colspan="10" class="empty-state">Nenhum lancamento encontrado.</td></tr>';
-      return;
-    }
-
-    els.table.innerHTML = filtered
-      .map((item) => {
-        const amountClass = item.presentation.amount.className;
-        const sign = item.presentation.amount.sign;
-        const typeLabel = item.presentation.typeLabel;
-        const statusLabel = item.presentation.statusLabel;
-        const dateLabel = item.date ? parseLocalDate(item.date).toLocaleDateString("pt-BR") : "-";
-        const dueDateLabel = item.dueDate ? parseLocalDate(item.dueDate).toLocaleDateString("pt-BR") : "-";
-
-        return `
-          <tr>
-            <td>${dateLabel}</td>
-            <td><strong>${esc(item.description)}</strong></td>
-            <td><span class="category-pill">${esc(categoryDisplayLabel(item))}</span></td>
-            <td>${esc(item.account)}</td>
-            <td><span class="type-pill ${item.status || "paid"}">${statusLabel}</span></td>
-            <td><span class="payment-pill ${item.paymentMethod || "pix"}">${item.presentation.paymentMethodLabel}</span></td>
-            <td>${dueDateLabel}</td>
-            <td><span class="type-pill ${item.type}">${typeLabel}</span></td>
-            <td class="right money ${amountClass}">${sign} ${money(Number(item.amount))}</td>
-            <td class="right">
-              <div class="row-actions">
-                ${item.status !== "paid" ? `<button class="row-action success" type="button" data-paid="${item.id}" title="Marcar como pago">Pago</button>` : ""}
-                <button class="row-action neutral" type="button" data-edit="${item.id}" title="Editar">Editar</button>
-                <button class="row-action" type="button" data-remove="${item.id}" aria-label="Remover lancamento">X</button>
-              </div>
-            </td>
-          </tr>
-        `;
-      })
-      .join("");
+    els.table.innerHTML = renderTransactionTableHtml(filtered, {
+      escapeHtml: esc,
+      formatCategoryLabel: categoryDisplayLabel,
+      formatDate: (value) => parseLocalDate(value).toLocaleDateString("pt-BR"),
+      formatMoney: money,
+    });
   }
 
   async function addTransaction(event) {
