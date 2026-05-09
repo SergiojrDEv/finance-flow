@@ -10,8 +10,8 @@ function json(body, init = {}) {
 }
 
 function getSupabaseConfig(env) {
-  const url = env?.SUPABASE_URL;
-  const anonKey = env?.SUPABASE_ANON_KEY;
+  const url = String(env?.SUPABASE_URL || "").trim();
+  const anonKey = String(env?.SUPABASE_ANON_KEY || "").trim();
 
   if (!url || !anonKey) {
     return null;

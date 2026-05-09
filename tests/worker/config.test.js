@@ -4,8 +4,8 @@ import worker, { getMissingSupabaseConfigKeys, getSupabaseConfig } from "../../s
 
 test("retorna config Supabase publica a partir do ambiente", () => {
   assert.deepEqual(getSupabaseConfig({
-    SUPABASE_URL: "https://example.supabase.co",
-    SUPABASE_ANON_KEY: "anon-key",
+    SUPABASE_URL: " https://example.supabase.co\n",
+    SUPABASE_ANON_KEY: " anon-key ",
   }), {
     url: "https://example.supabase.co",
     anonKey: "anon-key",

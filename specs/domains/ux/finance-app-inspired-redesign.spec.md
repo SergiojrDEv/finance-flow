@@ -1,6 +1,6 @@
 # Spec: Redesign inspirado em app financeiro
 
-Status: em andamento
+Status: pronto
 
 ## Objetivo
 
@@ -28,3 +28,11 @@ Aplicar uma linguagem visual mais proxima de aplicativos financeiros mobile, usa
 - Alterar fluxo de autenticacao.
 - Alterar schema ou sincronizacao.
 - Copiar telas ou assets de terceiros.
+
+## Evidencias
+
+- Home com card principal de disponibilidade financeira.
+- Atalhos rapidos de receita, despesa e investimento conectados ao formulario no tipo correto.
+- Cards de resumo, orcamentos e metas com hierarquia visual mais proxima de app.
+- Barra inferior e topo mobile preparados para leitura de aplicativo.
+- Guardrails automaticos cobrindo CSS, HTML e comportamento dos atalhos.
