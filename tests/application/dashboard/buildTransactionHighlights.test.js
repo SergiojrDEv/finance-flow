@@ -17,6 +17,7 @@ test("resume lancamentos do mes sem misturar entradas e saidas", () => {
   assert.equal(summary.payments.credit, 1);
   assert.equal(summary.totals.income, 3100);
   assert.equal(summary.totals.outflow, 350.23);
+  assert.equal(summary.totals.balance, 2749.77);
 });
 
 test("retorna zeros quando nao ha lancamentos", () => {
@@ -26,4 +27,5 @@ test("retorna zeros quando nao ha lancamentos", () => {
   assert.equal(summary.status.paid, 0);
   assert.equal(summary.totals.income, 0);
   assert.equal(summary.totals.outflow, 0);
+  assert.equal(summary.totals.balance, 0);
 });

@@ -19,6 +19,7 @@ export function buildTransactionHighlights(transactions = []) {
   const totalOutflow = safeTransactions
     .filter((item) => item?.type !== "income")
     .reduce((sum, item) => sum + toAmount(item.amount), 0);
+  const balance = totalIncome - totalOutflow;
 
   return {
     count: safeTransactions.length,
@@ -33,6 +34,7 @@ export function buildTransactionHighlights(transactions = []) {
     totals: {
       income: roundMoney(totalIncome),
       outflow: roundMoney(totalOutflow),
+      balance: roundMoney(balance),
     },
   };
 }
