@@ -24,6 +24,11 @@ export function createTransactionsDom(documentRef = document) {
     target.hidden = hidden;
   }
 
+  function html(selector, nextValue) {
+    const target = get(selector);
+    if (target) target.innerHTML = nextValue;
+  }
+
   function showModal(selector) {
     get(selector)?.classList.remove("is-hidden");
     documentRef.body?.classList.add("modal-open");
@@ -106,6 +111,35 @@ export function createTransactionsDom(documentRef = document) {
     setValue("#due-date", value);
   }
 
+  function syncCreditCardOptions(optionsHtml) {
+    html("#credit-card", optionsHtml);
+    html("#transaction-modal-credit-card", optionsHtml);
+  }
+
+  function syncCreditPaymentFields({ isExpense, isCredit }) {
+    setHidden("#credit-card-field", !isExpense || !isCredit);
+    setHidden("#installments-field", !isExpense || !isCredit);
+    if (!isExpense || !isCredit) {
+      setValue("#credit-card", "");
+      setValue("#installments", 1);
+    }
+  }
+
+  function readPaymentMethod() {
+    return value("#payment-method");
+  }
+
+  function syncTransactionModalCreditFields({ isExpense, isCredit }) {
+    setHidden("#transaction-modal-credit-card-field", !isExpense || !isCredit);
+    if (!isExpense || !isCredit) {
+      setValue("#transaction-modal-credit-card", "");
+    }
+  }
+
+  function readTransactionModalPaymentMethod() {
+    return value("#transaction-modal-payment-method");
+  }
+
   function syncTransactionTypeFields({ isExpense, experience, defaultPaymentMethod }) {
     text("#transaction-form-title", experience.formTitle);
     text("#transaction-form-copy", experience.formCopy);
@@ -156,12 +190,18 @@ export function createTransactionsDom(documentRef = document) {
     get,
     hideCancelEdit,
     openTransactionModal,
+    html,
+    readPaymentMethod,
     readTransactionForm,
     readTransactionModalForm,
+    readTransactionModalPaymentMethod,
     setDefaultDueDate,
     setHidden,
     resetTransactionForm,
     setValue,
+    syncCreditCardOptions,
+    syncCreditPaymentFields,
+    syncTransactionModalCreditFields,
     syncTransactionModalTypeFields,
     syncTransactionTypeFields,
     text,

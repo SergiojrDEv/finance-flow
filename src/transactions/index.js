@@ -202,40 +202,18 @@ export function createTransactionsModule(deps) {
   }
 
   function updateCreditCardOptions() {
-    if (!els.creditCard) return;
-    els.creditCard.innerHTML = '<option value="">Nenhum</option>' + state.settings.creditCards
+    const optionsHtml = '<option value="">Nenhum</option>' + state.settings.creditCards
       .map((card) => `<option value="${esc(card.id)}">${esc(card.name)}</option>`)
       .join("");
-
-    const modalCard = document.querySelector("#transaction-modal-credit-card");
-    if (modalCard) {
-      modalCard.innerHTML = '<option value="">Nenhum</option>' + state.settings.creditCards
-        .map((card) => `<option value="${esc(card.id)}">${esc(card.name)}</option>`)
-        .join("");
-    }
+    dom.syncCreditCardOptions(optionsHtml);
   }
 
   function updateCreditPaymentFields() {
-    if (!shouldUseExpenseOnlyFields(state.activeType)) {
-      const cardField = document.querySelector("#credit-card-field");
-      const installmentsField = document.querySelector("#installments-field");
-      cardField.classList.add("is-hidden");
-      installmentsField.classList.add("is-hidden");
-      cardField.hidden = true;
-      installmentsField.hidden = true;
-      return;
-    }
-    const isCredit = document.querySelector("#payment-method").value === "credit";
-    const cardField = document.querySelector("#credit-card-field");
-    const installmentsField = document.querySelector("#installments-field");
-    cardField.classList.toggle("is-hidden", !isCredit);
-    installmentsField.classList.toggle("is-hidden", !isCredit);
-    cardField.hidden = !isCredit;
-    installmentsField.hidden = !isCredit;
-    if (!isCredit) {
-      document.querySelector("#credit-card").value = "";
-      document.querySelector("#installments").value = 1;
-    }
+    const isExpense = shouldUseExpenseOnlyFields(state.activeType);
+    dom.syncCreditPaymentFields({
+      isExpense,
+      isCredit: isExpense && dom.readPaymentMethod() === "credit",
+    });
   }
 
   function updateTransactionModalCategories(type = state.transactionModalType) {
@@ -258,21 +236,11 @@ export function createTransactionsModule(deps) {
   }
 
   function updateTransactionModalCreditFields() {
-    if (!shouldUseExpenseOnlyFields(state.transactionModalType)) {
-      const cardField = document.querySelector("#transaction-modal-credit-card-field");
-      if (!cardField) return;
-      cardField.classList.add("is-hidden");
-      cardField.hidden = true;
-      return;
-    }
-    const isCredit = document.querySelector("#transaction-modal-payment-method")?.value === "credit";
-    const cardField = document.querySelector("#transaction-modal-credit-card-field");
-    if (!cardField) return;
-    cardField.classList.toggle("is-hidden", !isCredit);
-    cardField.hidden = !isCredit;
-    if (!isCredit) {
-      document.querySelector("#transaction-modal-credit-card").value = "";
-    }
+    const isExpense = shouldUseExpenseOnlyFields(state.transactionModalType);
+    dom.syncTransactionModalCreditFields({
+      isExpense,
+      isCredit: isExpense && dom.readTransactionModalPaymentMethod() === "credit",
+    });
   }
 
   function updateSubcategoryOptions(preferredValue = "") {

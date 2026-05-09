@@ -185,3 +185,23 @@ test("centraliza campos visuais do modal por tipo de lancamento", () => {
   assert.equal(dom.value("#transaction-modal-subcategory"), "");
   assert.equal(dom.value("#transaction-modal-credit-card"), "");
 });
+
+test("centraliza opcoes de cartao e campos de credito", () => {
+  const documentRef = createFakeDocument();
+  const dom = createTransactionsDom(documentRef);
+
+  dom.syncCreditCardOptions('<option value="">Nenhum</option><option value="card-1">Cartao</option>');
+  dom.setValue("#payment-method", "pix");
+  dom.syncCreditPaymentFields({ isExpense: true, isCredit: false });
+  dom.setValue("#transaction-modal-payment-method", "credit");
+  dom.syncTransactionModalCreditFields({ isExpense: true, isCredit: true });
+
+  assert.equal(dom.get("#credit-card").innerHTML, '<option value="">Nenhum</option><option value="card-1">Cartao</option>');
+  assert.equal(dom.get("#transaction-modal-credit-card").innerHTML, '<option value="">Nenhum</option><option value="card-1">Cartao</option>');
+  assert.equal(dom.readPaymentMethod(), "pix");
+  assert.equal(dom.get("#credit-card-field").hidden, true);
+  assert.equal(dom.value("#credit-card"), "");
+  assert.equal(dom.value("#installments"), 1);
+  assert.equal(dom.readTransactionModalPaymentMethod(), "credit");
+  assert.equal(dom.get("#transaction-modal-credit-card-field").hidden, false);
+});
