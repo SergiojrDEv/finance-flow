@@ -176,6 +176,9 @@ test("presenters e templates de UI extraidos permanecem sem estado global de nav
     "src/dashboard/viewTemplates.js",
     "src/transactions/tableTemplate.js",
     "src/transactions/typeExperience.js",
+    "src/settings/goalTemplates.js",
+    "src/settings/manageTemplates.js",
+    "src/settings/settingsPresenter.js",
   ];
   const violations = [];
 

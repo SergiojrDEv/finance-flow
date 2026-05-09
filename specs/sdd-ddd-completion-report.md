@@ -79,3 +79,5 @@ O typecheck esta configurado no CI por `.github/workflows/quality.yml`, mas nao 
 - Dashboard agora separa templates HTML, presenter de resumo, presenter de grafico e writer de DOM, mantendo os calculos de aplicacao preservados.
 - Lancamentos agora separam template da tabela do mes e textos de experiencia por tipo (`despesa`, `receita`, `investimento`), reduzindo repeticao e preparando futuras telas mais especificas.
 - Guardrail arquitetural adicionado para manter presenters/templates extraidos sem estado global de navegador.
+- Fase de modularizacao de Settings/Ajustes concluida para os blocos de maior impacto: listas de gerenciamento, metas e presenters de categorias/metas/etiquetas foram extraidos para modulos testaveis.
+- Templates de Settings (`goalTemplates` e `manageTemplates`) permanecem sem dependencia de `document`, `window` ou `state`, preparando uma futura experiencia de ajustes mais limpa e menos poluida.
