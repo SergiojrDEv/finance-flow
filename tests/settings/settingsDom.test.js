@@ -19,10 +19,12 @@ function createElement() {
     hidden: false,
     innerHTML: "",
     resetCalled: false,
+    scrollOptions: null,
     textContent: "",
     value: "",
     focus() { this.focusCalled = true; },
     reset() { this.resetCalled = true; },
+    scrollIntoView(options) { this.scrollOptions = options; },
   };
 }
 
@@ -125,4 +127,25 @@ test("centraliza leitura de modais e metas inline", () => {
   });
   assert.equal(dom.hasInlineGoalForm(2), true);
   assert.deepEqual(dom.readInlineGoalForm(2), { name: "Aposentadoria", key: "previdencia", target: 120000 });
+});
+
+test("centraliza preenchimento de aporte em meta", () => {
+  const documentRef = createFakeDocument();
+  const dom = createSettingsDom(documentRef);
+
+  dom.fillGoalContributionForm({
+    categoryKey: "renda-fixa",
+    accountName: "Corretora",
+    description: "Aporte - Reserva",
+  });
+  dom.focusTransactionDescription();
+  dom.scrollTransactionFormIntoView();
+
+  assert.equal(dom.value("#category"), "renda-fixa");
+  assert.equal(dom.value("#account"), "Corretora");
+  assert.equal(dom.value("#payment-method"), "transfer");
+  assert.equal(dom.value("#description"), "Aporte - Reserva");
+  assert.equal(dom.value("#amount"), "");
+  assert.equal(dom.get("#description").focusCalled, true);
+  assert.deepEqual(dom.get("#transaction-form").scrollOptions, { behavior: "smooth", block: "start" });
 });

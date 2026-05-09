@@ -146,8 +146,26 @@ export function createSettingsDom(documentRef = document) {
     };
   }
 
+  function fillGoalContributionForm({ categoryKey, accountName, description }) {
+    setValue("#category", categoryKey);
+    setValue("#account", accountName);
+    setValue("#payment-method", "transfer");
+    setValue("#description", description);
+    setValue("#amount", "");
+  }
+
+  function focusTransactionDescription() {
+    focus("#description");
+  }
+
+  function scrollTransactionFormIntoView(options = { behavior: "smooth", block: "start" }) {
+    get("#transaction-form")?.scrollIntoView(options);
+  }
+
   return {
+    fillGoalContributionForm,
     focus,
+    focusTransactionDescription,
     get,
     getAll,
     hasInlineGoalForm,
@@ -170,6 +188,7 @@ export function createSettingsDom(documentRef = document) {
     setHidden,
     setValue,
     showModal,
+    scrollTransactionFormIntoView,
     text,
     value,
   };

@@ -191,3 +191,18 @@ test("presenters e templates de UI extraidos permanecem sem estado global de nav
 
   assert.deepEqual(violations, []);
 });
+
+test("settings runtime delega seletores DOM ao adapter", async () => {
+  const source = await readFile(path.join(rootDir, "src/settings/index.js"), "utf8");
+  const violations = [];
+
+  if (/document\.querySelector/.test(source)) {
+    violations.push("src/settings/index.js: use createSettingsDom para leitura/escrita de campos");
+  }
+
+  if (/document\.querySelectorAll/.test(source)) {
+    violations.push("src/settings/index.js: use createSettingsDom para listas de elementos");
+  }
+
+  assert.deepEqual(violations, []);
+});

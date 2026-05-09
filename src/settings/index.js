@@ -179,15 +179,15 @@ export function createSettingsModule(deps) {
     deps.setSectionFromHash();
     deps.setActiveType("investment");
     deps.updateCategoryOptions();
-    document.querySelector("#category").value = goal.key;
     const accountNames = getAccounts().map((item) => item.name);
-    document.querySelector("#account").value = accountNames.includes("Corretora") ? "Corretora" : accountNames[0];
-    document.querySelector("#payment-method").value = "transfer";
+    dom.fillGoalContributionForm({
+      categoryKey: goal.key,
+      accountName: accountNames.includes("Corretora") ? "Corretora" : accountNames[0],
+      description: `Aporte - ${goal.name}`,
+    });
     deps.updateCreditPaymentFields();
-    document.querySelector("#description").value = `Aporte - ${goal.name}`;
-    document.querySelector("#amount").value = "";
-    document.querySelector("#description").focus();
-    document.querySelector("#transaction-form").scrollIntoView({ behavior: "smooth", block: "start" });
+    dom.focusTransactionDescription();
+    dom.scrollTransactionFormIntoView();
     deps.notify(`Preencha o valor para lancar aporte em ${goal.name}.`);
   }
 
