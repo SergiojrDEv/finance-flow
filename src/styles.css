@@ -1167,11 +1167,11 @@ tbody tr:last-child td {
 }
 
 .report-panel {
-  max-width: 920px;
+  max-width: 960px;
 }
 
 .settings-grid {
-  margin-bottom: 18px;
+  margin-bottom: 14px;
 }
 
 .settings-panel {
@@ -1180,30 +1180,33 @@ tbody tr:last-child td {
 
 .settings-manage-shell {
   display: grid;
-  gap: 16px;
+  gap: 14px;
 }
 
 .manage-switcher {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 6px;
+  padding: 5px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-md);
+  background: var(--surface-soft);
 }
 
 .manage-tab {
-  min-height: 36px;
-  padding: 0 12px;
-  border: 1px solid var(--line);
-  border-radius: var(--radius-pill);
-  background: #ffffff;
+  min-height: 34px;
+  padding: 0 10px;
+  border: 0;
+  border-radius: var(--radius-sm);
+  background: transparent;
   color: var(--muted);
-  font-size: 0.84rem;
+  font-size: 0.82rem;
   font-weight: 800;
 }
 
 .manage-tab.is-active {
-  border-color: #cfe0f7;
-  background: #eef4ff;
-  color: var(--text);
+  background: var(--text);
+  color: #ffffff;
 }
 
 .settings-manage-panels {
@@ -1220,7 +1223,7 @@ tbody tr:last-child td {
 
 .manage-list {
   display: grid;
-  gap: 10px;
+  gap: 8px;
 }
 
 .tag-plan-card {
@@ -1311,7 +1314,7 @@ tbody tr:last-child td {
 .manage-item {
   display: grid;
   grid-template-columns: minmax(0, 1fr) auto;
-  gap: 8px 12px;
+  gap: 6px 10px;
   align-items: center;
   border: 1px solid var(--line);
   border-radius: var(--radius-md);
@@ -1344,7 +1347,7 @@ tbody tr:last-child td {
 
 .mini-actions {
   display: flex;
-  gap: 6px;
+  gap: 5px;
 }
 
 .goal-edit-item {

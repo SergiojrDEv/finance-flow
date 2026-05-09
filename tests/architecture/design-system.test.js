@@ -147,3 +147,20 @@ test("styles compactam orcamentos e metas sem mudar layout estrutural", async ()
 
   assert.deepEqual(missing, []);
 });
+
+test("styles organizam ajustes como area de app", async () => {
+  const source = await readFile(stylesPath, "utf8");
+  const requiredSnippets = [
+    ".settings-grid {\n  margin-bottom: 14px;",
+    ".settings-manage-shell {\n  display: grid;\n  gap: 14px;",
+    ".manage-switcher {\n  display: grid;\n  grid-template-columns: repeat(5, minmax(0, 1fr));\n  gap: 6px;\n  padding: 5px;",
+    ".manage-tab {\n  min-height: 34px;\n  padding: 0 10px;\n  border: 0;\n  border-radius: var(--radius-sm);",
+    ".manage-tab.is-active {\n  background: var(--text);\n  color: #ffffff;",
+    ".manage-list {\n  display: grid;\n  gap: 8px;",
+    ".manage-item {\n  display: grid;\n  grid-template-columns: minmax(0, 1fr) auto;\n  gap: 6px 10px;",
+    ".mini-actions {\n  display: flex;\n  gap: 5px;",
+  ];
+  const missing = requiredSnippets.filter((snippet) => !source.includes(snippet));
+
+  assert.deepEqual(missing, []);
+});
