@@ -164,3 +164,19 @@ test("styles organizam ajustes como area de app", async () => {
 
   assert.deepEqual(missing, []);
 });
+
+test("styles finalizam relatorios e responsividade da fase de app", async () => {
+  const source = await readFile(stylesPath, "utf8");
+  const requiredSnippets = [
+    ".daily-history-list {\n  display: grid;\n  gap: 12px;",
+    ".history-day-card {\n  padding: 14px;",
+    ".history-day-header {\n  display: flex;\n  justify-content: space-between;\n  gap: 12px;",
+    ".history-day-totals {\n  display: grid;\n  gap: 4px;",
+    ".history-day-items {\n  display: grid;\n  gap: 8px;",
+    ".history-row {\n  display: flex;\n  justify-content: space-between;\n  gap: 12px;",
+    ".manage-switcher {\n    grid-template-columns: 1fr;\n    padding: 4px;",
+  ];
+  const missing = requiredSnippets.filter((snippet) => !source.includes(snippet));
+
+  assert.deepEqual(missing, []);
+});

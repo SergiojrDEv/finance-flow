@@ -1043,11 +1043,11 @@ tbody tr:last-child td {
 
 .daily-history-list {
   display: grid;
-  gap: 14px;
+  gap: 12px;
 }
 
 .history-day-card {
-  padding: 16px;
+  padding: 14px;
   border: 1px solid var(--line);
   border-radius: var(--radius-md);
   background: #fbfcfe;
@@ -1056,9 +1056,9 @@ tbody tr:last-child td {
 .history-day-header {
   display: flex;
   justify-content: space-between;
-  gap: 16px;
+  gap: 12px;
   align-items: flex-start;
-  margin-bottom: 14px;
+  margin-bottom: 12px;
 }
 
 .history-day-header strong {
@@ -1075,21 +1075,21 @@ tbody tr:last-child td {
 
 .history-day-totals {
   display: grid;
-  gap: 6px;
+  gap: 4px;
   text-align: right;
 }
 
 .history-day-items {
   display: grid;
-  gap: 10px;
+  gap: 8px;
 }
 
 .history-row {
   display: flex;
   justify-content: space-between;
-  gap: 14px;
+  gap: 12px;
   align-items: center;
-  padding-top: 10px;
+  padding-top: 8px;
   border-top: 1px solid var(--line);
 }
 
@@ -1485,7 +1485,6 @@ tbody tr:last-child td {
   }
 
   .manage-switcher {
-    display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
@@ -1676,6 +1675,7 @@ tbody tr:last-child td {
 
   .manage-switcher {
     grid-template-columns: 1fr;
+    padding: 4px;
   }
 
   .budget-card-header,
