@@ -100,3 +100,16 @@ test("styles deixam lancamentos mais compactos em desktop e mobile", async () =>
 
   assert.deepEqual(missing, []);
 });
+
+test("styles reduzem altura do formulario de lancamento", async () => {
+  const source = await readFile(stylesPath, "utf8");
+  const requiredSnippets = [
+    ".transaction-composer .panel-header {\n  margin-bottom: 14px;",
+    ".transaction-composer .segmented-control {\n  margin-bottom: 14px;",
+    ".transaction-composer label {\n  gap: 6px;\n  margin-bottom: 12px;",
+    ".transaction-composer input,\n.transaction-composer select {\n  min-height: 40px;",
+  ];
+  const missing = requiredSnippets.filter((snippet) => !source.includes(snippet));
+
+  assert.deepEqual(missing, []);
+});
