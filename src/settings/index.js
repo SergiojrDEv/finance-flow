@@ -26,8 +26,10 @@ import {
   buildGoalsSummary,
   buildSubcategoryGroups,
 } from "./settingsPresenter.js";
+import { createSettingsDom } from "./settingsDom.js";
 
 export function createSettingsModule(deps) {
+  const dom = createSettingsDom();
   let budgetServices = null;
   let catalogServices = null;
   let goalServices = null;
@@ -150,25 +152,24 @@ export function createSettingsModule(deps) {
 
   function renderGoals() {
     const investments = state.transactions.filter((item) => item.type === "investment");
-    const target = document.querySelector("#goals-list");
     const rows = buildGoalCardRows({
       goals: getGoals(),
       investments,
       findCategoryName: (key) => (getCategoryRecord("investment", key) || { name: key }).name,
     });
 
-    target.innerHTML = renderGoalsHtml(rows);
+    dom.html("#goals-list", renderGoalsHtml(rows));
   }
 
   function renderGoalsSummary() {
-    const target = document.querySelector("#goals-summary");
+    const target = dom.get("#goals-summary");
     if (!target) return;
 
     const investments = state.transactions.filter((item) => item.type === "investment");
-    target.innerHTML = renderGoalsSummaryHtml(buildGoalsSummary({
+    dom.html("#goals-summary", renderGoalsSummaryHtml(buildGoalsSummary({
       goals: getGoals(),
       investments,
-    }));
+    })));
   }
 
   function openGoalContribution(index) {
@@ -194,19 +195,17 @@ export function createSettingsModule(deps) {
     const goal = getGoalRecord(index);
     if (!goal) return;
     state.activeGoalEditIndex = index;
-    document.querySelector("#goal-modal-name").value = goal.name;
-    document.querySelector("#goal-modal-category").value = goal.key;
-    document.querySelector("#goal-modal-target").value = Number(goal.target) || 0;
-    document.querySelector("#goal-modal-overlay").classList.remove("is-hidden");
-    document.body.classList.add("modal-open");
-    document.querySelector("#goal-modal-name").focus();
+    dom.setValue("#goal-modal-name", goal.name);
+    dom.setValue("#goal-modal-category", goal.key);
+    dom.setValue("#goal-modal-target", Number(goal.target) || 0);
+    dom.showModal("#goal-modal-overlay");
+    dom.focus("#goal-modal-name");
   }
 
   function closeGoalModal() {
     state.activeGoalEditIndex = null;
-    document.querySelector("#goal-modal-form").reset();
-    document.querySelector("#goal-modal-overlay").classList.add("is-hidden");
-    document.body.classList.remove("modal-open");
+    dom.reset("#goal-modal-form");
+    dom.hideModal("#goal-modal-overlay");
   }
 
   async function saveGoalFromModal(event) {
@@ -215,9 +214,9 @@ export function createSettingsModule(deps) {
     const goal = getGoalRecord(index);
     if (!goal) return closeGoalModal();
 
-    const name = document.querySelector("#goal-modal-name").value.trim();
-    const key = document.querySelector("#goal-modal-category").value;
-    const target = Number(document.querySelector("#goal-modal-target").value);
+    const name = dom.value("#goal-modal-name").trim();
+    const key = dom.value("#goal-modal-category");
+    const target = dom.numberValue("#goal-modal-target");
     if (!name || target <= 0) return deps.notify("Preencha a meta corretamente.");
 
     const result = await getGoalServices().updateGoal.execute(goal.id, { name, key, target });
@@ -244,10 +243,10 @@ export function createSettingsModule(deps) {
   }
 
   function renderManagePanels() {
-    document.querySelectorAll(".manage-tab").forEach((button) => {
+    dom.getAll(".manage-tab").forEach((button) => {
       button.classList.toggle("is-active", button.dataset.manageView === state.manageView);
     });
-    document.querySelectorAll(".manage-panel").forEach((panel) => {
+    dom.getAll(".manage-panel").forEach((panel) => {
       panel.classList.toggle("is-active", panel.dataset.managePanel === state.manageView);
     });
   }
@@ -257,23 +256,18 @@ export function createSettingsModule(deps) {
       getCatalog().categories,
       (type, key) => getTags(type, key).length
     );
-    const target = document.querySelector("#category-manage-list");
-
-    target.innerHTML = renderCategoryManagerHtml(rows);
+    dom.html("#category-manage-list", renderCategoryManagerHtml(rows));
   }
 
   function renderAccountManager() {
-    const target = document.querySelector("#account-manage-list");
-    target.innerHTML = renderAccountManagerHtml(getAccounts());
+    dom.html("#account-manage-list", renderAccountManagerHtml(getAccounts()));
   }
 
   function renderCardManager() {
-    const target = document.querySelector("#card-manage-list");
-    target.innerHTML = renderCardManagerHtml(getCards());
+    dom.html("#card-manage-list", renderCardManagerHtml(getCards()));
   }
 
   function renderGoalManager() {
-    const target = document.querySelector("#goal-manage-list");
     const goals = getGoals();
     const categoryOptions = (selected) => getCategoriesByType("investment")
       .map((item) => `<option value="${esc(item.slug)}"${item.slug === selected ? " selected" : ""}>${esc(item.name)}</option>`)
@@ -283,14 +277,14 @@ export function createSettingsModule(deps) {
       categoryLabel: getCategoryRecord("investment", goal.key)?.name || goal.key,
     }));
 
-    target.innerHTML = renderGoalManagerHtml(rows, categoryOptions);
+    dom.html("#goal-manage-list", renderGoalManagerHtml(rows, categoryOptions));
   }
 
   function renderGoalCategoryOptions() {
     const options = getCategoriesByType("investment")
       .map((item) => `<option value="${esc(item.slug)}">${esc(item.name)}</option>`)
       .join("");
-    const selects = [document.querySelector("#new-goal-category"), document.querySelector("#goal-modal-category")].filter(Boolean);
+    const selects = [dom.get("#new-goal-category"), dom.get("#goal-modal-category")].filter(Boolean);
     selects.forEach((select) => {
       const currentValue = select.value;
       select.innerHTML = options;
@@ -301,8 +295,8 @@ export function createSettingsModule(deps) {
   }
 
   function renderSubcategoryParentOptions() {
-    const type = document.querySelector("#new-subcategory-type")?.value || "expense";
-    const select = document.querySelector("#new-subcategory-category");
+    const type = dom.value("#new-subcategory-type", "expense") || "expense";
+    const select = dom.get("#new-subcategory-category");
     if (!select) return;
     select.innerHTML = getCategoriesByType(type)
       .map((item) => `<option value="${esc(item.slug)}">${esc(item.name)}</option>`)
@@ -310,7 +304,7 @@ export function createSettingsModule(deps) {
   }
 
   function renderSubcategoryManager() {
-    const target = document.querySelector("#subcategory-manage-list");
+    const target = dom.get("#subcategory-manage-list");
     if (!target) return;
     const groups = buildSubcategoryGroups(
       getCatalog().categories,
@@ -318,7 +312,7 @@ export function createSettingsModule(deps) {
       (type, key) => getCategoryColorFromList(type, key, state.settings.categories)
     );
 
-    target.innerHTML = renderSubcategoryManagerHtml(groups);
+    dom.html("#subcategory-manage-list", renderSubcategoryManagerHtml(groups));
   }
 
   async function addInlineSubcategory(type, categoryKey, name) {
@@ -345,31 +339,25 @@ export function createSettingsModule(deps) {
 
   function openSettingsItemModal(config) {
     state.settingsItemEdit = config;
-    document.querySelector("#settings-item-modal-kicker").textContent = config.kicker;
-    document.querySelector("#settings-item-modal-title").textContent = config.title;
-    document.querySelector("#settings-item-modal-name").value = config.name || "";
-    document.querySelector("#settings-item-modal-color").value = config.color || "#0b7285";
-    document.querySelector("#settings-item-modal-limit").value = Number(config.limit || 0);
-    document.querySelector("#settings-item-modal-closing").value = Number(config.closingDay || 25);
-    document.querySelector("#settings-item-modal-due").value = Number(config.dueDay || 10);
+    dom.text("#settings-item-modal-kicker", config.kicker);
+    dom.text("#settings-item-modal-title", config.title);
+    dom.setValue("#settings-item-modal-name", config.name || "");
+    dom.setValue("#settings-item-modal-color", config.color || "#0b7285");
+    dom.setValue("#settings-item-modal-limit", Number(config.limit || 0));
+    dom.setValue("#settings-item-modal-closing", Number(config.closingDay || 25));
+    dom.setValue("#settings-item-modal-due", Number(config.dueDay || 10));
     const showColor = config.kind === "category" || config.kind === "tag";
-    document.querySelector("#settings-item-modal-category-fields").classList.toggle("is-hidden", !showColor && config.kind !== "category");
-    document.querySelector("#settings-item-modal-category-fields").hidden = !showColor && config.kind !== "category";
-    document.querySelector("#settings-item-modal-color-field").classList.toggle("is-hidden", !showColor);
-    document.querySelector("#settings-item-modal-color-field").hidden = !showColor;
-    document.querySelector("#settings-item-modal-limit-field").classList.toggle("is-hidden", config.kind !== "category");
-    document.querySelector("#settings-item-modal-limit-field").hidden = config.kind !== "category";
-    document.querySelector("#settings-item-modal-card-fields").classList.toggle("is-hidden", config.kind !== "card");
-    document.querySelector("#settings-item-modal-card-fields").hidden = config.kind !== "card";
-    document.querySelector("#settings-item-modal-overlay").classList.remove("is-hidden");
-    document.body.classList.add("modal-open");
-    document.querySelector("#settings-item-modal-name").focus();
+    dom.setHidden("#settings-item-modal-category-fields", !showColor && config.kind !== "category");
+    dom.setHidden("#settings-item-modal-color-field", !showColor);
+    dom.setHidden("#settings-item-modal-limit-field", config.kind !== "category");
+    dom.setHidden("#settings-item-modal-card-fields", config.kind !== "card");
+    dom.showModal("#settings-item-modal-overlay");
+    dom.focus("#settings-item-modal-name");
   }
 
   function closeSettingsItemModal() {
     state.settingsItemEdit = null;
-    document.querySelector("#settings-item-modal-overlay").classList.add("is-hidden");
-    document.body.classList.remove("modal-open");
+    dom.hideModal("#settings-item-modal-overlay");
   }
 
   async function saveSettingsItemFromModal(event) {
@@ -377,14 +365,14 @@ export function createSettingsModule(deps) {
     const edit = state.settingsItemEdit;
     if (!edit) return closeSettingsItemModal();
 
-    const name = document.querySelector("#settings-item-modal-name").value.trim();
+    const name = dom.value("#settings-item-modal-name").trim();
     if (!name) return deps.notify("Informe um nome valido.");
 
     if (edit.kind === "category") {
       const item = getCategoryRecord(edit.type, edit.key);
       if (!item) return closeSettingsItemModal();
-      const color = document.querySelector("#settings-item-modal-color").value;
-      const monthly = Math.max(0, Number(document.querySelector("#settings-item-modal-limit").value) || 0);
+      const color = dom.value("#settings-item-modal-color");
+      const monthly = Math.max(0, dom.numberValue("#settings-item-modal-limit") || 0);
       const result = await getCatalogServices().updateCategory.execute(item.id, {
         name,
         color,
@@ -427,8 +415,8 @@ export function createSettingsModule(deps) {
       const card = cards[edit.index];
       if (!card) return closeSettingsItemModal();
       card.name = name;
-      card.closingDay = Math.max(1, Math.min(31, Number(document.querySelector("#settings-item-modal-closing").value) || 25));
-      card.dueDay = Math.max(1, Math.min(31, Number(document.querySelector("#settings-item-modal-due").value) || 10));
+      card.closingDay = Math.max(1, Math.min(31, dom.numberValue("#settings-item-modal-closing", 25) || 25));
+      card.dueDay = Math.max(1, Math.min(31, dom.numberValue("#settings-item-modal-due", 10) || 10));
     }
 
     if (edit.kind === "tag") {
@@ -436,7 +424,7 @@ export function createSettingsModule(deps) {
       if (!item) return closeSettingsItemModal();
       const result = await getCatalogServices().updateCategoryTag.execute(item.id, {
         name,
-        color: document.querySelector("#settings-item-modal-color").value,
+        color: dom.value("#settings-item-modal-color"),
       });
       if (!result.ok) {
         deps.notify(firstErrorMessage(result.errors, "Nao foi possivel atualizar a etiqueta."));
