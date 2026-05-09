@@ -113,3 +113,20 @@ test("styles reduzem altura do formulario de lancamento", async () => {
 
   assert.deepEqual(missing, []);
 });
+
+test("styles deixam historico em tabela mais limpo", async () => {
+  const source = await readFile(stylesPath, "utf8");
+  const requiredSnippets = [
+    ".table-scroll {\n  overflow-x: auto;\n  border: 1px solid var(--line);\n  border-radius: var(--radius-md);\n  background: #ffffff;",
+    "border-collapse: separate;\n  border-spacing: 0;",
+    "th {\n  padding: 9px 10px;\n  border-bottom: 1px solid var(--line);\n  background: #fbfcfe;",
+    "td {\n  padding: 10px;",
+    "tbody tr:hover td {\n  background: #fbfcfe;",
+    "tbody tr:last-child td {\n  border-bottom: 0;",
+    ".row-actions {\n  display: inline-flex;\n  gap: 4px;",
+    ".row-action {\n  min-width: 32px;\n  height: 30px;",
+  ];
+  const missing = requiredSnippets.filter((snippet) => !source.includes(snippet));
+
+  assert.deepEqual(missing, []);
+});

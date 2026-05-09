@@ -747,17 +747,22 @@ select:focus {
 
 .table-scroll {
   overflow-x: auto;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-md);
+  background: #ffffff;
 }
 
 table {
   width: 100%;
-  border-collapse: collapse;
+  border-collapse: separate;
+  border-spacing: 0;
   font-size: 0.88rem;
 }
 
 th {
-  padding: 10px 10px;
+  padding: 9px 10px;
   border-bottom: 1px solid var(--line);
+  background: #fbfcfe;
   color: var(--muted);
   text-align: left;
   font-size: 0.72rem;
@@ -766,9 +771,17 @@ th {
 }
 
 td {
-  padding: 12px 10px;
+  padding: 10px;
   border-bottom: 1px solid #edf1f5;
   white-space: nowrap;
+}
+
+tbody tr:hover td {
+  background: #fbfcfe;
+}
+
+tbody tr:last-child td {
+  border-bottom: 0;
 }
 
 .right {
@@ -852,12 +865,12 @@ td {
 
 .row-actions {
   display: inline-flex;
-  gap: 6px;
+  gap: 4px;
 }
 
 .row-action {
   min-width: 32px;
-  height: 32px;
+  height: 30px;
   border: 1px solid #fecdd3;
   border-radius: var(--radius-md);
   background: #fff1f2;
