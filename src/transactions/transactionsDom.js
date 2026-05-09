@@ -12,6 +12,18 @@ export function createTransactionsDom(documentRef = document) {
     if (target) target.value = nextValue;
   }
 
+  function text(selector, nextValue) {
+    const target = get(selector);
+    if (target) target.textContent = nextValue;
+  }
+
+  function setHidden(selector, hidden) {
+    const target = get(selector);
+    if (!target) return;
+    target.classList.toggle("is-hidden", hidden);
+    target.hidden = hidden;
+  }
+
   function showModal(selector) {
     get(selector)?.classList.remove("is-hidden");
     documentRef.body?.classList.add("modal-open");
@@ -90,6 +102,42 @@ export function createTransactionsDom(documentRef = document) {
     form?.reset();
   }
 
+  function setDefaultDueDate(value) {
+    setValue("#due-date", value);
+  }
+
+  function syncTransactionTypeFields({ isExpense, experience, defaultPaymentMethod }) {
+    text("#transaction-form-title", experience.formTitle);
+    text("#transaction-form-copy", experience.formCopy);
+    text("#transaction-hero-title", experience.heroTitle);
+    text("#transaction-hero-copy", experience.heroCopy);
+    text("#transaction-submit", experience.submitLabel);
+    ["#transaction-payment-row", "#transaction-recurrence-row", "#repeat-count-field"].forEach((selector) => {
+      setHidden(selector, !isExpense);
+    });
+
+    if (!isExpense) {
+      setValue("#payment-method", defaultPaymentMethod);
+      setValue("#credit-card", "");
+      setValue("#installments", 1);
+      setValue("#recurrence", "none");
+      setValue("#repeat-count", 1);
+      setValue("#subcategory", "");
+    }
+  }
+
+  function syncTransactionModalTypeFields({ isExpense, experience, defaultPaymentMethod }) {
+    text("#transaction-modal-title", experience.modalTitle);
+    text("#transaction-modal-copy", experience.modalCopy);
+    setHidden("#transaction-modal-payment-row", !isExpense);
+
+    if (!isExpense) {
+      setValue("#transaction-modal-payment-method", defaultPaymentMethod);
+      setValue("#transaction-modal-subcategory", "");
+      setValue("#transaction-modal-credit-card", "");
+    }
+  }
+
   function enableTransactionSeriesControls() {
     ["#installments", "#recurrence", "#repeat-count"].forEach((selector) => {
       const target = get(selector);
@@ -110,8 +158,13 @@ export function createTransactionsDom(documentRef = document) {
     openTransactionModal,
     readTransactionForm,
     readTransactionModalForm,
+    setDefaultDueDate,
+    setHidden,
     resetTransactionForm,
     setValue,
+    syncTransactionModalTypeFields,
+    syncTransactionTypeFields,
+    text,
     value,
   };
 }

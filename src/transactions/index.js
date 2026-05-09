@@ -154,38 +154,13 @@ export function createTransactionsModule(deps) {
   function syncTransactionTypeFields() {
     const isExpense = shouldUseExpenseOnlyFields(state.activeType);
     const experience = getTypeExperience(state.activeType);
-    const paymentField = document.querySelector("#transaction-payment-row");
-    const recurrenceField = document.querySelector("#transaction-recurrence-row");
-    const repeatCountField = document.querySelector("#repeat-count-field");
-    const formTitle = document.querySelector("#transaction-form-title");
-    const formCopy = document.querySelector("#transaction-form-copy");
-    const heroTitle = document.querySelector("#transaction-hero-title");
-    const heroCopy = document.querySelector("#transaction-hero-copy");
-    const submit = document.querySelector("#transaction-submit");
 
     updateSubcategoryOptions();
-
-    if (formTitle) formTitle.textContent = experience.formTitle;
-    if (formCopy) formCopy.textContent = experience.formCopy;
-    if (heroTitle) heroTitle.textContent = experience.heroTitle;
-    if (heroCopy) heroCopy.textContent = experience.heroCopy;
-    if (submit) submit.textContent = experience.submitLabel;
-
-    [paymentField, recurrenceField, repeatCountField].forEach((field) => {
-      if (!field) return;
-      field.classList.toggle("is-hidden", !isExpense);
-      field.hidden = !isExpense;
+    dom.syncTransactionTypeFields({
+      isExpense,
+      experience,
+      defaultPaymentMethod: defaultPaymentMethodForType(state.activeType),
     });
-
-    if (!isExpense) {
-      document.querySelector("#payment-method").value = defaultPaymentMethodForType(state.activeType);
-      document.querySelector("#credit-card").value = "";
-      document.querySelector("#installments").value = 1;
-      document.querySelector("#recurrence").value = "none";
-      document.querySelector("#repeat-count").value = 1;
-      const subcategory = document.querySelector("#subcategory");
-      if (subcategory) subcategory.value = "";
-    }
 
     updateCreditPaymentFields();
   }
@@ -193,26 +168,13 @@ export function createTransactionsModule(deps) {
   function syncTransactionModalTypeFields() {
     const isExpense = shouldUseExpenseOnlyFields(state.transactionModalType);
     const experience = getTypeExperience(state.transactionModalType);
-    const paymentField = document.querySelector("#transaction-modal-payment-row");
-    const modalTitle = document.querySelector("#transaction-modal-title");
-    const modalCopy = document.querySelector("#transaction-modal-copy");
 
     updateTransactionModalSubcategoryOptions();
-
-    if (modalTitle) modalTitle.textContent = experience.modalTitle;
-    if (modalCopy) modalCopy.textContent = experience.modalCopy;
-
-    if (paymentField) {
-      paymentField.classList.toggle("is-hidden", !isExpense);
-      paymentField.hidden = !isExpense;
-    }
-
-    if (!isExpense) {
-      document.querySelector("#transaction-modal-payment-method").value = defaultPaymentMethodForType(state.transactionModalType);
-      const subcategory = document.querySelector("#transaction-modal-subcategory");
-      if (subcategory) subcategory.value = "";
-      document.querySelector("#transaction-modal-credit-card").value = "";
-    }
+    dom.syncTransactionModalTypeFields({
+      isExpense,
+      experience,
+      defaultPaymentMethod: defaultPaymentMethodForType(state.transactionModalType),
+    });
 
     updateTransactionModalCreditFields();
   }
@@ -221,7 +183,7 @@ export function createTransactionsModule(deps) {
     const today = new Date();
     const value = toDateInput(today);
     els.date.value = value;
-    document.querySelector("#due-date").value = value;
+    dom.setDefaultDueDate(value);
   }
 
   function updateCategoryOptions() {

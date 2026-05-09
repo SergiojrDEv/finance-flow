@@ -9,11 +9,17 @@ function createElement() {
       values: new Set(["is-hidden"]),
       add(value) { this.values.add(value); },
       remove(value) { this.values.delete(value); },
+      toggle(value, force) {
+        if (force) this.values.add(value);
+        else this.values.delete(value);
+      },
       contains(value) { return this.values.has(value); },
     },
     focusCalled: false,
     resetCalled: false,
     disabled: true,
+    hidden: false,
+    textContent: "",
     value: "",
     focus() { this.focusCalled = true; },
     reset() { this.resetCalled = true; },
@@ -130,4 +136,52 @@ test("centraliza reset e controles do formulario principal", () => {
   assert.equal(dom.get("#repeat-count").disabled, false);
   assert.equal(dom.get("#cancel-edit").classList.contains("is-hidden"), true);
   assert.equal(form.resetCalled, true);
+});
+
+test("centraliza campos visuais por tipo de lancamento", () => {
+  const documentRef = createFakeDocument();
+  const dom = createTransactionsDom(documentRef);
+
+  dom.syncTransactionTypeFields({
+    isExpense: false,
+    defaultPaymentMethod: "transfer",
+    experience: {
+      formTitle: "Nova receita",
+      formCopy: "Receba sem campos de despesa.",
+      heroTitle: "Cadastre uma receita",
+      heroCopy: "Entrada do mes.",
+      submitLabel: "Salvar receita",
+    },
+  });
+
+  assert.equal(dom.get("#transaction-form-title").textContent, "Nova receita");
+  assert.equal(dom.get("#transaction-submit").textContent, "Salvar receita");
+  assert.equal(dom.get("#transaction-payment-row").hidden, true);
+  assert.equal(dom.value("#payment-method"), "transfer");
+  assert.equal(dom.value("#credit-card"), "");
+  assert.equal(dom.value("#installments"), 1);
+  assert.equal(dom.value("#recurrence"), "none");
+  assert.equal(dom.value("#repeat-count"), 1);
+  assert.equal(dom.value("#subcategory"), "");
+});
+
+test("centraliza campos visuais do modal por tipo de lancamento", () => {
+  const documentRef = createFakeDocument();
+  const dom = createTransactionsDom(documentRef);
+
+  dom.syncTransactionModalTypeFields({
+    isExpense: false,
+    defaultPaymentMethod: "transfer",
+    experience: {
+      modalTitle: "Editar receita",
+      modalCopy: "Atualize a entrada.",
+    },
+  });
+
+  assert.equal(dom.get("#transaction-modal-title").textContent, "Editar receita");
+  assert.equal(dom.get("#transaction-modal-copy").textContent, "Atualize a entrada.");
+  assert.equal(dom.get("#transaction-modal-payment-row").hidden, true);
+  assert.equal(dom.value("#transaction-modal-payment-method"), "transfer");
+  assert.equal(dom.value("#transaction-modal-subcategory"), "");
+  assert.equal(dom.value("#transaction-modal-credit-card"), "");
 });
