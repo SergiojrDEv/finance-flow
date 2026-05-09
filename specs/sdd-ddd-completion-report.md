@@ -75,3 +75,7 @@ O typecheck esta configurado no CI por `.github/workflows/quality.yml`, mas nao 
 - Servicos de push/pull e repositorios Supabase de snapshot, legacy, catalogo V2 e transacoes V2 receberam contratos explicitos nas bordas publicas, preservando flexibilidade interna do query builder Supabase.
 - Nova fase de reducao do runtime iniciada: navegacao, bindings de eventos e composicao do bootstrap foram extraidos de `src/app.js` para modulos de `src/core`, mantendo o arquivo de entrada pequeno e estavel.
 - Guardrail arquitetural adicionado para manter `src/app.js` como entrada pequena delegando a composicao para `src/core/runtime.js`.
+- Nova fase de modularizacao de UI/renderizacao concluida para os primeiros blocos criticos: dashboard e lancamentos passaram a usar presenters/templates testaveis sem depender diretamente de `document`, `window` ou estado global.
+- Dashboard agora separa templates HTML, presenter de resumo, presenter de grafico e writer de DOM, mantendo os calculos de aplicacao preservados.
+- Lancamentos agora separam template da tabela do mes e textos de experiencia por tipo (`despesa`, `receita`, `investimento`), reduzindo repeticao e preparando futuras telas mais especificas.
+- Guardrail arquitetural adicionado para manter presenters/templates extraidos sem estado global de navegador.

@@ -168,3 +168,23 @@ test("src/app.js permanece como entrada pequena do runtime", async () => {
   assert.ok(source.includes("./core/runtime.js"), "src/app.js deve delegar composicao para src/core/runtime.js");
   assert.ok(lines <= 25, `src/app.js deve continuar pequeno; linhas atuais: ${lines}`);
 });
+
+test("presenters e templates de UI extraidos permanecem sem estado global de navegador", async () => {
+  const files = [
+    "src/dashboard/chartPresenter.js",
+    "src/dashboard/summaryPresenter.js",
+    "src/dashboard/viewTemplates.js",
+    "src/transactions/tableTemplate.js",
+    "src/transactions/typeExperience.js",
+  ];
+  const violations = [];
+
+  for (const relativePath of files) {
+    const source = await readFile(path.join(rootDir, relativePath), "utf8");
+    if (/\bdocument\b/.test(source)) violations.push(`${relativePath}: nao deve acessar document`);
+    if (/\bwindow\b/.test(source)) violations.push(`${relativePath}: nao deve acessar window`);
+    if (/from\s+["'][^"']*core\/state\.js["']/.test(source)) violations.push(`${relativePath}: nao deve importar state global`);
+  }
+
+  assert.deepEqual(violations, []);
+});
