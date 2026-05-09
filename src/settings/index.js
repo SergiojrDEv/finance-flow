@@ -12,6 +12,13 @@ import { firstErrorMessage } from "../application/shared/result.js";
 import { createBudgetServices } from "../infrastructure/composition/createBudgetServices.js";
 import { createCatalogServices } from "../infrastructure/composition/createCatalogServices.js";
 import { createGoalServices } from "../infrastructure/composition/createGoalServices.js";
+import {
+  renderAccountManagerHtml,
+  renderCardManagerHtml,
+  renderCategoryManagerHtml,
+  renderGoalManagerHtml,
+  renderSubcategoryManagerHtml,
+} from "./manageTemplates.js";
 
 export function createSettingsModule(deps) {
   let budgetServices = null;
@@ -291,107 +298,43 @@ export function createSettingsModule(deps) {
   }
 
   function renderCategoryManager() {
-    const labels = { expense: "Despesa", income: "Receita", investment: "Investimento" };
     const rows = getCatalog().categories
       .filter((item) => !item.isArchived)
-      .map((item) => ({ type: item.kind, key: item.slug, label: item.name, color: item.color, limit: item.monthlyLimit }));
+      .map((item) => ({
+        type: item.kind,
+        key: item.slug,
+        label: item.name,
+        color: item.color,
+        limit: item.monthlyLimit,
+        tagCount: getTags(item.kind, item.slug).length,
+      }));
     const target = document.querySelector("#category-manage-list");
 
-    target.innerHTML = rows
-      .map((item) => `
-        <div class="manage-item">
-          <div>
-            <strong><span class="color-dot" style="--color:${safeCssColor(item.color)}"></span>${esc(item.label)}</strong>
-            <small>${labels[item.type]}${item.type === "expense" ? ` | limite ${money(Number(item.limit || 0))}` : ""}${getTags(item.type, item.key).length ? ` | ${getTags(item.type, item.key).length} subcategoria${getTags(item.type, item.key).length === 1 ? "" : "s"}` : ""}</small>
-          </div>
-          <div class="mini-actions">
-            <button class="mini-btn" type="button" data-edit-category="${item.type}:${item.key}">Editar</button>
-            <button class="mini-btn danger" type="button" data-remove-category="${item.type}:${item.key}">Remover</button>
-          </div>
-        </div>
-      `)
-      .join("");
+    target.innerHTML = renderCategoryManagerHtml(rows);
   }
 
   function renderAccountManager() {
     const target = document.querySelector("#account-manage-list");
-    target.innerHTML = getAccounts()
-      .map((account, index) => `
-        <div class="manage-item">
-          <div>
-            <strong>${esc(account.name)}</strong>
-            <small>Conta disponivel para lancamentos</small>
-          </div>
-          <div class="mini-actions">
-            <button class="mini-btn" type="button" data-edit-account="${index}">Editar</button>
-            <button class="mini-btn danger" type="button" data-remove-account="${index}">Remover</button>
-          </div>
-        </div>
-      `)
-      .join("");
+    target.innerHTML = renderAccountManagerHtml(getAccounts());
   }
 
   function renderCardManager() {
     const target = document.querySelector("#card-manage-list");
-    target.innerHTML = getCards()
-      .map((card, index) => `
-        <div class="manage-item">
-          <div>
-            <strong>${esc(card.name)}</strong>
-            <small>Fecha dia ${card.closingDay} | vence dia ${card.dueDay}</small>
-          </div>
-          <div class="mini-actions">
-            <button class="mini-btn" type="button" data-edit-card="${index}">Editar</button>
-            <button class="mini-btn danger" type="button" data-remove-card="${index}">Remover</button>
-          </div>
-        </div>
-      `)
-      .join("");
+    target.innerHTML = renderCardManagerHtml(getCards());
   }
 
   function renderGoalManager() {
     const target = document.querySelector("#goal-manage-list");
     const goals = getGoals();
-    if (!goals.length) {
-      target.innerHTML = '<div class="empty-state">Nenhuma meta cadastrada.</div>';
-      return;
-    }
-
     const categoryOptions = (selected) => getCategoriesByType("investment")
       .map((item) => `<option value="${esc(item.slug)}"${item.slug === selected ? " selected" : ""}>${esc(item.name)}</option>`)
       .join("");
+    const rows = goals.map((goal) => ({
+      ...goal,
+      categoryLabel: getCategoryRecord("investment", goal.key)?.name || goal.key,
+    }));
 
-    target.innerHTML = goals
-      .map((goal, index) => {
-        const categoryLabel = getCategoryRecord("investment", goal.key)?.name || goal.key;
-        return `
-          <div class="manage-item goal-edit-item">
-            <div>
-              <strong>${esc(goal.name)}</strong>
-              <small>${esc(categoryLabel)} | alvo ${money(Number(goal.target))}</small>
-            </div>
-            <div class="goal-edit-grid">
-              <label>
-                Nome
-                <input data-goal-name="${index}" type="text" value="${esc(goal.name)}">
-              </label>
-              <label>
-                Categoria
-                <select data-goal-category="${index}">${categoryOptions(goal.key)}</select>
-              </label>
-              <label>
-                Valor alvo
-                <input data-goal-target="${index}" type="number" min="1" step="0.01" value="${Number(goal.target) || 0}">
-              </label>
-            </div>
-            <div class="mini-actions">
-              <button class="mini-btn" type="button" data-save-goal="${index}">Salvar</button>
-              <button class="mini-btn danger" type="button" data-remove-goal="${index}">Remover</button>
-            </div>
-          </div>
-        `;
-      })
-      .join("");
+    target.innerHTML = renderGoalManagerHtml(rows, categoryOptions);
   }
 
   function renderGoalCategoryOptions() {
@@ -420,42 +363,17 @@ export function createSettingsModule(deps) {
   function renderSubcategoryManager() {
     const target = document.querySelector("#subcategory-manage-list");
     if (!target) return;
-    const typeLabels = { expense: "Despesa", income: "Receita", investment: "Investimento" };
     const groups = getCatalog().categories
       .filter((item) => !item.isArchived)
       .map((item) => ({
         type: item.kind,
         categoryKey: item.slug,
         categoryLabel: item.name,
+        fallbackColor: getCategoryColorFromList(item.kind, item.slug, state.settings.categories),
         tags: getTags(item.kind, item.slug).map((tag) => [tag.slug, tag.name, tag.color]),
       }));
 
-    target.innerHTML = groups.map((group) => `
-      <article class="tag-plan-card">
-        <header class="tag-plan-header">
-          <div>
-            <strong>${esc(group.categoryLabel)}</strong>
-            <small>${typeLabels[group.type]}${group.tags.length ? ` | ${group.tags.length} etiqueta${group.tags.length === 1 ? "" : "s"}` : " | sem etiquetas"}</small>
-          </div>
-        </header>
-        <div class="tag-chip-wrap">
-          ${group.tags.length ? group.tags.map(([subKey, subLabel, subColor]) => `
-            <div class="tag-chip" style="--tag-color:${safeCssColor(subColor || getCategoryColorFromList(group.type, group.categoryKey, state.settings.categories))}">
-              <span class="tag-chip-dot"></span>
-              <span>${esc(subLabel)}</span>
-              <span class="tag-chip-actions">
-                <button class="tag-chip-action" type="button" data-edit-subcategory="${group.type}:${group.categoryKey}:${subKey}" title="Editar etiqueta">Editar</button>
-                <button class="tag-chip-action danger" type="button" data-remove-subcategory="${group.type}:${group.categoryKey}:${subKey}" title="Remover etiqueta">x</button>
-              </span>
-            </div>
-          `).join("") : '<span class="tag-chip tag-chip-empty">Nenhuma etiqueta ainda</span>'}
-        </div>
-        <form class="tag-inline-form" data-subcategory-inline="${group.type}:${group.categoryKey}">
-          <input type="text" name="name" placeholder="Adicionar etiqueta" aria-label="Adicionar etiqueta em ${esc(group.categoryLabel)}">
-          <button class="mini-btn" type="submit">Adicionar</button>
-        </form>
-      </article>
-    `).join("");
+    target.innerHTML = renderSubcategoryManagerHtml(groups);
   }
 
   async function addInlineSubcategory(type, categoryKey, name) {
