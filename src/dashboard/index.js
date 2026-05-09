@@ -11,6 +11,7 @@ import {
   getMonthTransactions,
 } from "../core/utils.js";
 import { buildCashflowChartView } from "./chartPresenter.js";
+import { createDashboardDomWriter } from "./domWriter.js";
 import { buildSmartDashboardView, buildSummaryView } from "./summaryPresenter.js";
 import {
   renderBudgetOverviewHtml,
@@ -21,6 +22,8 @@ import {
 } from "./viewTemplates.js";
 
 export function createDashboardModule(deps) {
+  const dom = createDashboardDomWriter();
+
   function renderSafely(name, renderFn) {
     try {
       renderFn();
@@ -42,16 +45,16 @@ export function createDashboardModule(deps) {
     const summary = buildFinancialSummary(transactions);
     const view = buildSummaryView({ transactions, summary });
 
-    document.querySelector("#income-total").textContent = view.totals.income;
-    document.querySelector("#expense-total").textContent = view.totals.expenses;
-    document.querySelector("#invest-total").textContent = view.totals.investments;
-    document.querySelector("#free-balance").textContent = view.totals.available;
-    document.querySelector("#income-count").textContent = view.counts.income;
-    document.querySelector("#expense-count").textContent = view.counts.expenseCategories;
-    document.querySelector("#invest-rate").textContent = view.rates.investment;
-    document.querySelector("#commitment-rate").textContent = view.rates.commitment;
-    document.querySelector("#health-score").textContent = view.health.score;
-    document.querySelector("#health-copy").textContent = view.health.copy;
+    dom.setText("#income-total", view.totals.income);
+    dom.setText("#expense-total", view.totals.expenses);
+    dom.setText("#invest-total", view.totals.investments);
+    dom.setText("#free-balance", view.totals.available);
+    dom.setText("#income-count", view.counts.income);
+    dom.setText("#expense-count", view.counts.expenseCategories);
+    dom.setText("#invest-rate", view.rates.investment);
+    dom.setText("#commitment-rate", view.rates.commitment);
+    dom.setText("#health-score", view.health.score);
+    dom.setText("#health-copy", view.health.copy);
     renderSmartDashboard(transactions, view.totalsForInsights, view.free);
   }
 
@@ -66,15 +69,14 @@ export function createDashboardModule(deps) {
       previousSummary,
     });
 
-    document.querySelector("#daily-safe").textContent = view.dailySafe;
-    document.querySelector("#month-comparison").textContent = view.monthComparison;
-    document.querySelector("#smart-title").textContent = view.title;
-    document.querySelector("#smart-copy").textContent = view.copy;
+    dom.setText("#daily-safe", view.dailySafe);
+    dom.setText("#month-comparison", view.monthComparison);
+    dom.setText("#smart-title", view.title);
+    dom.setText("#smart-copy", view.copy);
     renderInsights(transactions, totals);
   }
 
   function renderInsights(transactions, totals) {
-    const target = document.querySelector("#insight-list");
     const budgetRules = Object.fromEntries(
       state.settings.categories.expense.map(([key]) => [key, getBudgetRule(key)])
     );
@@ -85,7 +87,7 @@ export function createDashboardModule(deps) {
       totals,
     });
 
-    target.innerHTML = renderInsightsHtml(insights);
+    dom.setHtml("#insight-list", renderInsightsHtml(insights));
   }
 
   function renderCategoryBreakdown() {
@@ -93,22 +95,19 @@ export function createDashboardModule(deps) {
       transactions: getMonthTransactions(),
       categories: state.settings.categories.expense,
     });
-    const target = document.querySelector("#category-breakdown");
-
-    target.innerHTML = renderCategoryBreakdownHtml(rows);
+    dom.setHtml("#category-breakdown", renderCategoryBreakdownHtml(rows));
   }
 
   function renderTransactionHighlights() {
-    const target = document.querySelector("#transaction-highlights");
+    const target = dom.get("#transaction-highlights");
     if (!target) return;
 
     const highlights = buildTransactionHighlights(getMonthTransactions());
 
-    target.innerHTML = renderTransactionHighlightsHtml(highlights);
+    dom.setHtml("#transaction-highlights", renderTransactionHighlightsHtml(highlights));
   }
 
   function renderBudgets() {
-    const target = document.querySelector("#budget-list");
     const budgetRules = Object.fromEntries(
       state.settings.categories.expense.map(([key]) => [key, getBudgetRule(key)])
     );
@@ -118,22 +117,22 @@ export function createDashboardModule(deps) {
       budgetRules,
       currentDate: state.currentDate,
     });
-    target.innerHTML = renderBudgetOverviewHtml(rows);
+    dom.setHtml("#budget-list", renderBudgetOverviewHtml(rows));
   }
 
   function renderDailyHistory() {
-    const target = document.querySelector("#daily-history-list");
+    const target = dom.get("#daily-history-list");
     if (!target) return;
 
     const history = buildDailyHistory(getMonthTransactions());
 
-    target.innerHTML = renderDailyHistoryHtml(history);
+    dom.setHtml("#daily-history-list", renderDailyHistoryHtml(history));
   }
 
   function renderChart() {
-    const canvas = document.querySelector("#cashflow-chart");
+    const canvas = dom.get("#cashflow-chart");
     if (!canvas || !window.Chart) {
-      document.querySelector("#trend-status").textContent = "Grafico indisponivel";
+      dom.setText("#trend-status", "Grafico indisponivel");
       return;
     }
 
@@ -143,7 +142,7 @@ export function createDashboardModule(deps) {
     });
     const view = buildCashflowChartView(months);
 
-    document.querySelector("#trend-status").textContent = view.status;
+    dom.setText("#trend-status", view.status);
 
     if (state.chart) state.chart.destroy();
     state.chart = new Chart(canvas, view.config);
