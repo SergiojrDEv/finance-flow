@@ -1474,9 +1474,31 @@ td {
 }
 
 @media (max-width: 760px) {
-  .app-shell,
+  body {
+    padding-bottom: 82px;
+  }
+
+  .app-shell {
+    padding: 18px 14px 22px;
+  }
+
   .sidebar {
-    padding: 18px;
+    position: fixed;
+    inset: auto 0 0;
+    z-index: 40;
+    width: 100%;
+    min-height: 0;
+    padding: 8px 10px calc(8px + env(safe-area-inset-bottom));
+    border-top: 1px solid rgba(217, 226, 236, 0.9);
+    background: rgba(255, 255, 255, 0.96);
+    color: var(--text);
+    box-shadow: 0 -12px 30px rgba(17, 24, 39, 0.09);
+    backdrop-filter: blur(16px);
+  }
+
+  .sidebar .brand,
+  .sidebar-panel {
+    display: none;
   }
 
   .topbar,
@@ -1490,6 +1512,34 @@ td {
   .filter-actions,
   .report-actions {
     width: 100%;
+  }
+
+  .topbar {
+    gap: 14px;
+    margin-bottom: 18px;
+  }
+
+  .topbar h1 {
+    font-size: 1.9rem;
+  }
+
+  .topbar-actions {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 8px;
+  }
+
+  .month-switcher {
+    justify-content: space-between;
+  }
+
+  .month-switcher strong {
+    min-width: 0;
+    font-size: 0.88rem;
+  }
+
+  .topbar-actions #install-app {
+    grid-column: 1 / -1;
   }
 
   .primary-btn,
@@ -1533,7 +1583,26 @@ td {
   }
 
   .nav-list {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-template-columns: repeat(6, minmax(0, 1fr));
+    gap: 4px;
+  }
+
+  .nav-item {
+    min-height: 54px;
+    display: grid;
+    place-items: center;
+    padding: 6px 4px;
+    border-radius: var(--radius-md);
+    color: var(--muted);
+    font-size: 0.68rem;
+    line-height: 1.15;
+    text-align: center;
+  }
+
+  .nav-item:hover,
+  .nav-item.active {
+    background: #eef4ff;
+    color: var(--text);
   }
 
   .budget-rule-form,

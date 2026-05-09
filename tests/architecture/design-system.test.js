@@ -56,3 +56,18 @@ test("styles mantem cards discretos e sem letter spacing negativo", async () => 
   assert.equal(/border-radius:\s*(10|11|12|13|14|15|16)px/.test(source), false);
   assert.equal(/letter-spacing:\s*-/.test(source), false);
 });
+
+test("styles preparam navegacao mobile com barra inferior de app", async () => {
+  const source = await readFile(stylesPath, "utf8");
+  const requiredSnippets = [
+    "@media (max-width: 760px)",
+    "body {\n    padding-bottom: 82px;",
+    ".sidebar {\n    position: fixed;\n    inset: auto 0 0;",
+    "backdrop-filter: blur(16px);",
+    ".nav-list {\n    grid-template-columns: repeat(6, minmax(0, 1fr));",
+    ".nav-item {\n    min-height: 54px;",
+  ];
+  const missing = requiredSnippets.filter((snippet) => !source.includes(snippet));
+
+  assert.deepEqual(missing, []);
+});
