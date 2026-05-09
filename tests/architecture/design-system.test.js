@@ -71,3 +71,16 @@ test("styles preparam navegacao mobile com barra inferior de app", async () => {
 
   assert.deepEqual(missing, []);
 });
+
+test("styles mantem resumo principal compacto", async () => {
+  const source = await readFile(stylesPath, "utf8");
+  const requiredSnippets = [
+    ".summary-grid {\n  display: grid;\n  grid-template-columns: repeat(4, minmax(0, 1fr));\n  gap: 12px;",
+    ".metric-card {\n  position: relative;\n  overflow: hidden;\n  padding: 16px 16px 15px;",
+    "box-shadow: var(--shadow-soft);",
+    ".metric-card {\n    padding: 14px 14px 13px;",
+  ];
+  const missing = requiredSnippets.filter((snippet) => !source.includes(snippet));
+
+  assert.deepEqual(missing, []);
+});
