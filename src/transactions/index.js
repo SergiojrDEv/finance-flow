@@ -217,22 +217,18 @@ export function createTransactionsModule(deps) {
   }
 
   function updateTransactionModalCategories(type = state.transactionModalType) {
-    const category = document.querySelector("#transaction-modal-category");
-    if (!category) return;
-    category.innerHTML = state.settings.categories[type]
+    const optionsHtml = state.settings.categories[type]
       .map(([value, label]) => `<option value="${esc(value)}">${esc(label)}</option>`)
       .join("");
+    dom.syncTransactionModalCategories(optionsHtml);
     updateTransactionModalSubcategoryOptions();
   }
 
   function updateTransactionModalAccounts() {
-    const account = document.querySelector("#transaction-modal-account");
-    if (!account) return;
-    const previousValue = account.value;
-    account.innerHTML = state.settings.accounts
+    const optionsHtml = state.settings.accounts
       .map((name) => `<option value="${esc(name)}">${esc(name)}</option>`)
       .join("");
-    account.value = state.settings.accounts.includes(previousValue) ? previousValue : firstAccountName();
+    dom.syncTransactionModalAccounts(optionsHtml, firstAccountName());
   }
 
   function updateTransactionModalCreditFields() {
@@ -244,75 +240,47 @@ export function createTransactionsModule(deps) {
   }
 
   function updateSubcategoryOptions(preferredValue = "") {
-    const field = document.querySelector("#subcategory-field");
-    const select = document.querySelector("#subcategory");
-    if (!field || !select) return;
-    if (!shouldUseExpenseOnlyFields(state.activeType)) {
-      field.classList.add("is-hidden");
-      field.hidden = true;
-      select.innerHTML = "";
-      select.value = "";
-      return;
-    }
+    const isExpense = shouldUseExpenseOnlyFields(state.activeType);
     const categoryKey = els.category.value;
-    const items = getSubcategories(state.activeType, categoryKey);
-    if (!items.length) {
-      field.classList.add("is-hidden");
-      field.hidden = true;
-      select.innerHTML = "";
-      select.value = "";
-      return;
-    }
-    field.classList.remove("is-hidden");
-    field.hidden = false;
-    select.innerHTML = `<option value="">Sem subcategoria</option>${items
+    const items = isExpense ? getSubcategories(state.activeType, categoryKey) : [];
+    const optionsHtml = `<option value="">Sem subcategoria</option>${items
       .map(([value, label]) => `<option value="${esc(value)}">${esc(label)}</option>`)
       .join("")}`;
-    select.value = items.some(([value]) => value === preferredValue) ? preferredValue : "";
+    dom.syncSubcategoryOptions({
+      fieldSelector: "#subcategory-field",
+      selectSelector: "#subcategory",
+      optionsHtml,
+      preferredValue,
+      visible: isExpense && items.length > 0,
+    });
   }
 
   function updateTransactionModalSubcategoryOptions(preferredValue = "") {
-    const field = document.querySelector("#transaction-modal-subcategory-field");
-    const select = document.querySelector("#transaction-modal-subcategory");
-    const categoryKey = document.querySelector("#transaction-modal-category")?.value;
-    if (!field || !select || !categoryKey) return;
-    if (!shouldUseExpenseOnlyFields(state.transactionModalType)) {
-      field.classList.add("is-hidden");
-      field.hidden = true;
-      select.innerHTML = "";
-      select.value = "";
-      return;
-    }
-    const items = getSubcategories(state.transactionModalType, categoryKey);
-    if (!items.length) {
-      field.classList.add("is-hidden");
-      field.hidden = true;
-      select.innerHTML = "";
-      select.value = "";
-      return;
-    }
-    field.classList.remove("is-hidden");
-    field.hidden = false;
-    select.innerHTML = `<option value="">Sem subcategoria</option>${items
+    const isExpense = shouldUseExpenseOnlyFields(state.transactionModalType);
+    const categoryKey = dom.readTransactionModalCategory();
+    const items = isExpense && categoryKey ? getSubcategories(state.transactionModalType, categoryKey) : [];
+    const optionsHtml = `<option value="">Sem subcategoria</option>${items
       .map(([value, label]) => `<option value="${esc(value)}">${esc(label)}</option>`)
       .join("")}`;
-    select.value = items.some(([value]) => value === preferredValue) ? preferredValue : "";
+    dom.syncSubcategoryOptions({
+      fieldSelector: "#transaction-modal-subcategory-field",
+      selectSelector: "#transaction-modal-subcategory",
+      optionsHtml,
+      preferredValue,
+      visible: isExpense && items.length > 0,
+    });
   }
 
   function setTransactionModalType(type) {
     state.transactionModalType = type;
-    document.querySelectorAll(".transaction-modal-segment").forEach((button) => {
-      button.classList.toggle("active", button.dataset.modalType === type);
-    });
+    dom.syncTransactionModalSegments(type);
     updateTransactionModalCategories(type);
     syncTransactionModalTypeFields();
   }
 
   function setActiveType(type) {
     state.activeType = type;
-    document.querySelectorAll(".segment").forEach((button) => {
-      button.classList.toggle("active", button.dataset.type === type);
-    });
+    dom.syncTransactionSegments(type);
     updateCategoryOptions();
     syncTransactionTypeFields();
   }
@@ -577,9 +545,8 @@ export function createTransactionsModule(deps) {
 
   function showImportPreview(imported) {
     state.pendingImport = imported;
-    const target = document.querySelector("#import-preview");
     const currentCount = state.transactions.length;
-    target.innerHTML = `
+    dom.showImportPreview(`
       <div>
         <strong>Previa da importacao</strong>
         <p>${imported.transactions.length} lancamentos validos encontrados.${imported.ignored ? ` ${imported.ignored} linha${imported.ignored === 1 ? "" : "s"} ignorada${imported.ignored === 1 ? "" : "s"} por falta de data, descricao ou valor.` : ""}</p>
@@ -590,15 +557,12 @@ export function createTransactionsModule(deps) {
         <button class="ghost-btn" type="button" data-import-action="replace">Substituir tudo</button>
         <button class="danger-btn" type="button" data-import-action="cancel">Cancelar</button>
       </div>
-    `;
-    target.classList.remove("is-hidden");
+    `);
   }
 
   function clearImportPreview() {
     state.pendingImport = null;
-    const target = document.querySelector("#import-preview");
-    target.innerHTML = "";
-    target.classList.add("is-hidden");
+    dom.clearImportPreview();
   }
 
   function applyPendingImport(mode) {

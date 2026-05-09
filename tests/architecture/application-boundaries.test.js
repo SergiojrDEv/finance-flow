@@ -206,3 +206,18 @@ test("settings runtime delega seletores DOM ao adapter", async () => {
 
   assert.deepEqual(violations, []);
 });
+
+test("transactions runtime delega seletores DOM ao adapter", async () => {
+  const source = await readFile(path.join(rootDir, "src/transactions/index.js"), "utf8");
+  const violations = [];
+
+  if (/document\.querySelector/.test(source)) {
+    violations.push("src/transactions/index.js: use createTransactionsDom para leitura/escrita de campos");
+  }
+
+  if (/document\.querySelectorAll/.test(source)) {
+    violations.push("src/transactions/index.js: use createTransactionsDom para listas de elementos");
+  }
+
+  assert.deepEqual(violations, []);
+});

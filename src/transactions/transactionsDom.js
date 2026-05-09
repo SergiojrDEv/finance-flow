@@ -29,6 +29,10 @@ export function createTransactionsDom(documentRef = document) {
     if (target) target.innerHTML = nextValue;
   }
 
+  function getAll(selector) {
+    return [...documentRef.querySelectorAll(selector)];
+  }
+
   function showModal(selector) {
     get(selector)?.classList.remove("is-hidden");
     documentRef.body?.classList.add("modal-open");
@@ -140,6 +144,52 @@ export function createTransactionsDom(documentRef = document) {
     return value("#transaction-modal-payment-method");
   }
 
+  function syncTransactionModalCategories(optionsHtml) {
+    html("#transaction-modal-category", optionsHtml);
+  }
+
+  function syncTransactionModalAccounts(optionsHtml, fallback) {
+    const account = get("#transaction-modal-account");
+    if (!account) return;
+    const previousValue = account.value;
+    account.innerHTML = optionsHtml;
+    account.value = optionsHtml.includes(`value="${previousValue}"`) ? previousValue : fallback;
+  }
+
+  function readTransactionModalCategory() {
+    return value("#transaction-modal-category");
+  }
+
+  function syncSubcategoryOptions({ fieldSelector, selectSelector, optionsHtml, preferredValue, visible }) {
+    setHidden(fieldSelector, !visible);
+    const select = get(selectSelector);
+    if (!select) return;
+    select.innerHTML = visible ? optionsHtml : "";
+    select.value = visible && optionsHtml.includes(`value="${preferredValue}"`) ? preferredValue : "";
+  }
+
+  function syncTransactionModalSegments(type) {
+    getAll(".transaction-modal-segment").forEach((button) => {
+      button.classList.toggle("active", button.dataset.modalType === type);
+    });
+  }
+
+  function syncTransactionSegments(type) {
+    getAll(".segment").forEach((button) => {
+      button.classList.toggle("active", button.dataset.type === type);
+    });
+  }
+
+  function showImportPreview(htmlContent) {
+    html("#import-preview", htmlContent);
+    setHidden("#import-preview", false);
+  }
+
+  function clearImportPreview() {
+    html("#import-preview", "");
+    setHidden("#import-preview", true);
+  }
+
   function syncTransactionTypeFields({ isExpense, experience, defaultPaymentMethod }) {
     text("#transaction-form-title", experience.formTitle);
     text("#transaction-form-copy", experience.formCopy);
@@ -188,11 +238,14 @@ export function createTransactionsDom(documentRef = document) {
     enableTransactionSeriesControls,
     fillTransactionModal,
     get,
+    getAll,
     hideCancelEdit,
+    clearImportPreview,
     openTransactionModal,
     html,
     readPaymentMethod,
     readTransactionForm,
+    readTransactionModalCategory,
     readTransactionModalForm,
     readTransactionModalPaymentMethod,
     setDefaultDueDate,
@@ -201,9 +254,15 @@ export function createTransactionsDom(documentRef = document) {
     setValue,
     syncCreditCardOptions,
     syncCreditPaymentFields,
+    syncSubcategoryOptions,
+    syncTransactionModalAccounts,
+    syncTransactionModalCategories,
     syncTransactionModalCreditFields,
+    syncTransactionModalSegments,
     syncTransactionModalTypeFields,
+    syncTransactionSegments,
     syncTransactionTypeFields,
+    showImportPreview,
     text,
     value,
   };

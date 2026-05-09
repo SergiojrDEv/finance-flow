@@ -18,7 +18,9 @@ function createElement() {
     focusCalled: false,
     resetCalled: false,
     disabled: true,
+    dataset: {},
     hidden: false,
+    innerHTML: "",
     textContent: "",
     value: "",
     focus() { this.focusCalled = true; },
@@ -36,6 +38,9 @@ function createFakeDocument() {
     querySelector(selector) {
       if (!elements.has(selector)) elements.set(selector, createElement());
       return elements.get(selector);
+    },
+    querySelectorAll(selector) {
+      return [this.querySelector(`${selector}:1`), this.querySelector(`${selector}:2`)];
     },
   };
 }
@@ -204,4 +209,47 @@ test("centraliza opcoes de cartao e campos de credito", () => {
   assert.equal(dom.value("#installments"), 1);
   assert.equal(dom.readTransactionModalPaymentMethod(), "credit");
   assert.equal(dom.get("#transaction-modal-credit-card-field").hidden, false);
+});
+
+test("centraliza opcoes do modal, subcategorias, segmentos e importacao", () => {
+  const documentRef = createFakeDocument();
+  const dom = createTransactionsDom(documentRef);
+  const firstSegment = dom.get(".segment:1");
+  const secondSegment = dom.get(".segment:2");
+  const firstModalSegment = dom.get(".transaction-modal-segment:1");
+  const secondModalSegment = dom.get(".transaction-modal-segment:2");
+  firstSegment.dataset.type = "expense";
+  secondSegment.dataset.type = "income";
+  firstModalSegment.dataset.modalType = "expense";
+  secondModalSegment.dataset.modalType = "income";
+
+  dom.syncTransactionModalCategories('<option value="alimentacao">Alimentacao</option>');
+  dom.setValue("#transaction-modal-category", "alimentacao");
+  dom.syncTransactionModalAccounts('<option value="Conta corrente">Conta corrente</option>', "Conta corrente");
+  dom.syncSubcategoryOptions({
+    fieldSelector: "#subcategory-field",
+    selectSelector: "#subcategory",
+    optionsHtml: '<option value="">Sem subcategoria</option><option value="mercado">Mercado</option>',
+    preferredValue: "mercado",
+    visible: true,
+  });
+  dom.syncTransactionSegments("income");
+  dom.syncTransactionModalSegments("expense");
+  dom.showImportPreview("<strong>Previa</strong>");
+
+  assert.equal(dom.get("#transaction-modal-category").innerHTML, '<option value="alimentacao">Alimentacao</option>');
+  assert.equal(dom.get("#transaction-modal-account").value, "Conta corrente");
+  assert.equal(dom.readTransactionModalCategory(), "alimentacao");
+  assert.equal(dom.get("#subcategory-field").hidden, false);
+  assert.equal(dom.value("#subcategory"), "mercado");
+  assert.equal(firstSegment.classList.contains("active"), false);
+  assert.equal(secondSegment.classList.contains("active"), true);
+  assert.equal(firstModalSegment.classList.contains("active"), true);
+  assert.equal(secondModalSegment.classList.contains("active"), false);
+  assert.equal(dom.get("#import-preview").innerHTML, "<strong>Previa</strong>");
+  assert.equal(dom.get("#import-preview").hidden, false);
+
+  dom.clearImportPreview();
+  assert.equal(dom.get("#import-preview").innerHTML, "");
+  assert.equal(dom.get("#import-preview").hidden, true);
 });
