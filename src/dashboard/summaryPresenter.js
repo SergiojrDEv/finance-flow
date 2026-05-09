@@ -35,6 +35,9 @@ export function buildSummaryView({ transactions, summary }) {
         ? `Mes no vermelho: depois de despesas e investimentos, faltam ${money(Math.abs(free))} para o disponivel imediato fechar positivo.`
         : summary.health.copy,
     },
+    homeBalanceCopy: free >= 0
+      ? "Saldo disponivel para movimentacao imediata"
+      : `Faltam ${money(Math.abs(free))} para voltar ao positivo`,
     totalsForInsights: {
       income: summary.totals.income,
       expense: summary.totals.expenses,

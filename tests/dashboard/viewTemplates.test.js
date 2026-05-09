@@ -49,6 +49,9 @@ test("resumo de lancamentos mostra saldo do mes em linguagem de app", () => {
   });
 
   assert.match(html, /Movimento do mes/);
+  assert.match(html, /mini-stat-card movement/);
+  assert.match(html, /mini-stat-card balance/);
+  assert.match(html, /mini-stat-card payment/);
   assert.match(html, /Falta no mes/);
   assert.match(html, /Forma mais usada/);
   assert.match(html, /R\$\s*200,00/);

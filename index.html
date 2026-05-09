@@ -150,23 +150,63 @@
     </header>
 
     <section class="section active" id="visao-geral">
+      <article class="finance-home-hero" aria-label="Disponibilidade financeira">
+        <div>
+          <p class="eyebrow">Hoje ate o fim do mes</p>
+          <h2>Seu dinheiro agora</h2>
+          <span id="home-period">Acompanhe o mes selecionado</span>
+        </div>
+        <div class="home-balance-card">
+          <span>Disponivel para movimentacao</span>
+          <strong id="home-free-balance">R$ 0,00</strong>
+          <small id="home-balance-copy">Receitas - despesas - investimentos</small>
+        </div>
+      </article>
+
+      <div class="quick-action-grid" aria-label="Atalhos financeiros">
+        <a class="quick-action income" href="#novo-lancamento" data-quick-type="income">
+          <span>R</span>
+          <strong>Receita</strong>
+          <small>Registrar entrada</small>
+        </a>
+        <a class="quick-action expense" href="#novo-lancamento" data-quick-type="expense">
+          <span>D</span>
+          <strong>Despesa</strong>
+          <small>Controlar gasto</small>
+        </a>
+        <a class="quick-action invest" href="#novo-lancamento" data-quick-type="investment">
+          <span>I</span>
+          <strong>Investir</strong>
+          <small>Lancar aporte</small>
+        </a>
+        <a class="quick-action goal" href="#metas">
+          <span>M</span>
+          <strong>Meta</strong>
+          <small>Acompanhar objetivo</small>
+        </a>
+      </div>
+
       <div class="summary-grid" aria-label="Resumo do mes">
         <article class="metric-card income">
+          <i aria-hidden="true">R</i>
           <span>Receitas</span>
           <strong id="income-total">R$ 0,00</strong>
           <small id="income-count">0 lancamentos</small>
         </article>
         <article class="metric-card expense">
+          <i aria-hidden="true">D</i>
           <span>Despesas</span>
           <strong id="expense-total">R$ 0,00</strong>
           <small id="expense-count">0 categorias</small>
         </article>
         <article class="metric-card invest">
+          <i aria-hidden="true">I</i>
           <span>Investido no mes</span>
           <strong id="invest-total">R$ 0,00</strong>
           <small id="invest-rate">0% da receita direcionado para investimento</small>
         </article>
         <article class="metric-card balance">
+          <i aria-hidden="true">S</i>
           <span>Disponivel para movimentacao</span>
           <strong id="free-balance">R$ 0,00</strong>
           <small id="commitment-rate">0% da receita ja foi comprometida</small>

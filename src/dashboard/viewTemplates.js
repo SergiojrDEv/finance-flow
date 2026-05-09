@@ -57,18 +57,18 @@ export function renderTransactionHighlightsHtml(highlights) {
   const balanceLabel = highlights.totals.balance >= 0 ? "Sobra do mes" : "Falta no mes";
 
   return `
-      <article class="mini-stat-card">
+      <article class="mini-stat-card movement">
         <span>Movimento do mes</span>
         <strong>${highlights.count} lancamentos</strong>
         <small>Entradas: ${money(highlights.totals.income)}</small>
         <small>Saidas: ${money(highlights.totals.outflow)}</small>
       </article>
-      <article class="mini-stat-card">
+      <article class="mini-stat-card balance">
         <span>${balanceLabel}</span>
         <strong class="money ${balanceClass}">${money(Math.abs(highlights.totals.balance))}</strong>
         <small>${highlights.status.pending} pendentes ou previstos</small>
       </article>
-      <article class="mini-stat-card">
+      <article class="mini-stat-card payment">
         <span>Forma mais usada</span>
         <strong>${highlights.payments.pix} no Pix</strong>
         <small>${highlights.payments.credit} no credito</small>

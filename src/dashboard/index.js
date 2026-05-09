@@ -49,6 +49,8 @@ export function createDashboardModule(deps) {
     dom.setText("#expense-total", view.totals.expenses);
     dom.setText("#invest-total", view.totals.investments);
     dom.setText("#free-balance", view.totals.available);
+    dom.setText("#home-free-balance", view.totals.available);
+    dom.setText("#home-balance-copy", view.homeBalanceCopy);
     dom.setText("#income-count", view.counts.income);
     dom.setText("#expense-count", view.counts.expenseCategories);
     dom.setText("#invest-rate", view.rates.investment);

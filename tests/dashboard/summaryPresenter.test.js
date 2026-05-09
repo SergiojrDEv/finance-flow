@@ -27,6 +27,7 @@ test("monta view do resumo financeiro com textos formatados", () => {
   assert.equal(view.counts.expenseCategories, "12 categorias");
   assert.equal(view.health.score, "33%");
   assert.match(view.health.copy, /Mes no vermelho/);
+  assert.match(normalizeSpaces(view.homeBalanceCopy), /R\$ 214,13/);
   assert.deepEqual(view.totalsForInsights, { income: 3100, expense: 3314.13, investment: 0 });
 });
 

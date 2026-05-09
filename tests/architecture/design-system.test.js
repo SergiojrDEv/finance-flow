@@ -91,11 +91,29 @@ test("html oferece rotulos curtos para navegacao mobile", async () => {
   assert.deepEqual(missing, []);
 });
 
+test("html oferece home inspirada em app financeiro", async () => {
+  const source = await readFile(indexPath, "utf8");
+  const requiredSnippets = [
+    "finance-home-hero",
+    "home-free-balance",
+    "quick-action-grid",
+    'data-quick-type="income"',
+    'data-quick-type="expense"',
+    'data-quick-type="investment"',
+  ];
+  const missing = requiredSnippets.filter((snippet) => !source.includes(snippet));
+
+  assert.deepEqual(missing, []);
+});
+
 test("styles mantem resumo principal compacto", async () => {
   const source = await readFile(stylesPath, "utf8");
   const requiredSnippets = [
+    ".finance-home-hero {\n  display: grid;\n  grid-template-columns: minmax(0, 1fr) minmax(280px, 0.55fr);",
+    ".quick-action-grid {\n  display: grid;\n  grid-template-columns: repeat(4, minmax(0, 1fr));",
+    ".quick-action.income span,\n.metric-card.income i {",
     ".summary-grid {\n  display: grid;\n  grid-template-columns: repeat(4, minmax(0, 1fr));\n  gap: 12px;",
-    ".metric-card {\n  position: relative;\n  overflow: hidden;\n  padding: 16px 16px 15px;",
+    ".metric-card {\n  position: relative;\n  overflow: hidden;\n  display: grid;",
     "box-shadow: var(--shadow-soft);",
     ".summary-grid {\n    grid-template-columns: repeat(2, minmax(0, 1fr));",
     ".metric-card {\n    min-height: 112px;",
