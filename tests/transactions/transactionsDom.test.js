@@ -155,12 +155,18 @@ test("centraliza campos visuais por tipo de lancamento", () => {
       formCopy: "Receba sem campos de despesa.",
       heroTitle: "Cadastre uma receita",
       heroCopy: "Entrada do mes.",
+      guideLabel: "Entrada de dinheiro",
+      guideText: "Receitas aumentam o disponivel.",
+      tone: "income",
       submitLabel: "Salvar receita",
     },
   });
 
+  assert.equal(documentRef.body.dataset.transactionTypeTone, "income");
   assert.equal(dom.get("#transaction-form-title").textContent, "Nova receita");
   assert.equal(dom.get("#transaction-submit").textContent, "Salvar receita");
+  assert.equal(dom.get("#transaction-guide-label").textContent, "Entrada de dinheiro");
+  assert.equal(dom.get("#transaction-guide-text").textContent, "Receitas aumentam o disponivel.");
   assert.equal(dom.get("#transaction-payment-row").hidden, true);
   assert.equal(dom.value("#payment-method"), "transfer");
   assert.equal(dom.value("#credit-card"), "");

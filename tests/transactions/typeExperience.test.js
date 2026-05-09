@@ -8,6 +8,8 @@ test("retorna textos especificos para receita", () => {
 
   assert.equal(experience.formTitle, "Nova receita");
   assert.equal(experience.submitLabel, "Salvar receita");
+  assert.equal(experience.tone, "income");
+  assert.match(experience.guideText, /aumentam o disponivel/);
   assert.match(experience.heroCopy, /sem carregar campos/);
 });
 
@@ -16,6 +18,8 @@ test("retorna textos especificos para investimento", () => {
 
   assert.equal(experience.formTitle, "Novo investimento");
   assert.equal(experience.submitLabel, "Salvar investimento");
+  assert.equal(experience.tone, "investment");
+  assert.match(experience.guideText, /reduzem o disponivel imediato/);
   assert.match(experience.heroCopy, /sem campos de pagamento/);
 });
 
@@ -24,4 +28,5 @@ test("usa despesa como fallback", () => {
 
   assert.equal(experience.formTitle, "Nova despesa");
   assert.equal(experience.submitLabel, "Salvar despesa");
+  assert.equal(experience.tone, "expense");
 });

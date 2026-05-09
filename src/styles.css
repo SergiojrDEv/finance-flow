@@ -695,6 +695,42 @@ body[data-transaction-view="month"] .transaction-view-month {
   background: #152238;
 }
 
+.transaction-type-guide {
+  display: grid;
+  gap: 4px;
+  margin: -4px 0 14px;
+  padding: 12px;
+  border: 1px solid var(--line);
+  border-left: 4px solid var(--expense);
+  border-radius: var(--radius-md);
+  background: #fbfcfe;
+}
+
+.transaction-type-guide span {
+  color: var(--muted);
+  font-size: 0.74rem;
+  font-weight: 900;
+  text-transform: uppercase;
+}
+
+.transaction-type-guide strong {
+  color: var(--text);
+  font-size: 0.92rem;
+  line-height: 1.42;
+}
+
+body[data-transaction-type-tone="income"] .transaction-type-guide {
+  border-left-color: var(--income);
+}
+
+body[data-transaction-type-tone="investment"] .transaction-type-guide {
+  border-left-color: var(--invest);
+}
+
+body[data-transaction-type-tone="expense"] .transaction-type-guide {
+  border-left-color: var(--expense);
+}
+
 label {
   display: grid;
   gap: 7px;

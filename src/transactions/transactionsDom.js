@@ -191,10 +191,13 @@ export function createTransactionsDom(documentRef = document) {
   }
 
   function syncTransactionTypeFields({ isExpense, experience, defaultPaymentMethod }) {
+    documentRef.body.dataset.transactionTypeTone = experience.tone || "expense";
     text("#transaction-form-title", experience.formTitle);
     text("#transaction-form-copy", experience.formCopy);
     text("#transaction-hero-title", experience.heroTitle);
     text("#transaction-hero-copy", experience.heroCopy);
+    text("#transaction-guide-label", experience.guideLabel || "");
+    text("#transaction-guide-text", experience.guideText || "");
     text("#transaction-submit", experience.submitLabel);
     ["#transaction-payment-row", "#transaction-recurrence-row", "#repeat-count-field"].forEach((selector) => {
       setHidden(selector, !isExpense);

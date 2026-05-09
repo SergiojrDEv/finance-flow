@@ -194,3 +194,17 @@ test("styles suportam estados vazios guiados", async () => {
 
   assert.deepEqual(missing, []);
 });
+
+test("styles diferenciam tipo de lancamento com guia visual", async () => {
+  const source = await readFile(stylesPath, "utf8");
+  const requiredSnippets = [
+    ".transaction-type-guide {\n  display: grid;\n  gap: 4px;\n  margin: -4px 0 14px;",
+    "border-left: 4px solid var(--expense);",
+    "body[data-transaction-type-tone=\"income\"] .transaction-type-guide {\n  border-left-color: var(--income);",
+    "body[data-transaction-type-tone=\"investment\"] .transaction-type-guide {\n  border-left-color: var(--invest);",
+    "body[data-transaction-type-tone=\"expense\"] .transaction-type-guide {\n  border-left-color: var(--expense);",
+  ];
+  const missing = requiredSnippets.filter((snippet) => !source.includes(snippet));
+
+  assert.deepEqual(missing, []);
+});
