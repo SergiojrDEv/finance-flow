@@ -21,6 +21,7 @@ A base visual ja ficou mais compacta, mas no celular ainda falta uma separacao m
 - No mobile, o topo usa fundo escuro, texto claro e acoes compactas.
 - No mobile, a navegacao inferior usa rotulos curtos por item.
 - A barra inferior preserva seis destinos principais sem criar abas repetidas.
+- No mobile, dashboard e lancamentos usam cards compactos para reduzir rolagem.
 - Build e testes continuam passando.
 
 ## Fora de escopo neste corte

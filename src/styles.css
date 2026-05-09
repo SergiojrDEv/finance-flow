@@ -1709,6 +1709,60 @@ tbody tr:last-child td {
     line-height: 1.1;
   }
 
+  .smart-grid,
+  .dashboard-grid,
+  .transactions-shell {
+    gap: 12px;
+  }
+
+  .panel {
+    padding: 14px;
+  }
+
+  .panel-header {
+    gap: 10px;
+    margin-bottom: 12px;
+  }
+
+  .smart-copy {
+    margin-bottom: 12px;
+    font-size: 0.95rem;
+    line-height: 1.45;
+  }
+
+  .smart-metrics {
+    gap: 8px;
+  }
+
+  .smart-metrics div,
+  .insight-item {
+    padding: 10px;
+  }
+
+  .transaction-highlights {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 8px;
+  }
+
+  .mini-stat-card {
+    min-height: 86px;
+    padding: 10px;
+  }
+
+  .mini-stat-card span {
+    font-size: 0.62rem;
+  }
+
+  .mini-stat-card strong {
+    font-size: 0.9rem;
+    line-height: 1.15;
+  }
+
+  .mini-stat-card small {
+    font-size: 0.72rem;
+    line-height: 1.25;
+  }
+
   .modal-actions {
     display: grid;
   }

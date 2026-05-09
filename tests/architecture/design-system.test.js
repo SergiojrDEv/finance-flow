@@ -120,6 +120,22 @@ test("styles reforcam topo mobile como barra de aplicativo", async () => {
   assert.deepEqual(missing, []);
 });
 
+test("styles compactam areas de leitura no mobile", async () => {
+  const source = await readFile(stylesPath, "utf8");
+  const requiredSnippets = [
+    ".smart-grid,\n  .dashboard-grid,\n  .transactions-shell {\n    gap: 12px;",
+    ".panel {\n    padding: 14px;",
+    ".panel-header {\n    gap: 10px;\n    margin-bottom: 12px;",
+    ".smart-copy {\n    margin-bottom: 12px;\n    font-size: 0.95rem;",
+    ".transaction-highlights {\n    grid-template-columns: repeat(3, minmax(0, 1fr));",
+    ".mini-stat-card {\n    min-height: 86px;",
+    ".mini-stat-card strong {\n    font-size: 0.9rem;",
+  ];
+  const missing = requiredSnippets.filter((snippet) => !source.includes(snippet));
+
+  assert.deepEqual(missing, []);
+});
+
 test("styles deixam lancamentos mais compactos em desktop e mobile", async () => {
   const source = await readFile(stylesPath, "utf8");
   const requiredSnippets = [
