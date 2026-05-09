@@ -35,6 +35,27 @@ test("cria uma transacao de despesa valida e imutavel", () => {
   assert.equal(Object.isFrozen(result.value), true);
 });
 
+test("preserva origem bancaria opcional", () => {
+  const result = Transaction.create({
+    userId: "user-1",
+    type: "expense",
+    description: "Uber",
+    category: "outros",
+    account: "Conta corrente",
+    amount: 23.4,
+    date: "2026-05-08",
+    status: "paid",
+    paymentMethod: "pix",
+    dueDate: "2026-05-08",
+    origin: "open_finance",
+    importedTransactionId: "imp-1",
+  });
+
+  assert.equal(result.ok, true);
+  assert.equal(result.value.origin, "open_finance");
+  assert.equal(result.value.importedTransactionId, "imp-1");
+});
+
 test("cria receita sem campos exclusivos de despesa", () => {
   const result = Transaction.create({
     userId: "user-1",

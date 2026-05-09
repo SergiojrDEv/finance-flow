@@ -96,6 +96,7 @@ export function renderWalletReviewHtml(review = {}, pendingImported = [], format
           <small>${esc(transaction.date)} · Importado do banco</small>
         </div>
         <b class="${transaction.type === "income" ? "positive" : "negative"}">${transaction.type === "income" ? "+" : "-"} ${formatMoney(transaction.amount)}</b>
+        <button class="primary-btn wallet-review-action" type="button" data-wallet-create-transaction="${esc(transaction.id)}">Criar lancamento</button>
         <button class="ghost-btn wallet-review-action" type="button" data-wallet-review-imported="${esc(transaction.id)}">Conferido</button>
       </div>
     `).join("");

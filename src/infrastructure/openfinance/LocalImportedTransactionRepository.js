@@ -38,6 +38,10 @@ export class LocalImportedTransactionRepository extends ImportedTransactionRepos
       .filter((transaction) => transaction.connectionId === connectionId && transaction.status === "pending_review");
   }
 
+  async findById(id) {
+    return this.readImportedTransactions().find((transaction) => transaction.id === id) || null;
+  }
+
   async markReviewed(id, patch) {
     const rows = this.readImportedTransactions();
     const index = rows.findIndex((transaction) => transaction.id === id);

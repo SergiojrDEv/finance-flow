@@ -39,6 +39,8 @@ export type TransactionEntity = BaseEntity & {
   installmentNumber?: number | null;
   installmentTotal?: number | null;
   repeatCount?: number;
+  origin?: "manual" | "open_finance" | "bank" | "imported" | string;
+  importedTransactionId?: string | null;
 };
 
 export type CategoryEntity = BaseEntity & {

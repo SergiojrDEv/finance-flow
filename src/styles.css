@@ -802,7 +802,7 @@ h2 {
 
 .wallet-pending-transaction {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) auto auto;
+  grid-template-columns: minmax(0, 1fr) auto auto auto;
   gap: 12px;
   align-items: center;
   padding: 12px 14px;
@@ -2298,6 +2298,15 @@ tbody tr:last-child td {
 
   .wallet-panels {
     gap: 12px;
+  }
+
+  .wallet-pending-transaction {
+    grid-template-columns: 1fr;
+  }
+
+  .wallet-pending-transaction b,
+  .wallet-review-action {
+    justify-self: stretch;
   }
 
   .quick-action-grid {

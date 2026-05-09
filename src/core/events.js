@@ -60,6 +60,8 @@ export function bindAppEvents({
     if (event.target.closest("#wallet-empty-connect-bank")) deps.openWalletBankModal();
     const disconnectButton = event.target.closest("[data-wallet-disconnect]");
     if (disconnectButton) deps.disconnectMockBank(disconnectButton.dataset.walletDisconnect);
+    const createButton = event.target.closest("[data-wallet-create-transaction]");
+    if (createButton) deps.createTransactionFromImported(createButton.dataset.walletCreateTransaction);
     const reviewButton = event.target.closest("[data-wallet-review-imported]");
     if (reviewButton) deps.reviewImportedTransaction(reviewButton.dataset.walletReviewImported);
   });

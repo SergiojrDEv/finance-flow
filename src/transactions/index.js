@@ -336,6 +336,19 @@ export function createTransactionsModule(deps) {
     deps.notify(totalItems > 1 ? `${totalItems} lancamentos criados.` : "Lancamento salvo.");
   }
 
+  async function createTransactionFromDraft(draft) {
+    const result = await getTransactionServices().createTransaction.execute({
+      ...draft,
+      userId: draft.userId || state.currentUser?.id || "local-user",
+    });
+
+    if (!result.ok) {
+      deps.notify(firstErrorMessage(result.errors, "Nao foi possivel salvar o lancamento."));
+    }
+
+    return result;
+  }
+
   async function updateTransaction(values) {
     const item = state.transactions.find((transaction) => transaction.id === state.editingId);
     if (!item) return;
@@ -683,6 +696,7 @@ export function createTransactionsModule(deps) {
     setActiveType,
     renderTable,
     addTransaction,
+    createTransactionFromDraft,
     updateTransaction,
     editTransaction,
     resetTransactionForm,

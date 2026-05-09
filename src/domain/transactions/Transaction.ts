@@ -68,6 +68,8 @@ export class Transaction implements TransactionEntity {
   readonly date: string;
   readonly dueDate?: string;
   readonly status: TransactionStatus;
+  readonly origin?: string;
+  readonly importedTransactionId?: string | null;
   readonly paymentMethod?: PaymentMethod | string;
   readonly creditCardId?: string | null;
   readonly recurrence?: string;
@@ -89,6 +91,8 @@ export class Transaction implements TransactionEntity {
     this.amount = props.amount;
     this.date = props.date;
     this.status = props.status;
+    this.origin = props.origin || "manual";
+    this.importedTransactionId = props.importedTransactionId || null;
     this.createdAt = props.createdAt || null;
     this.updatedAt = props.updatedAt || null;
 
@@ -127,6 +131,8 @@ export class Transaction implements TransactionEntity {
       amount: normalizeAmount(draft.amount),
       date: normalizeText(draft.date),
       status: normalizeText(draft.status || "paid") as TransactionStatus,
+      origin: normalizeText(draft.origin || "manual"),
+      importedTransactionId: normalizeText(draft.importedTransactionId) || null,
       createdAt: draft.createdAt || null,
       updatedAt: draft.updatedAt || null,
       ...pickExpenseFields(draft),

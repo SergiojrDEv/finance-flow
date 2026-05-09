@@ -1,4 +1,5 @@
 import { buildWalletOverview } from "../application/wallet/buildWalletOverview.js";
+import { buildImportedTransactionDraft } from "../application/openfinance/buildImportedTransactionDraft.js";
 import { MOCK_INSTITUTIONS } from "../infrastructure/openfinance/MockOpenFinanceProvider.js";
 import {
   renderWalletAccountsHtml,
@@ -84,9 +85,34 @@ export function createWalletModule(deps) {
     deps.notify?.("Transacao importada marcada como conferida.");
   }
 
+  async function createTransactionFromImported(importedTransactionId) {
+    const importedTransaction = await deps.openFinanceServices.importedTransactionRepository.findById(importedTransactionId);
+    const draftResult = buildImportedTransactionDraft({
+      importedTransaction,
+      settings: deps.state.settings,
+      userId: deps.state.currentUser?.id || "local-user",
+    });
+
+    if (!draftResult.ok) {
+      deps.notify?.("Nao foi possivel encontrar esta transacao importada.");
+      return;
+    }
+
+    const transactionResult = await deps.createTransactionFromDraft(draftResult.value);
+    if (!transactionResult.ok) return;
+
+    await deps.openFinanceServices.reviewImportedTransaction.execute(importedTransactionId, {
+      matchedTransactionId: transactionResult.value.id,
+    });
+    deps.persist();
+    deps.renderAll();
+    deps.notify?.("Lancamento criado a partir do banco.");
+  }
+
   return {
     closeWalletBankModal,
     connectMockBank,
+    createTransactionFromImported,
     disconnectMockBank,
     openWalletBankModal,
     renderWallet,

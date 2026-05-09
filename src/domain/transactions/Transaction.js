@@ -37,6 +37,8 @@ export class Transaction {
     this.amount = props.amount;
     this.date = props.date;
     this.status = props.status;
+    this.origin = props.origin || "manual";
+    this.importedTransactionId = props.importedTransactionId || null;
     this.createdAt = props.createdAt || null;
     this.updatedAt = props.updatedAt || null;
 
@@ -75,6 +77,8 @@ export class Transaction {
       amount: normalizeAmount(draft.amount),
       date: normalizeText(draft.date),
       status: normalizeText(draft.status || "paid"),
+      origin: normalizeText(draft.origin || "manual"),
+      importedTransactionId: normalizeText(draft.importedTransactionId) || null,
       createdAt: draft.createdAt || null,
       updatedAt: draft.updatedAt || null,
       ...pickExpenseFields(draft),

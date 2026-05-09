@@ -25,6 +25,7 @@ Criar a base visual de uma experiencia mais parecida com aplicativo financeiro, 
 - Os casos de uso devem conectar provider mock, importar transacoes e revisar pendencias sem acessar Supabase.
 - A tela deve permitir conectar/desconectar banco mock local com modal de instituicoes.
 - A tela deve permitir marcar transacoes importadas como conferidas em modo local.
+- A tela deve permitir criar um lancamento local a partir de uma transacao importada mock.
 - O historico de lancamentos deve diferenciar visualmente origem Manual e Banco.
 - O estado vazio deve educar o usuario antes de pedir uma conexao.
 - Mobile deve manter leitura compacta e app-like.

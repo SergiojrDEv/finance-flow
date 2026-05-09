@@ -49,6 +49,8 @@ test("renderiza transacoes importadas pendentes com acao de conferencia", () => 
 
   assert.match(html, /Uber/);
   assert.match(html, /Importado do banco/);
+  assert.match(html, /data-wallet-create-transaction="imp-1"/);
+  assert.match(html, /Criar lancamento/);
   assert.match(html, /data-wallet-review-imported="imp-1"/);
   assert.match(html, /Conferido/);
 });
