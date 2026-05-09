@@ -71,3 +71,28 @@ test("centraliza abertura e fechamento de modal", () => {
   assert.equal(dom.get("#modal").classList.contains("is-hidden"), true);
   assert.equal(documentRef.body.classList.contains("modal-open"), false);
 });
+
+test("centraliza leitura de formularios de criacao", () => {
+  const documentRef = createFakeDocument();
+  const dom = createSettingsDom(documentRef);
+
+  dom.setValue("#new-category-type", "expense");
+  dom.setValue("#new-category-name", " Moradia ");
+  dom.setValue("#new-category-color", "#0b7285");
+  dom.setValue("#new-category-limit", "2200");
+  dom.setValue("#new-card-name", "Cartao");
+  dom.setValue("#new-card-closing", "25");
+  dom.setValue("#new-card-due", "10");
+  dom.setValue("#new-subcategory-type", "expense");
+  dom.setValue("#new-subcategory-category", "alimentacao");
+  dom.setValue("#new-subcategory-name", " Mercado ");
+  dom.setValue("#new-subcategory-color", "#c43d4b");
+  dom.setValue("#new-goal-name", " Reserva ");
+  dom.setValue("#new-goal-category", "renda-fixa");
+  dom.setValue("#new-goal-target", "30000");
+
+  assert.deepEqual(dom.readNewCategoryForm(), { type: "expense", name: "Moradia", color: "#0b7285", limit: 2200 });
+  assert.deepEqual(dom.readNewCardForm(), { name: "Cartao", closingDay: 25, dueDay: 10 });
+  assert.deepEqual(dom.readNewSubcategoryForm(), { type: "expense", categoryKey: "alimentacao", name: "Mercado", color: "#c43d4b" });
+  assert.deepEqual(dom.readNewGoalForm(), { name: "Reserva", key: "renda-fixa", target: 30000 });
+});

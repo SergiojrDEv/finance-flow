@@ -55,6 +55,57 @@ export function createSettingsDom(documentRef = document) {
     get(selector)?.focus();
   }
 
+  function readNewCategoryForm() {
+    return {
+      type: value("#new-category-type"),
+      name: value("#new-category-name").trim(),
+      color: value("#new-category-color"),
+      limit: numberValue("#new-category-limit"),
+    };
+  }
+
+  function resetNewCategoryForm(form) {
+    form?.reset();
+    setValue("#new-category-color", "#0b7285");
+  }
+
+  function readNewCardForm() {
+    return {
+      name: value("#new-card-name").trim(),
+      closingDay: numberValue("#new-card-closing"),
+      dueDay: numberValue("#new-card-due"),
+    };
+  }
+
+  function resetNewCardForm(form) {
+    form?.reset();
+    setValue("#new-card-closing", 25);
+    setValue("#new-card-due", 10);
+  }
+
+  function readNewSubcategoryForm() {
+    return {
+      type: value("#new-subcategory-type"),
+      categoryKey: value("#new-subcategory-category"),
+      name: value("#new-subcategory-name").trim(),
+      color: value("#new-subcategory-color"),
+    };
+  }
+
+  function resetNewSubcategoryForm(form, type) {
+    form?.reset();
+    setValue("#new-subcategory-type", type);
+    setValue("#new-subcategory-color", "#0b7285");
+  }
+
+  function readNewGoalForm() {
+    return {
+      name: value("#new-goal-name").trim(),
+      key: value("#new-goal-category"),
+      target: numberValue("#new-goal-target"),
+    };
+  }
+
   return {
     focus,
     get,
@@ -62,7 +113,14 @@ export function createSettingsDom(documentRef = document) {
     hideModal,
     html,
     numberValue,
+    readNewCardForm,
+    readNewCategoryForm,
+    readNewGoalForm,
+    readNewSubcategoryForm,
     reset,
+    resetNewCardForm,
+    resetNewCategoryForm,
+    resetNewSubcategoryForm,
     setHidden,
     setValue,
     showModal,

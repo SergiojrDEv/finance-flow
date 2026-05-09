@@ -438,10 +438,7 @@ export function createSettingsModule(deps) {
 
   async function addCategory(event) {
     event.preventDefault();
-    const type = document.querySelector("#new-category-type").value;
-    const name = document.querySelector("#new-category-name").value.trim();
-    const color = document.querySelector("#new-category-color").value;
-    const limit = Number(document.querySelector("#new-category-limit").value || 0);
+    const { type, name, color, limit } = dom.readNewCategoryForm();
     const key = slugify(name);
 
     if (!key) return deps.notify("Informe um nome valido.");
@@ -467,15 +464,14 @@ export function createSettingsModule(deps) {
         return;
       }
     }
-    event.currentTarget.reset();
-    document.querySelector("#new-category-color").value = "#0b7285";
+    dom.resetNewCategoryForm(event.currentTarget);
     commitCatalogChanges("Categoria criada.");
     deps.updateCategoryOptions();
   }
 
   function addAccount(event) {
     event.preventDefault();
-    const input = document.querySelector("#new-account-name");
+    const input = dom.get("#new-account-name");
     const name = input.value.trim();
     if (!name) return deps.notify("Informe o nome da conta.");
     if (getAccounts().some((item) => item.name.toLowerCase() === name.toLowerCase())) {
@@ -497,29 +493,25 @@ export function createSettingsModule(deps) {
 
   function addCreditCard(event) {
     event.preventDefault();
-    const nameInput = document.querySelector("#new-card-name");
-    const name = nameInput.value.trim();
-    const closingDay = Number(document.querySelector("#new-card-closing").value);
-    const dueDay = Number(document.querySelector("#new-card-due").value);
+    const { name, closingDay, dueDay } = dom.readNewCardForm();
     if (!name) return deps.notify("Informe o nome do cartao.");
     if (closingDay < 1 || closingDay > 31 || dueDay < 1 || dueDay > 31) return deps.notify("Informe dias validos.");
     if (getCards().some((card) => card.name.toLowerCase() === name.toLowerCase())) {
       return deps.notify("Este cartao ja existe.");
     }
     getCatalog().creditCards.push({ id: createId(), name, closingDay, dueDay, color: "#635bff", accountId: null, brand: "", isArchived: false });
-    event.currentTarget.reset();
-    document.querySelector("#new-card-closing").value = 25;
-    document.querySelector("#new-card-due").value = 10;
+    dom.resetNewCardForm(event.currentTarget);
     commitCatalogChanges("Cartao criado.");
     deps.updateCreditCardOptions();
   }
 
   function addSubcategory(event) {
     event.preventDefault();
-    const type = document.querySelector("#new-subcategory-type").value;
-    const categoryKey = document.querySelector("#new-subcategory-category").value;
-    const name = document.querySelector("#new-subcategory-name").value.trim();
-    const color = document.querySelector("#new-subcategory-color").value || getCategoryColorFromList(type, categoryKey, state.settings.categories);
+    const form = dom.readNewSubcategoryForm();
+    const type = form.type;
+    const categoryKey = form.categoryKey;
+    const name = form.name;
+    const color = form.color || getCategoryColorFromList(type, categoryKey, state.settings.categories);
     if (!name || !categoryKey) return deps.notify("Preencha a subcategoria corretamente.");
 
     const key = slugify(name);
@@ -536,18 +528,14 @@ export function createSettingsModule(deps) {
       color,
       isArchived: false,
     });
-    event.currentTarget.reset();
-    document.querySelector("#new-subcategory-type").value = type;
-    document.querySelector("#new-subcategory-color").value = "#0b7285";
+    dom.resetNewSubcategoryForm(event.currentTarget, type);
     renderSubcategoryParentOptions();
     commitCatalogChanges("Subcategoria criada.");
   }
 
   async function addGoal(event) {
     event.preventDefault();
-    const name = document.querySelector("#new-goal-name").value.trim();
-    const key = document.querySelector("#new-goal-category").value;
-    const target = Number(document.querySelector("#new-goal-target").value);
+    const { name, key, target } = dom.readNewGoalForm();
     if (!name || target <= 0) return deps.notify("Preencha a meta corretamente.");
 
     const result = await getGoalServices().createGoal.execute({ name, key, target, currentAmount: 0, color: "#635bff" });
