@@ -9,8 +9,8 @@ import { buildTransactionHighlights } from "../application/dashboard/buildTransa
 import {
   getBudgetRule,
   getMonthTransactions,
-  money,
 } from "../core/utils.js";
+import { buildCashflowChartView } from "./chartPresenter.js";
 import { buildSmartDashboardView, buildSummaryView } from "./summaryPresenter.js";
 import {
   renderBudgetOverviewHtml,
@@ -141,32 +141,12 @@ export function createDashboardModule(deps) {
       transactions: state.transactions,
       currentDate: state.currentDate,
     });
+    const view = buildCashflowChartView(months);
 
-    const last = months.at(-1);
-    document.querySelector("#trend-status").textContent = last.free >= 0 ? "Saldo positivo" : "Saldo negativo";
+    document.querySelector("#trend-status").textContent = view.status;
 
     if (state.chart) state.chart.destroy();
-    state.chart = new Chart(canvas, {
-      type: "line",
-      data: {
-        labels: months.map((item) => item.label),
-        datasets: [
-          { label: "Receitas", data: months.map((item) => item.income), borderColor: "#168a5b", backgroundColor: "rgba(22,138,91,.08)", tension: 0.35, fill: true },
-          { label: "Despesas", data: months.map((item) => item.expense), borderColor: "#c43d4b", backgroundColor: "rgba(196,61,75,.08)", tension: 0.35, fill: true },
-          { label: "Saldo livre", data: months.map((item) => item.free), borderColor: "#0b7285", tension: 0.35, borderWidth: 3 },
-        ],
-      },
-      options: {
-        responsive: true,
-        plugins: {
-          legend: { labels: { usePointStyle: true } },
-          tooltip: { callbacks: { label: (ctx) => `${ctx.dataset.label}: ${money(ctx.parsed.y)}` } },
-        },
-        scales: {
-          y: { ticks: { callback: (value) => money(value).replace(",00", "") } },
-        },
-      },
-    });
+    state.chart = new Chart(canvas, view.config);
   }
 
   function renderAll() {

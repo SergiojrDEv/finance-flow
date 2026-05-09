@@ -10,7 +10,6 @@ test("dashboard importa helpers usados no runtime", () => {
 
   assert.ok(utilsImport, "dashboard deve importar helpers de core/utils");
   assert.match(utilsImport[1], /\bgetMonthTransactions\b/);
-  assert.match(utilsImport[1], /\bmoney\b/);
 });
 
 test("dashboard delega HTML repetitivo para templates de view", () => {
