@@ -61,6 +61,12 @@ Esta rodada evolui a fase anterior sem migrar o runtime para React, Angular ou o
 - Navegacao e contrato de rotas devem existir como modelo puro, sem DOM, para serem reutilizados por qualquer framework futuro.
 - O runtime atual pode consumir esse modelo, desde que a aplicacao continue sem tocar em autenticacao, Supabase ou schema.
 
+### Fase 5 - Contratos de tela reutilizaveis
+
+- Cada rota principal deve possuir um contrato de tela com titulo, contexto, descricao e acoes.
+- O contrato deve separar intencoes de tela, como lancar, revisar historico, ajustar categorias ou conectar banco.
+- Um shell model deve combinar navegacao e tela ativa sem depender de DOM, framework, Supabase ou estado global.
+
 ## Fora de escopo neste corte
 
 - Alterar fluxo de autenticacao.
@@ -79,3 +85,4 @@ Esta rodada evolui a fase anterior sem migrar o runtime para React, Angular ou o
 - Fase 2 concluida: receita, despesa e investimento ganharam resumo visual por intencao; metas ganharam hero proprio de planejamento e atalho para aporte.
 - Fase 3 concluida: estados vazios principais ganharam acoes claras e textos curtos de orientacao para carteira, limites, metas e historico.
 - Fase 4 concluida: contrato puro de navegacao app-first criado em application com ponte TypeScript, testes e consumo seguro pelo runtime atual.
+- Fase 5 concluida: contratos puros de tela e shell app-first criados em application, preparando consumo por React, Angular ou app nativo.
