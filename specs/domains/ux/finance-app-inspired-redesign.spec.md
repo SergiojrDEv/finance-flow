@@ -42,6 +42,8 @@ Esta rodada evolui a fase anterior sem migrar o runtime para React, Angular ou o
 - Despesa deve concentrar pagamento, vencimento, parcelamento e recorrencia.
 - Investimento deve focar aporte, destino, meta e origem.
 - Metas devem parecer acompanhamento de objetivo, nao lancamento comum.
+- Cada tipo de lancamento deve ter um resumo visual proprio do fluxo que esta sendo preenchido.
+- A tela de metas deve ter chamada propria de planejamento e atalho para lancar aporte.
 
 ### Fase 3 - Leitura didatica para usuario leigo
 
@@ -70,3 +72,4 @@ Esta rodada evolui a fase anterior sem migrar o runtime para React, Angular ou o
 - Guardrails automaticos cobrindo CSS, HTML e comportamento dos atalhos.
 - Iteracao app-first iniciada com casca visual mobile mais compacta e acao de lancamento destacada na barra inferior.
 - Fase 1 concluida: barra inferior mobile com cinco itens principais e atalhos secundarios para limites e historico.
+- Fase 2 concluida: receita, despesa e investimento ganharam resumo visual por intencao; metas ganharam hero proprio de planejamento e atalho para aporte.

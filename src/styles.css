@@ -1298,6 +1298,40 @@ body[data-transaction-view="month"] .transaction-view-month {
   background: #fbfcfe;
 }
 
+.transaction-intent-card {
+  display: grid;
+  gap: 9px;
+  margin: -2px 0 14px;
+  padding: 12px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-md);
+  background: #ffffff;
+}
+
+.transaction-intent-card > span {
+  color: var(--text);
+  font-size: 0.86rem;
+  font-weight: 900;
+}
+
+.transaction-intent-card > div {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.transaction-intent-card small {
+  display: grid;
+  align-items: center;
+  min-height: 34px;
+  padding: 8px;
+  border-radius: var(--radius-sm);
+  background: var(--surface-soft);
+  color: var(--muted);
+  font-weight: 800;
+  line-height: 1.25;
+}
+
 .transaction-type-guide span {
   color: var(--muted);
   font-size: 0.74rem;
@@ -1315,12 +1349,39 @@ body[data-transaction-type-tone="income"] .transaction-type-guide {
   border-left-color: var(--income);
 }
 
+body[data-transaction-type-tone="income"] .transaction-intent-card {
+  background: #f4fbf7;
+}
+
+body[data-transaction-type-tone="income"] .transaction-intent-card small {
+  background: #e8f7ef;
+  color: var(--income);
+}
+
 body[data-transaction-type-tone="investment"] .transaction-type-guide {
   border-left-color: var(--invest);
 }
 
+body[data-transaction-type-tone="investment"] .transaction-intent-card {
+  background: #f7f7ff;
+}
+
+body[data-transaction-type-tone="investment"] .transaction-intent-card small {
+  background: #efefff;
+  color: var(--invest);
+}
+
 body[data-transaction-type-tone="expense"] .transaction-type-guide {
   border-left-color: var(--expense);
+}
+
+body[data-transaction-type-tone="expense"] .transaction-intent-card {
+  background: #fff8f9;
+}
+
+body[data-transaction-type-tone="expense"] .transaction-intent-card small {
+  background: #fff1f2;
+  color: var(--expense);
 }
 
 label {
@@ -1613,6 +1674,24 @@ tbody tr:last-child td {
   grid-template-columns: minmax(300px, 380px) minmax(0, 1fr);
   gap: 16px;
   align-items: start;
+}
+
+.goals-hero {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 14px;
+  background:
+    linear-gradient(135deg, rgba(99, 91, 255, 0.12), transparent 54%),
+    #ffffff;
+}
+
+.goals-hero .ghost-btn {
+  display: inline-grid;
+  place-items: center;
+  min-width: 132px;
+  text-decoration: none;
 }
 
 .metas-sidebar {
@@ -2318,6 +2397,15 @@ tbody tr:last-child td {
     gap: 12px;
   }
 
+  .goals-hero {
+    display: grid;
+    gap: 12px;
+  }
+
+  .goals-hero .ghost-btn {
+    width: 100%;
+  }
+
   .transaction-view-tabs {
     width: 100%;
     min-width: 0;
@@ -2556,6 +2644,14 @@ tbody tr:last-child td {
   .transaction-highlights {
     grid-template-columns: repeat(3, minmax(0, 1fr));
     gap: 8px;
+  }
+
+  .transaction-intent-card > div {
+    grid-template-columns: 1fr;
+  }
+
+  .transaction-intent-card small {
+    min-height: 30px;
   }
 
   .mini-stat-card {

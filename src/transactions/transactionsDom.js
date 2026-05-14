@@ -203,6 +203,10 @@ export function createTransactionsDom(documentRef = document) {
     text("#transaction-hero-copy", experience.heroCopy);
     text("#transaction-guide-label", experience.guideLabel || "");
     text("#transaction-guide-text", experience.guideText || "");
+    text("#transaction-intent-title", experience.intentTitle || "");
+    html("#transaction-intent-list", (experience.intentItems || [])
+      .map((item) => `<small>${String(item)}</small>`)
+      .join(""));
     text("#transaction-submit", experience.submitLabel);
     text("#description-label", experience.descriptionLabel || "Descricao");
     text("#category-label", experience.categoryLabel || "Categoria");

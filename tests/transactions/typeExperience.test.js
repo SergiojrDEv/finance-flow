@@ -12,6 +12,8 @@ test("retorna textos especificos para receita", () => {
   assert.equal(experience.descriptionLabel, "Origem da receita");
   assert.equal(experience.accountLabel, "Conta de destino");
   assert.equal(experience.dateLabel, "Recebido em");
+  assert.equal(experience.intentTitle, "Fluxo simples de entrada");
+  assert.deepEqual(experience.intentItems, ["Origem da receita", "Conta de destino", "Valor e data recebidos"]);
   assert.match(experience.guideText, /aumentam o disponivel/);
   assert.match(experience.heroCopy, /sem carregar campos/);
 });
@@ -25,6 +27,8 @@ test("retorna textos especificos para investimento", () => {
   assert.equal(experience.descriptionLabel, "Aplicacao");
   assert.equal(experience.accountLabel, "Conta de origem");
   assert.equal(experience.dateLabel, "Data do aporte");
+  assert.equal(experience.intentTitle, "Fluxo focado em patrimonio");
+  assert.deepEqual(experience.intentItems, ["Aplicacao ou ativo", "Conta de origem", "Valor aplicado e meta ligada"]);
   assert.match(experience.guideText, /reduzem o disponivel imediato/);
   assert.match(experience.heroCopy, /sem campos de pagamento/);
 });
@@ -35,4 +39,5 @@ test("usa despesa como fallback", () => {
   assert.equal(experience.formTitle, "Nova despesa");
   assert.equal(experience.submitLabel, "Salvar despesa");
   assert.equal(experience.tone, "expense");
+  assert.equal(experience.intentTitle, "Fluxo completo de gasto");
 });

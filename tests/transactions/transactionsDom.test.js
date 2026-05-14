@@ -157,6 +157,8 @@ test("centraliza campos visuais por tipo de lancamento", () => {
       heroCopy: "Entrada do mes.",
     guideLabel: "Entrada de dinheiro",
     guideText: "Receitas aumentam o disponivel.",
+    intentTitle: "Fluxo simples de entrada",
+    intentItems: ["Origem", "Conta", "Valor"],
     tone: "income",
     descriptionLabel: "Origem da receita",
     descriptionPlaceholder: "Ex: salario",
@@ -174,6 +176,8 @@ test("centraliza campos visuais por tipo de lancamento", () => {
   assert.equal(dom.get("#transaction-submit").textContent, "Salvar receita");
   assert.equal(dom.get("#transaction-guide-label").textContent, "Entrada de dinheiro");
   assert.equal(dom.get("#transaction-guide-text").textContent, "Receitas aumentam o disponivel.");
+  assert.equal(dom.get("#transaction-intent-title").textContent, "Fluxo simples de entrada");
+  assert.equal(dom.get("#transaction-intent-list").innerHTML, "<small>Origem</small><small>Conta</small><small>Valor</small>");
   assert.equal(dom.get("#description-label").textContent, "Origem da receita");
   assert.equal(dom.get("#description").placeholder, "Ex: salario");
   assert.equal(dom.get("#account-label").textContent, "Conta de destino");

@@ -325,10 +325,28 @@ test("styles diferenciam tipo de lancamento com guia visual", async () => {
   const source = await readFile(stylesPath, "utf8");
   const requiredSnippets = [
     ".transaction-type-guide {\n  display: grid;\n  gap: 4px;\n  margin: -4px 0 14px;",
+    ".transaction-intent-card {\n  display: grid;\n  gap: 9px;",
+    ".transaction-intent-card > div {\n  display: grid;\n  grid-template-columns: repeat(3, minmax(0, 1fr));",
     "border-left: 4px solid var(--expense);",
     "body[data-transaction-type-tone=\"income\"] .transaction-type-guide {\n  border-left-color: var(--income);",
+    "body[data-transaction-type-tone=\"income\"] .transaction-intent-card {",
     "body[data-transaction-type-tone=\"investment\"] .transaction-type-guide {\n  border-left-color: var(--invest);",
+    "body[data-transaction-type-tone=\"investment\"] .transaction-intent-card {",
     "body[data-transaction-type-tone=\"expense\"] .transaction-type-guide {\n  border-left-color: var(--expense);",
+    "body[data-transaction-type-tone=\"expense\"] .transaction-intent-card {",
+  ];
+  const missing = requiredSnippets.filter((snippet) => !source.includes(snippet));
+
+  assert.deepEqual(missing, []);
+});
+
+test("html diferencia metas como area de planejamento", async () => {
+  const source = await readFile(indexPath, "utf8");
+  const requiredSnippets = [
+    "goals-hero",
+    "Transforme aportes em objetivos visiveis",
+    "Lancar aporte",
+    'data-quick-type="investment"',
   ];
   const missing = requiredSnippets.filter((snippet) => !source.includes(snippet));
 
