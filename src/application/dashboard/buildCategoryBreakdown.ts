@@ -24,9 +24,10 @@ export function buildCategoryBreakdown({
 
       acc[categoryKey] = (acc[categoryKey] || 0) + toAmount(item.amount);
       return acc;
-    }, {});
+  }, {});
   const rows = Object.entries(totals).sort((a, b) => b[1] - a[1]);
   const max = Math.max(...rows.map(([, value]) => value), 0);
+  const total = rows.reduce((sum, [, value]) => sum + value, 0);
 
   return rows.map(([key, value]) => {
     const category = categoryByKey.get(key) || { label: key, color: "#667085" };
@@ -35,6 +36,7 @@ export function buildCategoryBreakdown({
       label: category.label,
       color: category.color,
       value,
+      percent: total ? (value / total) * 100 : 0,
       width: max ? (value / max) * 100 : 0,
     };
   });

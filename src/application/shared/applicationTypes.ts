@@ -133,6 +133,7 @@ export type CategoryBreakdownRow = {
   label: string;
   color: string;
   value: number;
+  percent: number;
   width: number;
 };
 

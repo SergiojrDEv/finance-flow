@@ -75,3 +75,16 @@ test("orcamento mostra status de app por categoria", () => {
   assert.match(html, /Semana 90%/);
   assert.match(html, /Mes 120%/);
 });
+
+test("maiores despesas usa distribuicao visual em estilo app", () => {
+  const html = renderCategoryBreakdownHtml([
+    { key: "alimentacao", label: "Alimentacao", color: "#c43d4b", value: 300, percent: 60, width: 100 },
+    { key: "moradia", label: "Moradia", color: "#0b7285", value: 200, percent: 40, width: 66 },
+  ]);
+
+  assert.match(html, /category-app-card/);
+  assert.match(html, /category-donut/);
+  assert.match(html, /Total gasto/);
+  assert.match(html, /Alimentacao/);
+  assert.match(html, /60%/);
+});

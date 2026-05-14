@@ -41,15 +41,36 @@ export function renderCategoryBreakdownHtml(rows) {
     return renderEmptyState("Sem despesas no mes", "Cadastre uma despesa para entender quais categorias pesam mais no seu dinheiro.");
   }
 
-  return rows
-    .map((item) => `
-          <div class="category-row">
-            <strong>${esc(item.label)}</strong>
-            <span class="money negative">${money(item.value)}</span>
-            <div class="bar"><span style="--value:${item.width}%;--color:${safeCssColor(item.color)}"></span></div>
+  const total = rows.reduce((sum, item) => sum + Number(item.value || 0), 0);
+  let start = 0;
+  const segments = rows.slice(0, 6).map((item) => {
+    const end = start + Number(item.percent || 0);
+    const segment = `${safeCssColor(item.color)} ${start.toFixed(2)}% ${end.toFixed(2)}%`;
+    start = end;
+    return segment;
+  });
+  const gradient = `conic-gradient(${segments.join(", ")})`;
+
+  return `
+      <section class="category-app-card">
+        <div class="category-donut-wrap">
+          <div class="category-donut" style="--category-donut:${gradient}">
+            <span>Total gasto</span>
+            <strong>${money(total)}</strong>
           </div>
-        `)
-    .join("");
+        </div>
+        <div class="category-app-list">
+          ${rows.slice(0, 6).map((item) => `
+            <div class="category-app-row">
+              <span class="category-dot" style="--dot-color:${safeCssColor(item.color)}"></span>
+              <strong>${esc(item.label)}</strong>
+              <b class="money negative">${money(item.value)}</b>
+              <small>${Math.round(Number(item.percent || 0))}%</small>
+            </div>
+          `).join("")}
+        </div>
+      </section>
+    `;
 }
 
 export function renderTransactionHighlightsHtml(highlights) {

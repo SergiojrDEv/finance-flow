@@ -17,9 +17,9 @@ test("monta ranking de maiores despesas por categoria", () => {
     ],
   });
 
-  assert.deepEqual(rows.map((item) => [item.key, item.value, item.width]), [
-    ["moradia", 200, 100],
-    ["alimentacao", 125, 62.5],
+  assert.deepEqual(rows.map((item) => [item.key, item.value, item.width, Math.round(item.percent)]), [
+    ["moradia", 200, 100, 62],
+    ["alimentacao", 125, 62.5, 38],
   ]);
   assert.equal(rows[0].label, "Moradia");
 });
