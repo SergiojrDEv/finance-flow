@@ -81,3 +81,4 @@ O typecheck esta configurado no CI por `.github/workflows/quality.yml`, mas nao 
 - Guardrail arquitetural adicionado para manter presenters/templates extraidos sem estado global de navegador.
 - Fase de modularizacao de Settings/Ajustes concluida para os blocos de maior impacto: listas de gerenciamento, metas e presenters de categorias/metas/etiquetas foram extraidos para modulos testaveis.
 - Templates de Settings (`goalTemplates` e `manageTemplates`) permanecem sem dependencia de `document`, `window` ou `state`, preparando uma futura experiencia de ajustes mais limpa e menos poluida.
+- Rodada app-first concluida em 100% ate a Fase 4: a navegacao principal agora possui contrato puro em `src/application/navigation/appNavigationModel`, com ponte TypeScript e consumo seguro por `src/core/navigation`, preparando React, Angular ou app nativo sem reescrever rotas e sem alterar autenticacao, Supabase ou schema.

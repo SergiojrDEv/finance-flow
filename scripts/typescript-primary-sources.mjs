@@ -9,6 +9,7 @@ export const typeScriptPrimarySourceFiles = [
   "src/application/catalog/validateCategoryTagDraft.ts",
   "src/application/goals/ports/GoalRepository.ts",
   "src/application/goals/validateGoalDraft.ts",
+  "src/application/navigation/appNavigationModel.ts",
   "src/application/sync/planCloudError.ts",
   "src/application/sync/ports/CatalogV2SyncRepository.ts",
   "src/application/sync/ports/CloudSnapshotRepository.ts",

@@ -58,6 +58,8 @@ Esta rodada evolui a fase anterior sem migrar o runtime para React, Angular ou o
 - Manter dominio, casos de uso, mapeadores e testes independentes da UI.
 - Evitar conectar a nova arquitetura no bootstrap ou auth antes da hora.
 - Permitir migracao futura para React, Angular ou app nativo sem reescrever regra financeira.
+- Navegacao e contrato de rotas devem existir como modelo puro, sem DOM, para serem reutilizados por qualquer framework futuro.
+- O runtime atual pode consumir esse modelo, desde que a aplicacao continue sem tocar em autenticacao, Supabase ou schema.
 
 ## Fora de escopo neste corte
 
@@ -76,3 +78,4 @@ Esta rodada evolui a fase anterior sem migrar o runtime para React, Angular ou o
 - Fase 1 concluida: barra inferior mobile com cinco itens principais e atalhos secundarios para limites e historico.
 - Fase 2 concluida: receita, despesa e investimento ganharam resumo visual por intencao; metas ganharam hero proprio de planejamento e atalho para aporte.
 - Fase 3 concluida: estados vazios principais ganharam acoes claras e textos curtos de orientacao para carteira, limites, metas e historico.
+- Fase 4 concluida: contrato puro de navegacao app-first criado em application com ponte TypeScript, testes e consumo seguro pelo runtime atual.
