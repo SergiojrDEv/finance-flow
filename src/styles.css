@@ -461,6 +461,10 @@ h2 {
   color: var(--balance);
 }
 
+.mobile-secondary-actions {
+  display: none;
+}
+
 .summary-grid {
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
@@ -2488,6 +2492,27 @@ tbody tr:last-child td {
     line-height: 1.25;
   }
 
+  .mobile-secondary-actions {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8px;
+    margin: 0 0 12px;
+  }
+
+  .mobile-secondary-actions a {
+    min-height: 38px;
+    display: grid;
+    place-items: center;
+    border: 1px solid var(--line);
+    border-radius: var(--radius-md);
+    background: rgba(255, 255, 255, 0.76);
+    color: var(--muted);
+    text-align: center;
+    text-decoration: none;
+    font-size: 0.78rem;
+    font-weight: 800;
+  }
+
   .metric-card {
     min-height: 102px;
     padding: 13px;
@@ -2573,8 +2598,13 @@ tbody tr:last-child td {
   }
 
   .nav-list {
-    grid-template-columns: repeat(7, minmax(0, 1fr));
+    grid-template-columns: repeat(5, minmax(0, 1fr));
     gap: 4px;
+  }
+
+  .nav-item[data-section="orcamentos"],
+  .nav-item[data-section="relatorios"] {
+    display: none;
   }
 
   .nav-item {

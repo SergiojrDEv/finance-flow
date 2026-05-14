@@ -32,6 +32,8 @@ Esta rodada evolui a fase anterior sem migrar o runtime para React, Angular ou o
 - Home mais compacta, com hero de carteira e cards de resumo menos pesados.
 - Atalhos de acao com leitura de app, sem duplicar fluxos.
 - Navegacao mobile com o lancamento como acao principal.
+- Barra inferior mobile reduzida para os cinco caminhos principais.
+- Limites e historico saem da barra principal no mobile e ficam como atalhos complementares da home.
 - Nenhuma alteracao em autenticacao, Supabase, sync, schema ou regras financeiras.
 
 ### Fase 2 - Telas por intencao
@@ -67,3 +69,4 @@ Esta rodada evolui a fase anterior sem migrar o runtime para React, Angular ou o
 - Barra inferior e topo mobile preparados para leitura de aplicativo.
 - Guardrails automaticos cobrindo CSS, HTML e comportamento dos atalhos.
 - Iteracao app-first iniciada com casca visual mobile mais compacta e acao de lancamento destacada na barra inferior.
+- Fase 1 concluida: barra inferior mobile com cinco itens principais e atalhos secundarios para limites e historico.
