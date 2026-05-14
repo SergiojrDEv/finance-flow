@@ -17,12 +17,16 @@ const {
 } = await import("../../src/dashboard/viewTemplates.js");
 
 test("renderiza estado vazio guiado compartilhado", () => {
-  const html = renderEmptyState("Proximo passo", "Cadastre um lancamento para comecar.");
+  const html = renderEmptyState("Proximo passo", "Cadastre um lancamento para comecar.", [
+    { href: "#novo-lancamento", label: "Criar lancamento" },
+  ]);
 
   assert.match(html, /app-empty-state/);
   assert.match(html, /empty-state-title/);
   assert.match(html, /Proximo passo/);
   assert.match(html, /Cadastre um lancamento/);
+  assert.match(html, /empty-state-actions/);
+  assert.match(html, /Criar lancamento/);
 });
 
 test("dashboard usa estados vazios didaticos", () => {
@@ -37,6 +41,9 @@ test("dashboard usa estados vazios didaticos", () => {
   assert.match(html, /Sem despesas no mes/);
   assert.match(html, /Nenhuma categoria para acompanhar/);
   assert.match(html, /Seu historico ainda esta vazio/);
+  assert.match(html, /Lancar despesa/);
+  assert.match(html, /Criar categoria/);
+  assert.match(html, /Criar primeiro lancamento/);
   assert.equal((html.match(/app-empty-state/g) || []).length, 4);
 });
 

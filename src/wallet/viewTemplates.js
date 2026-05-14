@@ -13,6 +13,9 @@ export function renderWalletAccountsHtml(rows = [], formatMoney = (value) => Str
       <div class="wallet-empty-state">
         <strong>Nenhuma conta cadastrada</strong>
         <span>Adicione contas em Ajustes para acompanhar saldos nesta tela.</span>
+        <div class="empty-state-actions">
+          <a href="#ajustes">Adicionar conta</a>
+        </div>
       </div>
     `;
   }
@@ -46,6 +49,9 @@ export function renderWalletInstitutionsHtml(institutions = [], cards = [], form
       <div class="wallet-empty-state">
         <strong>Nenhum banco conectado ainda</strong>
         <span>Use o botao Conectar banco para iniciar uma conexao mock local.</span>
+        <div class="empty-state-actions">
+          <a href="#carteira">Ver opcoes</a>
+        </div>
       </div>
     `;
   }

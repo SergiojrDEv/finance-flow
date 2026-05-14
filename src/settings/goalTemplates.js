@@ -29,6 +29,10 @@ export function renderGoalsHtml(goals) {
           <article class="goal-card empty-state app-empty-state">
             <strong class="empty-state-title">Nenhuma meta criada ainda</strong>
             <span class="empty-state-copy">Crie uma meta para acompanhar aportes, progresso e quanto falta para chegar no valor desejado.</span>
+            <div class="empty-state-actions">
+              <a href="#metas">Criar meta</a>
+              <a href="#novo-lancamento">Lancar aporte</a>
+            </div>
           </article>
         `;
   }

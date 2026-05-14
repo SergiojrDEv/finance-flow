@@ -314,6 +314,8 @@ test("styles suportam estados vazios guiados", async () => {
     "border: 1px dashed var(--line);",
     ".empty-state-title {\n  color: var(--text);\n  font-size: 0.95rem;",
     ".empty-state-copy {\n  max-width: 420px;\n  line-height: 1.45;",
+    ".empty-state-actions {\n  display: flex;",
+    ".empty-state-actions a {\n  min-height: 34px;",
     ".table-empty-state {\n  min-width: 360px;",
   ];
   const missing = requiredSnippets.filter((snippet) => !source.includes(snippet));
@@ -345,8 +347,11 @@ test("html diferencia metas como area de planejamento", async () => {
   const requiredSnippets = [
     "goals-hero",
     "Transforme aportes em objetivos visiveis",
+    "Escolha um objetivo, defina o valor alvo",
     "Lancar aporte",
     'data-quick-type="investment"',
+    "Use esta tela como linha do tempo",
+    "Defina quanto quer gastar por semana e por mes",
   ];
   const missing = requiredSnippets.filter((snippet) => !source.includes(snippet));
 

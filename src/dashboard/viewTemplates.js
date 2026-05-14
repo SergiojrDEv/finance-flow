@@ -14,18 +14,27 @@ export function formatInsightText(item) {
   return item.description || "";
 }
 
-export function renderEmptyState(title, copy) {
+export function renderEmptyState(title, copy, actions = []) {
   return `
       <div class="empty-state app-empty-state">
         <strong class="empty-state-title">${esc(title)}</strong>
         <span class="empty-state-copy">${esc(copy)}</span>
+        ${actions.length ? `
+          <div class="empty-state-actions">
+            ${actions.map((item) => `<a href="${esc(item.href)}">${esc(item.label)}</a>`).join("")}
+          </div>
+        ` : ""}
       </div>
     `;
 }
 
 export function renderInsightsHtml(insights) {
   if (!insights.length) {
-    return renderEmptyState("Tudo certo por enquanto", "Quando houver vencimentos ou limites perto do estouro, eles aparecem aqui.");
+    return renderEmptyState(
+      "Tudo certo por enquanto",
+      "Quando houver vencimentos ou limites perto do estouro, eles aparecem aqui.",
+      [{ href: "#orcamentos", label: "Revisar limites" }],
+    );
   }
 
   return insights.slice(0, 5).map((item) => `
@@ -38,7 +47,11 @@ export function renderInsightsHtml(insights) {
 
 export function renderCategoryBreakdownHtml(rows) {
   if (!rows.length) {
-    return renderEmptyState("Sem despesas no mes", "Cadastre uma despesa para entender quais categorias pesam mais no seu dinheiro.");
+    return renderEmptyState(
+      "Sem despesas no mes",
+      "Cadastre uma despesa para entender quais categorias pesam mais no seu dinheiro.",
+      [{ href: "#novo-lancamento", label: "Lancar despesa" }],
+    );
   }
 
   const total = rows.reduce((sum, item) => sum + Number(item.value || 0), 0);
@@ -114,7 +127,11 @@ function budgetStatusLabel(tone) {
 
 export function renderBudgetOverviewHtml(rows) {
   if (!rows.length) {
-    return renderEmptyState("Nenhuma categoria para acompanhar", "Crie categorias de despesa em Ajustes para definir limites semanais e mensais.");
+    return renderEmptyState(
+      "Nenhuma categoria para acompanhar",
+      "Crie categorias de despesa em Ajustes para definir limites semanais e mensais.",
+      [{ href: "#ajustes", label: "Criar categoria" }],
+    );
   }
 
   return rows
@@ -166,7 +183,11 @@ export function renderBudgetOverviewHtml(rows) {
 
 export function renderDailyHistoryHtml(history) {
   if (!history.length) {
-    return renderEmptyState("Seu historico ainda esta vazio", "Depois que voce cadastrar receitas, despesas ou investimentos, a rotina diaria aparece aqui.");
+    return renderEmptyState(
+      "Seu historico ainda esta vazio",
+      "Depois que voce cadastrar receitas, despesas ou investimentos, a rotina diaria aparece aqui.",
+      [{ href: "#novo-lancamento", label: "Criar primeiro lancamento" }],
+    );
   }
 
   return history

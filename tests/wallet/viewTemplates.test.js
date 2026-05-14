@@ -11,10 +11,13 @@ import {
 const money = (value) => `R$ ${value}`;
 
 test("renderiza cards de carteira com saldos locais", () => {
+  const emptyHtml = renderWalletAccountsHtml([], money);
   const html = renderWalletAccountsHtml([
     { name: "Conta corrente", tone: "checking", caption: "Disponivel", balance: 150 },
   ], money);
 
+  assert.match(emptyHtml, /Adicionar conta/);
+  assert.match(emptyHtml, /empty-state-actions/);
   assert.match(html, /wallet-account-card checking/);
   assert.match(html, /Conta corrente/);
   assert.match(html, /R\$ 150/);
@@ -63,5 +66,6 @@ test("renderiza estado vazio e opcoes de bancos", () => {
 
   assert.match(emptyHtml, /Nenhum banco conectado ainda/);
   assert.match(emptyHtml, /wallet-empty-connect-bank/);
+  assert.match(emptyHtml, /Open Finance regulado/);
   assert.match(optionsHtml, /data-wallet-bank="nubank"/);
 });

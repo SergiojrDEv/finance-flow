@@ -50,6 +50,8 @@ Esta rodada evolui a fase anterior sem migrar o runtime para React, Angular ou o
 - Incluir estados vazios e textos curtos que expliquem o proximo passo.
 - Reduzir paineis repetitivos e mostrar detalhes sob demanda.
 - Priorizar linguagem de aplicativo no mobile.
+- Estados vazios principais devem ter uma acao clara, como criar lancamento, criar categoria, criar meta ou adicionar conta.
+- Textos de carteira, limites, metas e historico devem explicar o papel da tela em uma frase curta.
 
 ### Fase 4 - Preparacao para framework futuro
 
@@ -73,3 +75,4 @@ Esta rodada evolui a fase anterior sem migrar o runtime para React, Angular ou o
 - Iteracao app-first iniciada com casca visual mobile mais compacta e acao de lancamento destacada na barra inferior.
 - Fase 1 concluida: barra inferior mobile com cinco itens principais e atalhos secundarios para limites e historico.
 - Fase 2 concluida: receita, despesa e investimento ganharam resumo visual por intencao; metas ganharam hero proprio de planejamento e atalho para aporte.
+- Fase 3 concluida: estados vazios principais ganharam acoes claras e textos curtos de orientacao para carteira, limites, metas e historico.
