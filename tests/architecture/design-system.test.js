@@ -144,8 +144,11 @@ test("html oferece home inspirada em app financeiro", async () => {
 test("styles mantem resumo principal compacto", async () => {
   const source = await readFile(stylesPath, "utf8");
   const requiredSnippets = [
-    ".finance-home-hero {\n  display: grid;\n  grid-template-columns: minmax(0, 1fr) minmax(280px, 0.55fr);",
+    ".finance-home-hero {\n  position: relative;\n  overflow: hidden;",
+    "grid-template-columns: minmax(0, 1fr) minmax(280px, 0.55fr);",
+    "linear-gradient(135deg, rgba(11, 114, 133, 0.26), transparent 46%),",
     ".quick-action-grid {\n  display: grid;\n  grid-template-columns: repeat(4, minmax(0, 1fr));",
+    ".quick-action {\n  display: grid;\n  grid-template-columns: auto minmax(0, 1fr);",
     ".quick-action.income span,\n.metric-card.income i {",
     ".summary-grid {\n  display: grid;\n  grid-template-columns: repeat(4, minmax(0, 1fr));\n  gap: 12px;",
     ".metric-card {\n  position: relative;\n  overflow: hidden;\n  display: grid;",
@@ -154,7 +157,8 @@ test("styles mantem resumo principal compacto", async () => {
     ".quick-action:hover {\n  transform: translateY(-2px);",
     "box-shadow: var(--shadow-soft);",
     ".summary-grid {\n    grid-template-columns: repeat(2, minmax(0, 1fr));",
-    ".metric-card {\n    min-height: 112px;",
+    ".metric-card {\n    min-height: 102px;",
+    '.nav-item[data-section="novo-lancamento"] {\n    min-height: 62px;',
   ];
   const missing = requiredSnippets.filter((snippet) => !source.includes(snippet));
 
