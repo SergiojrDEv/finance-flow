@@ -102,6 +102,19 @@ Esta rodada evolui a fase anterior sem migrar o runtime para React, Angular ou o
 - A leitura deve continuar compacta no mobile e detalhada o bastante no desktop.
 - A mudanca deve continuar limitada a templates e estilos, sem alterar auth, Supabase, schema ou sync.
 
+### Fase 11 - Home alinhada ao prototipo mobile
+
+- A visao geral do web deve absorver a linguagem do prototipo Expo sem migrar o runtime.
+- O card principal deve reunir saldo disponivel, receitas, despesas e investimentos como resumo imediato.
+- A alteracao deve preparar a futura trilha React Native/Expo sem substituir o app Cloudflare atual.
+- A mudanca deve continuar limitada a HTML, dashboard e estilos, sem alterar auth, Supabase, schema ou sync.
+
+### Trilha futura - Mobile React Native/Expo
+
+- Iniciar somente depois de consolidar e aprovar a experiencia app-like no web atual.
+- Usar `finance-flow-mobile_3` como base tecnica e visual, corrigindo encoding, assets, sync V2 e testes.
+- Avisar explicitamente antes de entrar nesta trilha.
+
 ## Fora de escopo neste corte
 
 - Alterar fluxo de autenticacao.
@@ -126,3 +139,4 @@ Esta rodada evolui a fase anterior sem migrar o runtime para React, Angular ou o
 - Fase 8 concluida: painel de categorias da visao geral ganhou leitura consultiva em card de app, chip do periodo e distribuicao visual mais clara.
 - Fase 9 concluida: orcamentos passaram a editar limites sob demanda e metas ganharam leitura objetiva de quanto falta para concluir.
 - Fase 10 concluida: historico diario ganhou leitura de linha do tempo com marcadores e rotulos Entrada, Saida e Aporte.
+- Fase 11 concluida: hero da visao geral ganhou mini-cards de receitas, despesas e investimentos inspirados no prototipo mobile.

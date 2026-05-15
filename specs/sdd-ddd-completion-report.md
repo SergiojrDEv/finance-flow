@@ -88,3 +88,4 @@ O typecheck esta configurado no CI por `.github/workflows/quality.yml`, mas nao 
 - Fase 8 app-first concluida: painel de categorias da visao geral agora usa card consultivo com chip do periodo e distribuicao visual mais proxima de app financeiro.
 - Fase 9 app-first concluida: orcamentos agora exibem edicao de limites sob demanda e metas mostram quanto falta para concluir, reduzindo poluicao visual sem alterar regras ou persistencia.
 - Fase 10 app-first concluida: historico diario passou a renderizar movimentos como linha do tempo com rotulos simples para entrada, saida e aporte.
+- Fase 11 app-first concluida: home do web absorveu mini-cards do prototipo mobile no hero principal, mantendo runtime Cloudflare e preparando a futura trilha React Native/Expo.

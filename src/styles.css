@@ -415,6 +415,50 @@ h2 {
   font-size: clamp(1.7rem, 4vw, 2.35rem);
 }
 
+.home-mini-cards {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.home-mini-card {
+  display: grid;
+  gap: 4px;
+  min-width: 0;
+  padding: 10px;
+  border-radius: var(--radius-sm);
+  background: rgba(255, 255, 255, 0.11);
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.08);
+}
+
+.home-mini-card span {
+  color: rgba(255, 255, 255, 0.68);
+  font-size: 0.72rem;
+  font-weight: 800;
+}
+
+.home-mini-card strong {
+  min-width: 0;
+  overflow: hidden;
+  color: #ffffff;
+  font-size: 0.9rem;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.home-mini-card.income {
+  background: rgba(29, 145, 92, 0.24);
+}
+
+.home-mini-card.expense {
+  background: rgba(209, 61, 82, 0.22);
+}
+
+.home-mini-card.invest {
+  background: rgba(99, 91, 255, 0.24);
+}
+
 .quick-action-grid {
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
@@ -2831,6 +2875,11 @@ tbody tr:last-child td {
   .home-balance-card,
   .wallet-balance-card {
     padding: 14px;
+  }
+
+  .home-mini-cards {
+    grid-template-columns: 1fr;
+    gap: 6px;
   }
 
   .wallet-grid {

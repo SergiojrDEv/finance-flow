@@ -135,6 +135,10 @@ test("html oferece home inspirada em app financeiro", async () => {
     "app-home-status",
     "Formula da disponibilidade",
     "home-free-balance",
+    "home-mini-cards",
+    "home-income-mini",
+    "home-expense-mini",
+    "home-invest-mini",
     "quick-action-grid",
     "mobile-secondary-actions",
     "Limites da semana",
@@ -156,6 +160,8 @@ test("styles mantem resumo principal compacto", async () => {
   const requiredSnippets = [
     ".finance-home-hero {\n  position: relative;\n  overflow: hidden;",
     ".app-home-status {\n  width: fit-content;",
+    ".home-mini-cards {\n  display: grid;\n  grid-template-columns: repeat(3, minmax(0, 1fr));",
+    ".home-mini-card {\n  display: grid;",
     "grid-template-columns: minmax(0, 1fr) minmax(280px, 0.55fr);",
     "linear-gradient(135deg, rgba(11, 114, 133, 0.26), transparent 46%),",
     ".quick-action-grid {\n  display: grid;\n  grid-template-columns: repeat(4, minmax(0, 1fr));",
@@ -170,6 +176,7 @@ test("styles mantem resumo principal compacto", async () => {
     ".quick-action:hover {\n  transform: translateY(-2px);",
     "box-shadow: var(--shadow-soft);",
     ".summary-grid {\n    grid-template-columns: repeat(2, minmax(0, 1fr));",
+    ".home-mini-cards {\n    grid-template-columns: 1fr;",
     ".metric-card {\n    min-height: 102px;",
     '.nav-item[data-section="novo-lancamento"] {\n    min-height: 62px;',
   ];

@@ -46,8 +46,11 @@ export function createDashboardModule(deps) {
     const view = buildSummaryView({ transactions, summary });
 
     dom.setText("#income-total", view.totals.income);
+    dom.setText("#home-income-mini", view.totals.income);
     dom.setText("#expense-total", view.totals.expenses);
+    dom.setText("#home-expense-mini", view.totals.expenses);
     dom.setText("#invest-total", view.totals.investments);
+    dom.setText("#home-invest-mini", view.totals.investments);
     dom.setText("#free-balance", view.totals.available);
     dom.setText("#home-free-balance", view.totals.available);
     dom.setText("#home-balance-copy", view.homeBalanceCopy);
