@@ -576,6 +576,42 @@ h2 {
   display: none;
 }
 
+.app-rhythm-card {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 4px 12px;
+  align-items: center;
+  margin-bottom: 16px;
+  padding: 13px 14px;
+  border: 1px solid rgba(14, 125, 140, 0.16);
+  border-radius: var(--radius-md);
+  background: linear-gradient(135deg, rgba(14, 125, 140, 0.09), transparent 58%), #ffffff;
+  box-shadow: var(--shadow-soft);
+}
+
+.app-rhythm-card strong,
+.app-rhythm-card span {
+  min-width: 0;
+}
+
+.app-rhythm-card span {
+  color: var(--muted);
+  font-size: 0.9rem;
+  font-weight: 700;
+}
+
+.app-rhythm-card small {
+  grid-row: 1 / span 2;
+  grid-column: 2;
+  padding: 7px 10px;
+  border-radius: var(--radius-pill);
+  background: var(--surface-soft);
+  color: var(--balance);
+  font-size: 0.76rem;
+  font-weight: 900;
+  white-space: nowrap;
+}
+
 .summary-grid {
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
@@ -2045,6 +2081,29 @@ tbody tr:last-child td {
   background: linear-gradient(135deg, rgba(99, 91, 255, 0.08), transparent 52%), #fbfcfe;
 }
 
+.budget-flow-card {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+  margin: 0 0 14px;
+  padding: 10px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-md);
+  background: linear-gradient(135deg, rgba(245, 159, 0, 0.09), transparent 52%), #fbfcfe;
+}
+
+.budget-flow-card span {
+  display: grid;
+  min-height: 34px;
+  align-items: center;
+  padding: 8px 10px;
+  border-radius: var(--radius-sm);
+  background: #ffffff;
+  color: var(--text);
+  font-size: 0.82rem;
+  font-weight: 900;
+}
+
 .goal-flow-card span {
   display: grid;
   min-height: 34px;
@@ -2884,6 +2943,10 @@ tbody tr:last-child td {
     grid-template-columns: 1fr;
   }
 
+  .budget-flow-card {
+    grid-template-columns: 1fr;
+  }
+
   .budget-card-header,
   .budget-meter-head {
     display: grid;
@@ -3330,6 +3393,17 @@ tbody tr:last-child td {
     font-weight: 800;
   }
 
+  .app-rhythm-card {
+    grid-template-columns: 1fr;
+  }
+
+  .app-rhythm-card small {
+    grid-row: auto;
+    grid-column: auto;
+    justify-self: start;
+    white-space: normal;
+  }
+
   .metric-card {
     min-height: 102px;
     padding: 13px;
@@ -3533,6 +3607,10 @@ tbody tr:last-child td {
   }
 
   .report-review-card {
+    grid-template-columns: 1fr;
+  }
+
+  .budget-flow-card {
     grid-template-columns: 1fr;
   }
 

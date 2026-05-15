@@ -158,6 +158,27 @@ Esta rodada evolui a fase anterior sem migrar o runtime para React, Angular ou o
 - A interface deve diferenciar o mock local atual de um provider real futuro.
 - A mudanca deve continuar limitada a HTML, estilos e testes, sem alterar auth, Supabase, schema, sync ou integracao real.
 
+### Fase 19 - Ritmo de app consistente
+
+- A home deve comunicar a rotina principal de uso do app em uma frase curta.
+- A interface deve reforcar que o fluxo basico e lancar, revisar e acompanhar o mes.
+- O web app deve ficar posicionado como base visual pronta para a futura trilha mobile.
+- A mudanca deve continuar limitada a HTML, estilos e testes, sem alterar auth, Supabase, schema ou sync.
+
+### Fase 20 - Orcamentos mais didaticos
+
+- A tela de orcamentos deve explicar a sequencia de definir semana, comparar mes e ajustar quando a rotina mudar.
+- A experiencia deve reduzir a sensacao de configuracao tecnica.
+- O usuario leigo deve entender por que existem limite semanal e limite mensal.
+- A mudanca deve continuar limitada a HTML, estilos e testes, sem alterar regras financeiras, auth, Supabase, schema ou sync.
+
+### Fase 21 - Encerramento web e handoff mobile
+
+- A trilha web app-like deve ficar documentada como concluida em 100%.
+- O handoff para mobile deve listar o ponto de partida, o que reaproveitar e o que ainda nao deve ser migrado.
+- A entrada na trilha React Native/Expo deve continuar explicita e separada da evolucao web.
+- A mudanca deve continuar limitada a documentacao, HTML, estilos e testes, sem alterar runtime critico.
+
 ### Trilha futura - Mobile React Native/Expo
 
 - Iniciar somente depois de consolidar e aprovar a experiencia app-like no web atual.
@@ -196,3 +217,6 @@ Esta rodada evolui a fase anterior sem migrar o runtime para React, Angular ou o
 - Fase 16 concluida: ajustes ganharam contexto de centro de organizacao e fluxo visual de criar, editar e desativar.
 - Fase 17 concluida: relatorios ganharam revisao guiada para conferir dias, revisar valores e exportar quando necessario.
 - Fase 18 concluida: carteira ganhou aviso de controle para revisar importacoes antes de transformar qualquer item em lancamento.
+- Fase 19 concluida: home ganhou cartao de ritmo de uso para lancar, revisar e acompanhar o mes.
+- Fase 20 concluida: orcamentos ganharam fluxo didatico de semana, mes e ajuste.
+- Fase 21 concluida: trilha web app-like encerrada com handoff mobile documentado.

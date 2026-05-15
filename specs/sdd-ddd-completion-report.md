@@ -96,3 +96,6 @@ O typecheck esta configurado no CI por `.github/workflows/quality.yml`, mas nao 
 - Fase 16 app-first concluida: ajustes ganharam contexto de centro de organizacao e fluxo visual de criar, editar e desativar, preservando regras e persistencia.
 - Fase 17 app-first concluida: relatorios ganharam revisao guiada para conferir dias, revisar valores e exportar quando necessario, preservando regras e persistencia.
 - Fase 18 app-first concluida: carteira ganhou aviso de controle para revisar importacoes antes de transformar qualquer item em lancamento, preservando regras e persistencia.
+- Fase 19 app-first concluida: home ganhou cartao de ritmo de uso para lancar, revisar e acompanhar o mes, preservando regras e persistencia.
+- Fase 20 app-first concluida: orcamentos ganharam fluxo didatico de semana, mes e ajuste, preservando regras e persistencia.
+- Fase 21 app-first concluida: trilha web app-like encerrada com handoff mobile React Native/Expo documentado em `specs/mobile-react-expo-handoff.md`.

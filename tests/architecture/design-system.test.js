@@ -351,6 +351,8 @@ test("styles compactam orcamentos e metas sem mudar layout estrutural", async ()
     ".budget-rule-details {\n  margin-top: 2px;",
     ".budget-rule-details summary {\n  min-height: 34px;",
     ".budget-rule-form input {\n  min-width: 0;\n  min-height: 36px;",
+    ".budget-flow-card {\n  display: grid;\n  grid-template-columns: repeat(3, minmax(0, 1fr));",
+    ".budget-flow-card span {\n  display: grid;",
     ".goal-card {\n  position: relative;\n  overflow: hidden;\n  display: grid;",
     ".goal-flow-card {\n  display: grid;\n  gap: 8px;",
     ".goal-flow-card span {\n  display: grid;",
@@ -399,6 +401,7 @@ test("styles finalizam relatorios e responsividade da fase de app", async () => 
     ".manage-switcher {\n    grid-template-columns: 1fr;\n    padding: 4px;",
     ".settings-flow-card {\n    grid-template-columns: 1fr;",
     ".report-review-card {\n    grid-template-columns: 1fr;",
+    ".budget-flow-card {\n    grid-template-columns: 1fr;",
   ];
   const missing = requiredSnippets.filter((snippet) => !source.includes(snippet));
 
@@ -444,6 +447,9 @@ test("styles diferenciam tipo de lancamento com guia visual", async () => {
 test("html diferencia metas como area de planejamento", async () => {
   const source = await readFile(indexPath, "utf8");
   const requiredSnippets = [
+    "app-rhythm-card",
+    "Lance, revise e acompanhe o mes sem repetir caminhos",
+    "Web app pronto para base mobile",
     "goals-hero",
     "Transforme aportes em objetivos visiveis",
     "Escolha um objetivo, defina o valor alvo",
@@ -455,6 +461,10 @@ test("html diferencia metas como area de planejamento", async () => {
     "3. Acompanhe o progresso",
     "Use esta tela como linha do tempo",
     "Defina quanto quer gastar por semana e por mes",
+    "budget-flow-card",
+    "1. Defina a semana",
+    "2. Compare o mes",
+    "3. Ajuste quando mudar",
     "Centralize nomes, cores, contas, cartoes e etiquetas",
     "settings-flow-card",
     "Desativar quando nao usar",
@@ -462,6 +472,20 @@ test("html diferencia metas como area de planejamento", async () => {
     "1. Confira o dia",
     "2. Revise valores",
     "3. Exporte se precisar",
+  ];
+  const missing = requiredSnippets.filter((snippet) => !source.includes(snippet));
+
+  assert.deepEqual(missing, []);
+});
+
+test("handoff mobile documenta entrada da proxima trilha", async () => {
+  const source = await readFile(new URL("../../specs/mobile-react-expo-handoff.md", import.meta.url), "utf8");
+  const requiredSnippets = [
+    "finance-flow-mobile_3/finance-flow-mobile",
+    "Expo, React Native, Expo Router",
+    "Auth e bootstrap sem uma fase propria de estabilizacao",
+    "Validar que o app Expo sobe localmente",
+    "A proxima trilha deve ser aberta explicitamente como mobile React Native/Expo",
   ];
   const missing = requiredSnippets.filter((snippet) => !source.includes(snippet));
 
