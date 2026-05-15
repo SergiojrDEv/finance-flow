@@ -178,8 +178,10 @@ test("styles reforcam topo mobile como barra de aplicativo", async () => {
     "background: #152238;",
     ".topbar h1 {\n    font-size: 1.36rem;",
     ".topbar .eyebrow {\n    color: rgba(255, 255, 255, 0.72);",
+    ".topbar-copy {\n    max-width: none;\n    color: rgba(255, 255, 255, 0.72);",
     ".topbar .icon-btn {\n    border-color: rgba(255, 255, 255, 0.16);",
     ".topbar .danger-btn {\n    flex: 0 0 auto;",
+    ".topbar-actions .screen-action {\n    grid-column: 1 / -1;",
   ];
   const missing = requiredSnippets.filter((snippet) => !source.includes(snippet));
 

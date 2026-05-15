@@ -24,11 +24,36 @@ function makeDocument() {
     dataset: { section: id },
     classList: makeClassList(),
   }));
+  const elements = new Map([
+    ["#app-screen-eyebrow", { textContent: "" }],
+    ["#app-screen-title", { textContent: "" }],
+    ["#app-screen-description", { textContent: "" }],
+    ["#app-screen-primary-action", {
+      textContent: "",
+      dataset: {},
+      attributes: {},
+      classList: { add() {}, remove() {} },
+      setAttribute(name, value) { this.attributes[name] = value; },
+      removeAttribute(name) { delete this.attributes[name]; },
+    }],
+    ["#app-screen-secondary-action", {
+      textContent: "",
+      dataset: {},
+      attributes: {},
+      classList: { add() {}, remove() {} },
+      setAttribute(name, value) { this.attributes[name] = value; },
+      removeAttribute(name) { delete this.attributes[name]; },
+    }],
+  ]);
 
   return {
     body: { dataset: {} },
     sections,
     navItems,
+    elements,
+    querySelector(selector) {
+      return this.elements.get(selector) || null;
+    },
     querySelectorAll(selector) {
       if (selector === ".section") return this.sections;
       if (selector === ".nav-item") return this.navItems;
@@ -90,4 +115,6 @@ test("setSectionFromHash usa secao salva quando hash esta vazio", () => {
 
   assert.equal(documentRef.body.dataset.section, "metas");
   assert.equal(documentRef.navItems.find((item) => item.dataset.section === "metas").classList.toggles.at(-1)[1], true);
+  assert.equal(documentRef.elements.get("#app-screen-title").textContent, "Transforme aportes em objetivos visiveis");
+  assert.equal(documentRef.elements.get("#app-screen-primary-action").dataset.screenActionIntent, "compose-investment");
 });

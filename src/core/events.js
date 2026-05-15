@@ -14,6 +14,38 @@ export function openTransactionComposer({
   documentRef.querySelector("#transaction-form")?.scrollIntoView({ behavior: "smooth", block: "start" });
 }
 
+export function handleScreenActionClick({
+  event,
+  button,
+  deps,
+  documentRef = document,
+  locationRef = location,
+} = {}) {
+  const intent = button?.dataset?.screenActionIntent;
+
+  if (intent === "compose-investment") {
+    event?.preventDefault();
+    openTransactionComposer({ deps, documentRef, locationRef, type: "investment" });
+    return true;
+  }
+
+  if (intent === "compose-transaction") {
+    event?.preventDefault();
+    openTransactionComposer({ deps, documentRef, locationRef });
+    return true;
+  }
+
+  if (intent === "review-month") {
+    event?.preventDefault();
+    locationRef.hash = "novo-lancamento";
+    deps.setTransactionView("month");
+    deps.setSectionFromHash();
+    return true;
+  }
+
+  return false;
+}
+
 export function bindAppEvents({
   deps,
   state,
@@ -39,6 +71,11 @@ export function bindAppEvents({
     button.addEventListener("click", (event) => {
       event.preventDefault();
       openTransactionComposer({ deps, documentRef, locationRef, type: button.dataset.quickType });
+    });
+  });
+  documentRef.querySelectorAll("[data-screen-action-intent]").forEach((button) => {
+    button.addEventListener("click", (event) => {
+      handleScreenActionClick({ event, button, deps, documentRef, locationRef });
     });
   });
   documentRef.querySelector("#go-to-month-transactions").addEventListener("click", () => {

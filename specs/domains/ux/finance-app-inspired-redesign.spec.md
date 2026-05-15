@@ -67,6 +67,13 @@ Esta rodada evolui a fase anterior sem migrar o runtime para React, Angular ou o
 - O contrato deve separar intencoes de tela, como lancar, revisar historico, ajustar categorias ou conectar banco.
 - Um shell model deve combinar navegacao e tela ativa sem depender de DOM, framework, Supabase ou estado global.
 
+### Fase 6 - Contratos refletidos no runtime atual
+
+- O topo do app atual deve ler contexto, titulo e descricao do contrato de tela ativo.
+- A acao principal e a primeira acao secundaria devem vir do contrato de tela quando fizer sentido.
+- Acoes por intencao, como lancar movimento, lancar aporte e ver mes, devem ter comportamento centralizado.
+- Deve existir uma view serializavel do shell para consumo futuro por React, Angular ou app nativo.
+
 ## Fora de escopo neste corte
 
 - Alterar fluxo de autenticacao.
@@ -86,3 +93,4 @@ Esta rodada evolui a fase anterior sem migrar o runtime para React, Angular ou o
 - Fase 3 concluida: estados vazios principais ganharam acoes claras e textos curtos de orientacao para carteira, limites, metas e historico.
 - Fase 4 concluida: contrato puro de navegacao app-first criado em application com ponte TypeScript, testes e consumo seguro pelo runtime atual.
 - Fase 5 concluida: contratos puros de tela e shell app-first criados em application, preparando consumo por React, Angular ou app nativo.
+- Fase 6 concluida: topo e acoes principais do runtime atual passaram a refletir o contrato de tela; shell serializavel criado para futuras UIs.

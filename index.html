@@ -135,8 +135,9 @@
   <main class="app-shell is-hidden" id="app-shell">
     <header class="topbar">
       <div>
-        <p class="eyebrow">Painel financeiro</p>
-        <h1>Organize seu dinheiro com clareza</h1>
+        <p class="eyebrow" id="app-screen-eyebrow">Painel financeiro</p>
+        <h1 id="app-screen-title">Organize seu dinheiro com clareza</h1>
+        <p class="topbar-copy" id="app-screen-description">Veja disponibilidade, receitas, despesas e proximos passos do mes em uma tela compacta.</p>
       </div>
 
       <div class="topbar-actions">
@@ -145,6 +146,8 @@
           <strong id="current-month">Abril 2026</strong>
           <button class="icon-btn" id="next-month" type="button" aria-label="Proximo mes">&gt;</button>
         </div>
+        <a class="ghost-btn screen-action is-hidden" id="app-screen-secondary-action" href="#visao-geral" data-screen-action-intent="">Acao secundaria</a>
+        <a class="primary-btn screen-action" id="app-screen-primary-action" href="#novo-lancamento" data-screen-action-intent="compose-transaction">Lancar movimento</a>
         <button class="ghost-btn is-hidden" id="install-app" type="button">Instalar app</button>
         <button class="danger-btn" id="logout-btn" type="button">Sair</button>
       </div>

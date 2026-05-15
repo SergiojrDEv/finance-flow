@@ -2,6 +2,7 @@ import {
   getAppRouteIds,
   resolveAppSection,
 } from "../application/navigation/appNavigationModel.js";
+import { buildAppShellModel } from "../application/navigation/appScreenModel.js";
 
 export const LAST_SECTION_KEY = "finance-flow-last-section";
 export const VALID_SECTIONS = new Set(getAppRouteIds());
@@ -12,6 +13,27 @@ export function createNavigationModule({
   locationRef = location,
   storage = localStorage,
 } = {}) {
+  function setText(selector, value) {
+    const target = documentRef.querySelector(selector);
+    if (target) target.textContent = value;
+  }
+
+  function setAction(selector, action) {
+    const target = documentRef.querySelector(selector);
+    if (!target) return;
+
+    if (!action) {
+      target.classList.add("is-hidden");
+      target.removeAttribute("data-screen-action-intent");
+      return;
+    }
+
+    target.classList.remove("is-hidden");
+    target.textContent = action.label;
+    target.setAttribute("href", action.href);
+    target.dataset.screenActionIntent = action.intent;
+  }
+
   function setTransactionView(view) {
     state.transactionView = view === "month" ? "month" : "compose";
     documentRef.body.dataset.transactionView = state.transactionView;
@@ -28,6 +50,12 @@ export function createNavigationModule({
       setTransactionView(state.transactionView || "compose");
     }
     documentRef.body.dataset.section = next.sectionId;
+    const shell = buildAppShellModel({ activeSection: next.sectionId });
+    setText("#app-screen-eyebrow", shell.screen.eyebrow);
+    setText("#app-screen-title", shell.screen.title);
+    setText("#app-screen-description", shell.screen.description);
+    setAction("#app-screen-primary-action", shell.screen.primaryAction);
+    setAction("#app-screen-secondary-action", shell.screen.secondaryActions[0] || null);
     if (next.shouldPersist) storage.setItem(LAST_SECTION_KEY, next.sectionId);
     documentRef.querySelectorAll(".section").forEach((section) => {
       section.classList.toggle("active", section.id === next.sectionId);

@@ -88,3 +88,29 @@ export function buildAppShellModel({ activeSection = "visao-geral" } = {}) {
     screen,
   };
 }
+
+export function buildFrameworkShellView({ activeSection = "visao-geral" } = {}) {
+  const shell = buildAppShellModel({ activeSection });
+
+  return {
+    activeSection: shell.activeSection,
+    header: {
+      eyebrow: shell.screen.eyebrow,
+      title: shell.screen.title,
+      description: shell.screen.description,
+    },
+    actions: {
+      primary: shell.screen.primaryAction,
+      secondary: shell.screen.secondaryActions,
+    },
+    navigation: shell.navigation.routes.map((route) => ({
+      id: route.id,
+      href: route.hash,
+      label: route.label,
+      mobileLabel: route.mobileLabel,
+      role: route.role,
+      active: route.active,
+      mobilePrimary: route.mobilePrimary,
+    })),
+  };
+}

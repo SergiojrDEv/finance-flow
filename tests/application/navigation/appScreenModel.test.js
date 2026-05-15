@@ -3,6 +3,7 @@ import test from "node:test";
 import { getAppRouteIds } from "../../../src/application/navigation/appNavigationModel.js";
 import {
   APP_SCREEN_COPY,
+  buildFrameworkShellView,
   buildAppShellModel,
   getAppScreenModel,
 } from "../../../src/application/navigation/appScreenModel.js";
@@ -50,4 +51,18 @@ test("contrato de tela separa intencoes sem copiar regra financeira", () => {
   assert.equal(compose.primaryAction.intent, "compose-transaction");
   assert.equal(reports.primaryAction.intent, "export-data");
   assert.equal(settings.primaryAction.intent, "manage-category");
+});
+
+test("monta view de shell serializavel para framework futuro", () => {
+  const view = buildFrameworkShellView({ activeSection: "carteira" });
+
+  assert.equal(view.activeSection, "carteira");
+  assert.deepEqual(view.header, {
+    eyebrow: "Carteira",
+    title: "Contas, cartoes e bancos em um lugar",
+    description: "Acompanhe saldos locais e simule conexoes Open Finance antes de ligar um provider real.",
+  });
+  assert.equal(view.actions.primary.intent, "connect-bank");
+  assert.equal(view.navigation.find((route) => route.id === "carteira")?.active, true);
+  assert.equal(view.navigation.every((route) => route.href.startsWith("#")), true);
 });

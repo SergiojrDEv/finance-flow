@@ -38,6 +38,28 @@ export type AppShellModel = {
   readonly screen: AppScreenModel;
 };
 
+export type FrameworkShellView = {
+  readonly activeSection: string;
+  readonly header: {
+    readonly eyebrow: string;
+    readonly title: string;
+    readonly description: string;
+  };
+  readonly actions: {
+    readonly primary: AppScreenAction;
+    readonly secondary: readonly AppScreenAction[];
+  };
+  readonly navigation: readonly {
+    readonly id: string;
+    readonly href: string;
+    readonly label: string;
+    readonly mobileLabel: string;
+    readonly role: string;
+    readonly active: boolean;
+    readonly mobilePrimary: boolean;
+  }[];
+};
+
 export const APP_SCREEN_COPY: Readonly<Record<string, Omit<AppScreenModel, "id">>> = Object.freeze({
   "visao-geral": Object.freeze({
     eyebrow: "Painel financeiro",
@@ -123,5 +145,33 @@ export function buildAppShellModel({
     activeSection: navigation.activeSection,
     navigation,
     screen,
+  };
+}
+
+export function buildFrameworkShellView({
+  activeSection = "visao-geral",
+}: { readonly activeSection?: string } = {}): FrameworkShellView {
+  const shell = buildAppShellModel({ activeSection });
+
+  return {
+    activeSection: shell.activeSection,
+    header: {
+      eyebrow: shell.screen.eyebrow,
+      title: shell.screen.title,
+      description: shell.screen.description,
+    },
+    actions: {
+      primary: shell.screen.primaryAction,
+      secondary: shell.screen.secondaryActions,
+    },
+    navigation: shell.navigation.routes.map((route) => ({
+      id: route.id,
+      href: route.hash,
+      label: route.label,
+      mobileLabel: route.mobileLabel,
+      role: route.role,
+      active: route.active,
+      mobilePrimary: route.mobilePrimary,
+    })),
   };
 }

@@ -7,7 +7,7 @@ globalThis.document = {
   },
 };
 
-const { openTransactionComposer } = await import("../../src/core/events.js");
+const { handleScreenActionClick, openTransactionComposer } = await import("../../src/core/events.js");
 
 test("atalho rapido abre lancamento no tipo escolhido", () => {
   const calls = [];
@@ -54,4 +54,48 @@ test("botao generico de novo lancamento preserva tipo atual", () => {
   });
 
   assert.deepEqual(calls, [["view", "compose"], ["section"]]);
+});
+
+test("acao de tela abre aporte como investimento", () => {
+  const calls = [];
+  let prevented = false;
+  const deps = {
+    setTransactionView: (view) => calls.push(["view", view]),
+    setActiveType: (type) => calls.push(["type", type]),
+    setSectionFromHash: () => calls.push(["section"]),
+  };
+
+  const handled = handleScreenActionClick({
+    event: { preventDefault: () => { prevented = true; } },
+    button: { dataset: { screenActionIntent: "compose-investment" } },
+    deps,
+    documentRef: { querySelector: () => null },
+    locationRef: { hash: "" },
+  });
+
+  assert.equal(handled, true);
+  assert.equal(prevented, true);
+  assert.deepEqual(calls, [["view", "compose"], ["type", "investment"], ["section"]]);
+});
+
+test("acao de tela abre lancamentos do mes", () => {
+  const calls = [];
+  let prevented = false;
+  const locationRef = { hash: "" };
+  const deps = {
+    setTransactionView: (view) => calls.push(["view", view]),
+    setSectionFromHash: () => calls.push(["section"]),
+  };
+
+  const handled = handleScreenActionClick({
+    event: { preventDefault: () => { prevented = true; } },
+    button: { dataset: { screenActionIntent: "review-month" } },
+    deps,
+    locationRef,
+  });
+
+  assert.equal(handled, true);
+  assert.equal(prevented, true);
+  assert.equal(locationRef.hash, "novo-lancamento");
+  assert.deepEqual(calls, [["view", "month"], ["section"]]);
 });
