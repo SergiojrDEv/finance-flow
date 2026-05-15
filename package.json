@@ -5,8 +5,8 @@
   "type": "module",
   "scripts": {
     "build": "node scripts/build-static.mjs",
-    "deploy": "npm run build && wrangler deploy",
-    "preview": "npm run build && wrangler dev",
+    "deploy": "npm run build && npx wrangler deploy",
+    "preview": "npm run build && npx wrangler dev",
     "test": "node --test",
     "typecheck": "tsc -p tsconfig.json --noEmit"
   },
