@@ -89,3 +89,4 @@ O typecheck esta configurado no CI por `.github/workflows/quality.yml`, mas nao 
 - Fase 9 app-first concluida: orcamentos agora exibem edicao de limites sob demanda e metas mostram quanto falta para concluir, reduzindo poluicao visual sem alterar regras ou persistencia.
 - Fase 10 app-first concluida: historico diario passou a renderizar movimentos como linha do tempo com rotulos simples para entrada, saida e aporte.
 - Fase 11 app-first concluida: home do web absorveu mini-cards do prototipo mobile no hero principal, mantendo runtime Cloudflare e preparando a futura trilha React Native/Expo.
+- Fase 12 app-first concluida: atalhos da home foram refinados como acoes de app com indicador lateral por tipo e seta visual, mantendo escopo em CSS/testes.

@@ -109,6 +109,13 @@ Esta rodada evolui a fase anterior sem migrar o runtime para React, Angular ou o
 - A alteracao deve preparar a futura trilha React Native/Expo sem substituir o app Cloudflare atual.
 - A mudanca deve continuar limitada a HTML, dashboard e estilos, sem alterar auth, Supabase, schema ou sync.
 
+### Fase 12 - Atalhos como acoes de app
+
+- Os atalhos da home devem parecer acoes imediatas, nao cards genericos repetidos.
+- Cada atalho deve ter indicador visual por tipo para receita, despesa, investimento e meta.
+- No mobile, a leitura deve continuar compacta e com affordance clara de toque.
+- A mudanca deve continuar limitada a estilos e testes, sem alterar auth, Supabase, schema ou sync.
+
 ### Trilha futura - Mobile React Native/Expo
 
 - Iniciar somente depois de consolidar e aprovar a experiencia app-like no web atual.
@@ -140,3 +147,4 @@ Esta rodada evolui a fase anterior sem migrar o runtime para React, Angular ou o
 - Fase 9 concluida: orcamentos passaram a editar limites sob demanda e metas ganharam leitura objetiva de quanto falta para concluir.
 - Fase 10 concluida: historico diario ganhou leitura de linha do tempo com marcadores e rotulos Entrada, Saida e Aporte.
 - Fase 11 concluida: hero da visao geral ganhou mini-cards de receitas, despesas e investimentos inspirados no prototipo mobile.
+- Fase 12 concluida: atalhos da home ganharam indicador lateral por tipo e seta visual de acao, aproximando a home de um app sem mudar regras.

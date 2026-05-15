@@ -467,6 +467,8 @@ h2 {
 }
 
 .quick-action {
+  position: relative;
+  overflow: hidden;
   display: grid;
   grid-template-columns: auto minmax(0, 1fr);
   gap: 5px 10px;
@@ -474,12 +476,29 @@ h2 {
   min-height: 82px;
   padding: 14px;
   border: 1px solid var(--line);
+  border-left: 4px solid transparent;
   border-radius: var(--radius-md);
   background: #ffffff;
   color: var(--text);
   text-decoration: none;
   box-shadow: var(--shadow-soft);
   transition: transform 160ms ease, border-color 160ms ease, box-shadow 160ms ease;
+}
+
+.quick-action::after {
+  content: ">";
+  position: absolute;
+  right: 12px;
+  top: 12px;
+  display: grid;
+  width: 22px;
+  height: 22px;
+  place-items: center;
+  border-radius: 999px;
+  background: var(--surface-soft);
+  color: var(--muted);
+  font-size: 0.78rem;
+  font-weight: 900;
 }
 
 .quick-action:hover {
@@ -519,10 +538,18 @@ h2 {
   color: var(--income);
 }
 
+.quick-action.income {
+  border-left-color: var(--income);
+}
+
 .quick-action.expense span,
 .metric-card.expense i {
   background: #fff1f2;
   color: var(--expense);
+}
+
+.quick-action.expense {
+  border-left-color: var(--expense);
 }
 
 .quick-action.invest span,
@@ -531,10 +558,18 @@ h2 {
   color: var(--invest);
 }
 
+.quick-action.invest {
+  border-left-color: var(--invest);
+}
+
 .quick-action.goal span,
 .metric-card.balance i {
   background: #ecfeff;
   color: var(--balance);
+}
+
+.quick-action.goal {
+  border-left-color: var(--balance);
 }
 
 .mobile-secondary-actions {
@@ -3068,8 +3103,16 @@ tbody tr:last-child td {
   }
 
   .quick-action {
+    grid-template-columns: auto minmax(0, 1fr) auto;
     min-height: 74px;
     padding: 10px;
+  }
+
+  .quick-action::after {
+    position: static;
+    grid-column: 3;
+    grid-row: 1 / span 2;
+    align-self: center;
   }
 
   .quick-action span,
