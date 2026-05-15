@@ -137,6 +137,13 @@ Esta rodada evolui a fase anterior sem migrar o runtime para React, Angular ou o
 - A melhoria deve deixar a experiencia mais acessivel para usuarios leigos sem mudar persistencia.
 - A mudanca deve continuar limitada a HTML, estilos e testes, sem alterar auth, Supabase, schema ou sync.
 
+### Fase 16 - Ajustes como centro de organizacao
+
+- A area de ajustes deve explicar que categorias, contas, cartoes e etiquetas controlam a rotina do app.
+- O gerenciamento deve comunicar o fluxo de criar, editar e desativar itens que nao sao usados.
+- A experiencia deve ficar mais clara para usuarios leigos sem remover controles avancados.
+- A mudanca deve continuar limitada a HTML, estilos e testes, sem alterar auth, Supabase, schema ou sync.
+
 ### Trilha futura - Mobile React Native/Expo
 
 - Iniciar somente depois de consolidar e aprovar a experiencia app-like no web atual.
@@ -172,3 +179,4 @@ Esta rodada evolui a fase anterior sem migrar o runtime para React, Angular ou o
 - Fase 13 concluida: formulario de lancamento ganhou regua visual de etapas para tipo, detalhes e revisao, mantendo o fluxo atual.
 - Fase 14 concluida: lancamentos do mes ganharam contexto de extrato e cards de resumo com marcadores visuais.
 - Fase 15 concluida: metas ganharam fluxo didatico de objetivo, aporte e acompanhamento antes do formulario.
+- Fase 16 concluida: ajustes ganharam contexto de centro de organizacao e fluxo visual de criar, editar e desativar.

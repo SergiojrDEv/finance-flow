@@ -362,6 +362,8 @@ test("styles organizam ajustes como area de app", async () => {
   const requiredSnippets = [
     ".settings-grid {\n  margin-bottom: 14px;",
     ".settings-manage-shell {\n  display: grid;\n  gap: 14px;",
+    ".settings-flow-card {\n  display: grid;\n  grid-template-columns: repeat(3, minmax(0, 1fr));",
+    ".settings-flow-card span {\n  min-width: 0;",
     ".manage-switcher {\n  display: grid;\n  grid-template-columns: repeat(5, minmax(0, 1fr));\n  gap: 6px;\n  padding: 5px;",
     ".manage-tab {\n  min-height: 34px;\n  padding: 0 10px;\n  border: 0;\n  border-radius: var(--radius-sm);",
     ".manage-tab.is-active {\n  background: var(--text);\n  color: #ffffff;",
@@ -387,6 +389,7 @@ test("styles finalizam relatorios e responsividade da fase de app", async () => 
     ".history-dot {\n  width: 10px;",
     ".history-type-pill {\n  display: inline-flex;",
     ".manage-switcher {\n    grid-template-columns: 1fr;\n    padding: 4px;",
+    ".settings-flow-card {\n    grid-template-columns: 1fr;",
   ];
   const missing = requiredSnippets.filter((snippet) => !source.includes(snippet));
 
@@ -443,6 +446,9 @@ test("html diferencia metas como area de planejamento", async () => {
     "3. Acompanhe o progresso",
     "Use esta tela como linha do tempo",
     "Defina quanto quer gastar por semana e por mes",
+    "Centralize nomes, cores, contas, cartoes e etiquetas",
+    "settings-flow-card",
+    "Desativar quando nao usar",
   ];
   const missing = requiredSnippets.filter((snippet) => !source.includes(snippet));
 

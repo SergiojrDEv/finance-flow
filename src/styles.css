@@ -2451,6 +2451,27 @@ tbody tr:last-child td {
   gap: 14px;
 }
 
+.settings-flow-card {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+  padding: 10px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-md);
+  background: linear-gradient(135deg, rgba(11, 114, 133, 0.08), transparent 52%), #fbfcfe;
+}
+
+.settings-flow-card span {
+  min-width: 0;
+  padding: 9px 10px;
+  border-radius: var(--radius-sm);
+  background: #ffffff;
+  color: var(--text);
+  font-size: 0.82rem;
+  font-weight: 900;
+  text-align: center;
+}
+
 .manage-switcher {
   display: grid;
   grid-template-columns: repeat(5, minmax(0, 1fr));
@@ -2796,6 +2817,10 @@ tbody tr:last-child td {
 
   .manage-switcher {
     grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .settings-flow-card {
+    grid-template-columns: 1fr;
   }
 
   .budget-card-header,
@@ -3429,6 +3454,10 @@ tbody tr:last-child td {
   .manage-switcher {
     grid-template-columns: 1fr;
     padding: 4px;
+  }
+
+  .settings-flow-card {
+    grid-template-columns: 1fr;
   }
 
   .budget-card-header,
