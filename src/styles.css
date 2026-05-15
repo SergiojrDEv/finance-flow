@@ -2000,6 +2000,28 @@ tbody tr:last-child td {
   width: 100%;
 }
 
+.goal-flow-card {
+  display: grid;
+  gap: 8px;
+  margin: 0 0 14px;
+  padding: 10px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-md);
+  background: linear-gradient(135deg, rgba(99, 91, 255, 0.08), transparent 52%), #fbfcfe;
+}
+
+.goal-flow-card span {
+  display: grid;
+  min-height: 34px;
+  align-items: center;
+  padding: 8px 10px;
+  border-radius: var(--radius-sm);
+  background: #ffffff;
+  color: var(--text);
+  font-size: 0.82rem;
+  font-weight: 900;
+}
+
 .goals-summary-panel {
   padding-bottom: 10px;
 }

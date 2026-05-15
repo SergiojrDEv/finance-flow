@@ -92,3 +92,4 @@ O typecheck esta configurado no CI por `.github/workflows/quality.yml`, mas nao 
 - Fase 12 app-first concluida: atalhos da home foram refinados como acoes de app com indicador lateral por tipo e seta visual, mantendo escopo em CSS/testes.
 - Fase 13 app-first concluida: formulario de lancamento ganhou regua visual de etapas para tipo, detalhes e revisao, preservando campos, regras e persistencia.
 - Fase 14 app-first concluida: lancamentos do mes ganharam contexto de extrato e cards de resumo com marcadores visuais, sem alterar regras nem persistencia.
+- Fase 15 app-first concluida: metas ganharam fluxo didatico de objetivo, aporte e acompanhamento antes do formulario, preservando regras e persistencia.

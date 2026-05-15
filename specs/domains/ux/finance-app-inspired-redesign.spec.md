@@ -130,6 +130,13 @@ Esta rodada evolui a fase anterior sem migrar o runtime para React, Angular ou o
 - O cabecalho deve orientar que a area serve para consultar, filtrar e ajustar movimentos.
 - A mudanca deve continuar limitada a HTML, templates, estilos e testes, sem alterar auth, Supabase, schema ou sync.
 
+### Fase 15 - Metas com fluxo didatico
+
+- A criacao de metas deve explicar o caminho basico antes do formulario.
+- A tela deve reforcar a sequencia objetivo, aporte e acompanhamento do progresso.
+- A melhoria deve deixar a experiencia mais acessivel para usuarios leigos sem mudar persistencia.
+- A mudanca deve continuar limitada a HTML, estilos e testes, sem alterar auth, Supabase, schema ou sync.
+
 ### Trilha futura - Mobile React Native/Expo
 
 - Iniciar somente depois de consolidar e aprovar a experiencia app-like no web atual.
@@ -164,3 +171,4 @@ Esta rodada evolui a fase anterior sem migrar o runtime para React, Angular ou o
 - Fase 12 concluida: atalhos da home ganharam indicador lateral por tipo e seta visual de acao, aproximando a home de um app sem mudar regras.
 - Fase 13 concluida: formulario de lancamento ganhou regua visual de etapas para tipo, detalhes e revisao, mantendo o fluxo atual.
 - Fase 14 concluida: lancamentos do mes ganharam contexto de extrato e cards de resumo com marcadores visuais.
+- Fase 15 concluida: metas ganharam fluxo didatico de objetivo, aporte e acompanhamento antes do formulario.
