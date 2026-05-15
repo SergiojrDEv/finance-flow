@@ -129,6 +129,18 @@ function budgetStatusLabel(tone) {
   return "Dentro do plano";
 }
 
+function historyTypeLabel(item) {
+  if (item.type === "income") return "Entrada";
+  if (item.type === "investment") return "Aporte";
+  return "Saida";
+}
+
+function historyTypeTone(item) {
+  if (item.type === "income") return "income";
+  if (item.type === "investment") return "investment";
+  return "expense";
+}
+
 export function renderBudgetOverviewHtml(rows) {
   if (!rows.length) {
     return renderEmptyState(
@@ -199,7 +211,7 @@ export function renderDailyHistoryHtml(history) {
 
   return history
     .map((day) => `
-          <article class="history-day-card">
+          <article class="history-day-card timeline-card">
             <header class="history-day-header">
               <div>
                 <strong>${parseLocalDate(day.date).toLocaleDateString("pt-BR", { weekday: "long", day: "2-digit", month: "long" })}</strong>
@@ -212,8 +224,10 @@ export function renderDailyHistoryHtml(history) {
             </header>
             <div class="history-day-items">
               ${day.items.map((item) => `
-                <div class="history-row">
-                  <div>
+                <div class="history-row history-row-${historyTypeTone(item)}">
+                  <span class="history-dot"></span>
+                  <div class="history-row-copy">
+                    <span class="history-type-pill">${esc(historyTypeLabel(item))}</span>
                     <strong>${esc(item.description)}</strong>
                     <small>${esc(categoryDisplayLabel(item))} | ${esc(paymentMethodLabel(item.paymentMethod))}</small>
                   </div>

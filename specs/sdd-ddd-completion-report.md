@@ -87,3 +87,4 @@ O typecheck esta configurado no CI por `.github/workflows/quality.yml`, mas nao 
 - Fase 7 app-first concluida: home, carteira e extrato receberam melhorias visuais perceptiveis, incluindo formula compacta de disponibilidade, guia de carteira e lancamentos em formato de cards no mobile.
 - Fase 8 app-first concluida: painel de categorias da visao geral agora usa card consultivo com chip do periodo e distribuicao visual mais proxima de app financeiro.
 - Fase 9 app-first concluida: orcamentos agora exibem edicao de limites sob demanda e metas mostram quanto falta para concluir, reduzindo poluicao visual sem alterar regras ou persistencia.
+- Fase 10 app-first concluida: historico diario passou a renderizar movimentos como linha do tempo com rotulos simples para entrada, saida e aporte.

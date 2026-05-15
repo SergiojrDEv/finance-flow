@@ -330,12 +330,15 @@ test("styles organizam ajustes como area de app", async () => {
 test("styles finalizam relatorios e responsividade da fase de app", async () => {
   const source = await readFile(stylesPath, "utf8");
   const requiredSnippets = [
-    ".daily-history-list {\n  display: grid;\n  gap: 12px;",
-    ".history-day-card {\n  padding: 14px;",
+    ".daily-history-list {\n  display: grid;\n  gap: 14px;\n  position: relative;",
+    ".history-day-card {\n  position: relative;\n  padding: 14px;",
+    ".timeline-card::before {\n  content: \"\";",
     ".history-day-header {\n  display: flex;\n  justify-content: space-between;\n  gap: 12px;",
     ".history-day-totals {\n  display: grid;\n  gap: 4px;",
-    ".history-day-items {\n  display: grid;\n  gap: 8px;",
-    ".history-row {\n  display: flex;\n  justify-content: space-between;\n  gap: 12px;",
+    ".history-day-items {\n  display: grid;\n  gap: 9px;",
+    ".history-row {\n  position: relative;\n  display: grid;\n  grid-template-columns: 18px minmax(0, 1fr) auto;",
+    ".history-dot {\n  width: 10px;",
+    ".history-type-pill {\n  display: inline-flex;",
     ".manage-switcher {\n    grid-template-columns: 1fr;\n    padding: 4px;",
   ];
   const missing = requiredSnippets.filter((snippet) => !source.includes(snippet));

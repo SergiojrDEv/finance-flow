@@ -95,6 +95,13 @@ Esta rodada evolui a fase anterior sem migrar o runtime para React, Angular ou o
 - A experiencia deve ficar mais proxima de app de planejamento, sem remover controles existentes.
 - A mudanca deve continuar limitada a templates e estilos, sem alterar auth, Supabase, schema ou sync.
 
+### Fase 10 - Historico como linha do tempo
+
+- O historico diario deve parecer uma linha do tempo de movimentos, nao uma lista tecnica.
+- Receita, despesa e investimento devem ter marcadores visuais e rotulos simples.
+- A leitura deve continuar compacta no mobile e detalhada o bastante no desktop.
+- A mudanca deve continuar limitada a templates e estilos, sem alterar auth, Supabase, schema ou sync.
+
 ## Fora de escopo neste corte
 
 - Alterar fluxo de autenticacao.
@@ -118,3 +125,4 @@ Esta rodada evolui a fase anterior sem migrar o runtime para React, Angular ou o
 - Fase 7 concluida: home, carteira e lancamentos ganharam melhorias visuais perceptiveis, com extrato em cards no mobile e orientacao de uso mais clara.
 - Fase 8 concluida: painel de categorias da visao geral ganhou leitura consultiva em card de app, chip do periodo e distribuicao visual mais clara.
 - Fase 9 concluida: orcamentos passaram a editar limites sob demanda e metas ganharam leitura objetiva de quanto falta para concluir.
+- Fase 10 concluida: historico diario ganhou leitura de linha do tempo com marcadores e rotulos Entrada, Saida e Aporte.

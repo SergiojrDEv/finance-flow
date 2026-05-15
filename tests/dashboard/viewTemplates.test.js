@@ -100,3 +100,26 @@ test("maiores despesas usa distribuicao visual em estilo app", () => {
   assert.match(html, /Alimentacao/);
   assert.match(html, /60%/);
 });
+
+test("historico diario usa linha do tempo em linguagem de app", () => {
+  const html = renderDailyHistoryHtml([
+    {
+      date: "2026-05-15",
+      count: 3,
+      totals: { income: 1000, outflow: 250 },
+      items: [
+        { description: "Salario", type: "income", amount: 1000, category: "salario", paymentMethod: "pix" },
+        { description: "Tesouro", type: "investment", amount: 200, category: "renda-fixa", paymentMethod: "pix" },
+        { description: "Mercado", type: "expense", amount: 50, category: "alimentacao", paymentMethod: "credit" },
+      ],
+    },
+  ]);
+
+  assert.match(html, /timeline-card/);
+  assert.match(html, /history-dot/);
+  assert.match(html, /history-type-pill/);
+  assert.match(html, /Entrada/);
+  assert.match(html, /Aporte/);
+  assert.match(html, /Saida/);
+  assert.match(html, /history-row-investment/);
+});
