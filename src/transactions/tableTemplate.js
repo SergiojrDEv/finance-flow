@@ -35,17 +35,20 @@ export function renderTransactionTableHtml(items, helpers = {}) {
 
       return `
           <tr class="transaction-row transaction-row-${item.type}">
-            <td>${dateLabel}</td>
-            <td><strong>${escapeHtml(item.description)}</strong></td>
-            <td><span class="category-pill">${escapeHtml(formatCategoryLabel(item))}</span></td>
-            <td><span class="source-pill source-${escapeHtml(item.origin || "manual")}">${escapeHtml(item.presentation.originLabel || "Manual")}</span></td>
-            <td>${escapeHtml(item.account)}</td>
-            <td><span class="type-pill ${item.status || "paid"}">${statusLabel}</span></td>
-            <td><span class="payment-pill ${item.type}">${item.presentation.flowLabel || item.presentation.paymentMethodLabel}</span></td>
-            <td>${dueDateLabel}</td>
-            <td><span class="type-pill ${item.type}">${typeLabel}</span></td>
-            <td class="right money ${amountClass}">${sign} ${formatMoney(Number(item.amount))}</td>
-            <td class="right">
+            <td data-label="Data"><span class="cell-value">${dateLabel}</span></td>
+            <td data-label="Descricao" class="transaction-main-cell">
+              <strong>${escapeHtml(item.description)}</strong>
+              <small>${escapeHtml(formatCategoryLabel(item))} | ${escapeHtml(item.presentation.originLabel || "Manual")}</small>
+            </td>
+            <td data-label="Categoria"><span class="category-pill">${escapeHtml(formatCategoryLabel(item))}</span></td>
+            <td data-label="Origem"><span class="source-pill source-${escapeHtml(item.origin || "manual")}">${escapeHtml(item.presentation.originLabel || "Manual")}</span></td>
+            <td data-label="Conta"><span class="cell-value">${escapeHtml(item.account)}</span></td>
+            <td data-label="Status"><span class="type-pill ${item.status || "paid"}">${statusLabel}</span></td>
+            <td data-label="Pagamento"><span class="payment-pill ${item.type}">${escapeHtml(item.presentation.flowLabel || item.presentation.paymentMethodLabel)}</span></td>
+            <td data-label="Vencimento"><span class="cell-value">${dueDateLabel}</span></td>
+            <td data-label="Tipo"><span class="type-pill ${item.type}">${typeLabel}</span></td>
+            <td data-label="Valor" class="right money ${amountClass}"><span class="cell-value">${sign} ${formatMoney(Number(item.amount))}</span></td>
+            <td data-label="Acoes" class="right">
               <div class="row-actions">
                 ${item.status !== "paid" ? `<button class="row-action success" type="button" data-paid="${item.id}" title="Marcar como pago">Pago</button>` : ""}
                 <button class="row-action neutral" type="button" data-edit="${item.id}" title="Editar">Editar</button>

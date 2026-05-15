@@ -74,6 +74,13 @@ Esta rodada evolui a fase anterior sem migrar o runtime para React, Angular ou o
 - Acoes por intencao, como lancar movimento, lancar aporte e ver mes, devem ter comportamento centralizado.
 - Deve existir uma view serializavel do shell para consumo futuro por React, Angular ou app nativo.
 
+### Fase 7 - Melhorias visuais perceptiveis
+
+- A home deve ganhar leitura mais proxima de aplicativo financeiro, com explicacao compacta da disponibilidade.
+- A carteira deve orientar o usuario em passos simples para contas, revisao e lancamentos.
+- Lancamentos do mes devem ter leitura de extrato em cartoes no mobile, sem perder a tabela no desktop.
+- As melhorias devem continuar limitadas a UX/visual, sem alterar auth, Supabase, schema ou sync.
+
 ## Fora de escopo neste corte
 
 - Alterar fluxo de autenticacao.
@@ -94,3 +101,4 @@ Esta rodada evolui a fase anterior sem migrar o runtime para React, Angular ou o
 - Fase 4 concluida: contrato puro de navegacao app-first criado em application com ponte TypeScript, testes e consumo seguro pelo runtime atual.
 - Fase 5 concluida: contratos puros de tela e shell app-first criados em application, preparando consumo por React, Angular ou app nativo.
 - Fase 6 concluida: topo e acoes principais do runtime atual passaram a refletir o contrato de tela; shell serializavel criado para futuras UIs.
+- Fase 7 concluida: home, carteira e lancamentos ganharam melhorias visuais perceptiveis, com extrato em cards no mobile e orientacao de uso mais clara.

@@ -43,6 +43,9 @@ test("renderiza linha de lancamento com helpers injetados", () => {
   });
 
   assert.match(html, /data:2026-04-23/);
+  assert.match(html, /data-label="Data"/);
+  assert.match(html, /data-label="Descricao"/);
+  assert.match(html, /transaction-main-cell/);
   assert.match(html, /Mercado &lt;script&gt;/);
   assert.match(html, /Alimentacao \/ Mercado/);
   assert.match(html, /transaction-row transaction-row-expense/);
@@ -96,6 +99,7 @@ test("renderiza fluxo de receita e investimento sem parecer pagamento", () => {
 
   assert.match(html, /payment-pill income">Entrada/);
   assert.match(html, /payment-pill investment">Aporte/);
+  assert.match(html, /data-label="Valor"/);
   assert.match(html, /transaction-row-income/);
   assert.match(html, /transaction-row-investment/);
   assert.match(html, /source-open_finance/);

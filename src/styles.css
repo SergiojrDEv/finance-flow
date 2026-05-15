@@ -375,6 +375,26 @@ h2 {
   font-weight: 700;
 }
 
+.app-home-status {
+  width: fit-content;
+  display: inline-grid;
+  gap: 2px;
+  margin-top: 18px;
+  padding: 10px 12px;
+  border-radius: var(--radius-md);
+  background: rgba(255, 255, 255, 0.12);
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.08);
+}
+
+.app-home-status b {
+  font-size: 0.86rem;
+}
+
+.app-home-status small {
+  color: rgba(255, 255, 255, 0.76);
+  font-weight: 700;
+}
+
 .home-balance-card {
   position: relative;
   display: grid;
@@ -663,6 +683,26 @@ h2 {
   margin-bottom: 14px;
 }
 
+.wallet-guide-strip {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+  margin-bottom: 14px;
+}
+
+.wallet-guide-strip span {
+  min-height: 42px;
+  display: grid;
+  align-items: center;
+  padding: 0 12px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-md);
+  background: #ffffff;
+  color: var(--muted);
+  font-size: 0.8rem;
+  font-weight: 800;
+}
+
 .wallet-mini-card {
   display: grid;
   gap: 8px;
@@ -823,6 +863,13 @@ h2 {
 
 .wallet-institution-row b {
   font-family: "JetBrains Mono", monospace;
+}
+
+.wallet-card-hint {
+  grid-column: 2 / -1;
+  color: var(--muted);
+  font-size: 0.72rem;
+  font-weight: 700;
 }
 
 .wallet-review-list {
@@ -1499,6 +1546,21 @@ tbody tr:last-child td {
 
 .transaction-row-investment td:first-child {
   border-left-color: var(--invest);
+}
+
+.transaction-main-cell strong {
+  display: block;
+}
+
+.transaction-main-cell small {
+  display: none;
+  color: var(--muted);
+  font-size: 0.76rem;
+  font-weight: 700;
+}
+
+.cell-value {
+  display: inline-block;
 }
 
 .right {
@@ -2576,6 +2638,17 @@ tbody tr:last-child td {
     margin-bottom: 12px;
   }
 
+  .wallet-guide-strip {
+    grid-template-columns: 1fr;
+    gap: 6px;
+    margin-bottom: 12px;
+  }
+
+  .wallet-guide-strip span {
+    min-height: 36px;
+    font-size: 0.76rem;
+  }
+
   .wallet-account-card {
     min-height: 82px;
     grid-template-columns: auto minmax(0, 1fr);
@@ -2596,6 +2669,147 @@ tbody tr:last-child td {
   .wallet-pending-transaction b,
   .wallet-review-action {
     justify-self: stretch;
+  }
+
+  .table-scroll {
+    overflow: visible;
+    border: 0;
+    background: transparent;
+  }
+
+  table,
+  thead,
+  tbody,
+  tr,
+  td {
+    display: block;
+  }
+
+  table {
+    display: grid;
+  }
+
+  table,
+  tbody,
+  tr,
+  td {
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+  }
+
+  thead {
+    display: none;
+  }
+
+  tbody {
+    display: grid;
+    gap: 10px;
+  }
+
+  .transaction-row {
+    position: relative;
+    display: grid;
+    width: min(100%, calc(100vw - 56px));
+    max-width: 100%;
+    gap: 8px;
+    padding: 12px;
+    border: 1px solid var(--line);
+    border-radius: var(--radius-md);
+    background: #ffffff;
+    box-shadow: var(--shadow-soft);
+    overflow: hidden;
+  }
+
+  .transaction-row::before {
+    content: "";
+    position: absolute;
+    inset: 0 auto 0 0;
+    width: 4px;
+    border-radius: var(--radius-md) 0 0 var(--radius-md);
+    background: var(--muted);
+  }
+
+  .transaction-row-income::before {
+    background: var(--income);
+  }
+
+  .transaction-row-expense::before {
+    background: var(--expense);
+  }
+
+  .transaction-row-investment::before {
+    background: var(--invest);
+  }
+
+  .transaction-row td {
+    display: grid;
+    grid-template-columns: 1fr;
+    align-items: center;
+    gap: 3px;
+    padding: 0;
+    border: 0;
+    text-align: left;
+    white-space: normal;
+  }
+
+  .transaction-row .cell-value,
+  .transaction-row .type-pill,
+  .transaction-row .payment-pill,
+  .transaction-row .source-pill {
+    min-width: 0;
+    width: fit-content;
+    max-width: 100%;
+    text-align: left;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .transaction-row td::before {
+    content: attr(data-label);
+    flex: 0 0 auto;
+    color: var(--muted);
+    font-size: 0.68rem;
+    font-weight: 900;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+  }
+
+  .transaction-row td:first-child {
+    border-left: 0;
+  }
+
+  .transaction-main-cell {
+    display: grid !important;
+    grid-template-columns: 1fr;
+    gap: 4px;
+  }
+
+  .transaction-main-cell::before {
+    display: none;
+  }
+
+  .transaction-main-cell strong {
+    font-size: 0.95rem;
+  }
+
+  .transaction-main-cell small {
+    display: block;
+  }
+
+  .transaction-row td:nth-child(3),
+  .transaction-row td:nth-child(4) {
+    display: none;
+  }
+
+  .transaction-row .money {
+    font-size: 1.02rem;
+  }
+
+  .transaction-row .row-actions {
+    width: 100%;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(0, 1fr));
   }
 
   .quick-action-grid {

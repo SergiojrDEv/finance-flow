@@ -20,6 +20,7 @@ test("renderiza cards de carteira com saldos locais", () => {
   assert.match(emptyHtml, /empty-state-actions/);
   assert.match(html, /wallet-account-card checking/);
   assert.match(html, /Conta corrente/);
+  assert.match(html, /Saldo acompanhado no app/);
   assert.match(html, /R\$ 150/);
 });
 

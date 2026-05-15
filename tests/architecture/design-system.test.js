@@ -114,6 +114,7 @@ test("styles suportam tela carteira app-like", async () => {
   const requiredSnippets = [
     ".wallet-hero {\n  display: grid;\n  grid-template-columns: minmax(0, 1fr) minmax(280px, 0.42fr);",
     ".wallet-balance-card {\n  display: grid;",
+    ".wallet-guide-strip {\n  display: grid;",
     ".wallet-grid {\n  display: grid;\n  grid-template-columns: repeat(3, minmax(0, 1fr));",
     ".wallet-account-card {\n  display: grid;\n  grid-template-columns: auto minmax(0, 1fr) auto;",
     ".wallet-panels {\n  display: grid;\n  grid-template-columns: minmax(0, 1.1fr) minmax(300px, 0.9fr);",
@@ -131,6 +132,8 @@ test("html oferece home inspirada em app financeiro", async () => {
   const source = await readFile(indexPath, "utf8");
   const requiredSnippets = [
     "finance-home-hero",
+    "app-home-status",
+    "Formula da disponibilidade",
     "home-free-balance",
     "quick-action-grid",
     "mobile-secondary-actions",
@@ -149,6 +152,7 @@ test("styles mantem resumo principal compacto", async () => {
   const source = await readFile(stylesPath, "utf8");
   const requiredSnippets = [
     ".finance-home-hero {\n  position: relative;\n  overflow: hidden;",
+    ".app-home-status {\n  width: fit-content;",
     "grid-template-columns: minmax(0, 1fr) minmax(280px, 0.55fr);",
     "linear-gradient(135deg, rgba(11, 114, 133, 0.26), transparent 46%),",
     ".quick-action-grid {\n  display: grid;\n  grid-template-columns: repeat(4, minmax(0, 1fr));",
@@ -244,8 +248,12 @@ test("styles deixam historico em tabela mais limpo", async () => {
     "tbody tr:last-child td {\n  border-bottom: 0;",
     ".row-actions {\n  display: inline-flex;\n  gap: 4px;",
     ".row-action {\n  min-width: 32px;\n  height: 30px;",
+    ".transaction-main-cell {\n    display: grid !important;",
     ".transaction-row td:first-child {\n  border-left: 4px solid transparent;",
     ".transaction-row-income td:first-child {\n  border-left-color: var(--income);",
+    ".transaction-row::before {\n    content: \"\";",
+    ".transaction-row td::before {\n    content: attr(data-label);",
+    ".transaction-main-cell small {\n    display: block;",
     ".payment-pill.investment {\n  background: #efefff;",
   ];
   const missing = requiredSnippets.filter((snippet) => !source.includes(snippet));

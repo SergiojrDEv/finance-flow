@@ -28,6 +28,7 @@ export function renderWalletAccountsHtml(rows = [], formatMoney = (value) => Str
         <small>${esc(row.caption)}</small>
       </div>
       <b>${formatMoney(row.balance)}</b>
+      <small class="wallet-card-hint">Saldo acompanhado no app</small>
     </article>
   `).join("");
 }
