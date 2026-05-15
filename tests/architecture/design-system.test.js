@@ -380,6 +380,8 @@ test("styles finalizam relatorios e responsividade da fase de app", async () => 
   const source = await readFile(stylesPath, "utf8");
   const requiredSnippets = [
     ".daily-history-list {\n  display: grid;\n  gap: 14px;\n  position: relative;",
+    ".report-review-card {\n  display: grid;\n  grid-template-columns: repeat(3, minmax(0, 1fr));",
+    ".report-review-card span {\n  min-width: 0;",
     ".history-day-card {\n  position: relative;\n  padding: 14px;",
     ".timeline-card::before {\n  content: \"\";",
     ".history-day-header {\n  display: flex;\n  justify-content: space-between;\n  gap: 12px;",
@@ -390,6 +392,7 @@ test("styles finalizam relatorios e responsividade da fase de app", async () => 
     ".history-type-pill {\n  display: inline-flex;",
     ".manage-switcher {\n    grid-template-columns: 1fr;\n    padding: 4px;",
     ".settings-flow-card {\n    grid-template-columns: 1fr;",
+    ".report-review-card {\n    grid-template-columns: 1fr;",
   ];
   const missing = requiredSnippets.filter((snippet) => !source.includes(snippet));
 
@@ -449,6 +452,10 @@ test("html diferencia metas como area de planejamento", async () => {
     "Centralize nomes, cores, contas, cartoes e etiquetas",
     "settings-flow-card",
     "Desativar quando nao usar",
+    "Como revisar o historico",
+    "1. Confira o dia",
+    "2. Revise valores",
+    "3. Exporte se precisar",
   ];
   const missing = requiredSnippets.filter((snippet) => !source.includes(snippet));
 

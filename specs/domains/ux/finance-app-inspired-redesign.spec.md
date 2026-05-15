@@ -144,6 +144,13 @@ Esta rodada evolui a fase anterior sem migrar o runtime para React, Angular ou o
 - A experiencia deve ficar mais clara para usuarios leigos sem remover controles avancados.
 - A mudanca deve continuar limitada a HTML, estilos e testes, sem alterar auth, Supabase, schema ou sync.
 
+### Fase 17 - Relatorios como revisao guiada
+
+- A tela de historico deve comunicar um fluxo simples de conferir o dia, revisar valores e exportar apenas quando necessario.
+- O historico diario deve continuar sendo o foco principal da tela.
+- A experiencia deve reduzir a sensacao de relatorio tecnico e aproximar a area de uma revisao de app.
+- A mudanca deve continuar limitada a HTML, estilos e testes, sem alterar auth, Supabase, schema ou sync.
+
 ### Trilha futura - Mobile React Native/Expo
 
 - Iniciar somente depois de consolidar e aprovar a experiencia app-like no web atual.
@@ -180,3 +187,4 @@ Esta rodada evolui a fase anterior sem migrar o runtime para React, Angular ou o
 - Fase 14 concluida: lancamentos do mes ganharam contexto de extrato e cards de resumo com marcadores visuais.
 - Fase 15 concluida: metas ganharam fluxo didatico de objetivo, aporte e acompanhamento antes do formulario.
 - Fase 16 concluida: ajustes ganharam contexto de centro de organizacao e fluxo visual de criar, editar e desativar.
+- Fase 17 concluida: relatorios ganharam revisao guiada para conferir dias, revisar valores e exportar quando necessario.
