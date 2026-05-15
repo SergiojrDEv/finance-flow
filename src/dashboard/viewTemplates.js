@@ -66,6 +66,10 @@ export function renderCategoryBreakdownHtml(rows) {
 
   return `
       <section class="category-app-card">
+        <div class="category-app-copy">
+          <span>Distribuicao por categoria</span>
+          <strong>Onde o mes pesa mais</strong>
+        </div>
         <div class="category-donut-wrap">
           <div class="category-donut" style="--category-donut:${gradient}">
             <span>Total gasto</span>

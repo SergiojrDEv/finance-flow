@@ -85,3 +85,4 @@ O typecheck esta configurado no CI por `.github/workflows/quality.yml`, mas nao 
 - Fase 5 app-first concluida: `src/application/navigation/appScreenModel` passou a definir contratos de tela e shell model por rota, separando intencoes de UI para futura implementacao em React, Angular ou app nativo sem copiar regra financeira.
 - Fase 6 app-first concluida: o runtime atual passou a refletir o contrato de tela no topo e nas acoes principais, com tratamento centralizado de intencoes e view de shell serializavel para UI futura.
 - Fase 7 app-first concluida: home, carteira e extrato receberam melhorias visuais perceptiveis, incluindo formula compacta de disponibilidade, guia de carteira e lancamentos em formato de cards no mobile.
+- Fase 8 app-first concluida: painel de categorias da visao geral agora usa card consultivo com chip do periodo e distribuicao visual mais proxima de app financeiro.

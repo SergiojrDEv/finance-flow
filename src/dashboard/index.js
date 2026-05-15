@@ -97,6 +97,10 @@ export function createDashboardModule(deps) {
       transactions: getMonthTransactions(),
       categories: state.settings.categories.expense,
     });
+    dom.setText("#category-period", state.currentDate.toLocaleDateString("pt-BR", {
+      month: "short",
+      year: "numeric",
+    }));
     dom.setHtml("#category-breakdown", renderCategoryBreakdownHtml(rows));
   }
 

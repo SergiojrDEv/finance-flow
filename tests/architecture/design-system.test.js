@@ -139,6 +139,9 @@ test("html oferece home inspirada em app financeiro", async () => {
     "mobile-secondary-actions",
     "Limites da semana",
     "Historico completo",
+    "category-panel",
+    "Onde foi seu dinheiro",
+    "category-period",
     'data-quick-type="income"',
     'data-quick-type="expense"',
     'data-quick-type="investment"',
@@ -169,6 +172,26 @@ test("styles mantem resumo principal compacto", async () => {
     ".summary-grid {\n    grid-template-columns: repeat(2, minmax(0, 1fr));",
     ".metric-card {\n    min-height: 102px;",
     '.nav-item[data-section="novo-lancamento"] {\n    min-height: 62px;',
+  ];
+  const missing = requiredSnippets.filter((snippet) => !source.includes(snippet));
+
+  assert.deepEqual(missing, []);
+});
+
+test("styles refinam distribuicao por categoria como card de app", async () => {
+  const source = await readFile(stylesPath, "utf8");
+  const requiredSnippets = [
+    ".category-panel {\n  overflow: hidden;",
+    ".month-chip {\n  min-height: 32px;",
+    ".category-app-card {\n  position: relative;\n  display: grid;",
+    "linear-gradient(135deg, rgba(11, 114, 133, 0.07), transparent 42%),",
+    ".category-app-copy {\n  grid-column: 1 / -1;",
+    ".category-app-row {\n  display: grid;",
+    "box-shadow: inset 0 0 0 1px rgba(217, 226, 236, 0.75);",
+    ".category-app-card {\n    grid-template-columns: 1fr;\n    padding: 12px;\n    overflow: hidden;",
+    ".category-panel-header,\n  .category-app-copy {\n    display: grid;",
+    ".category-app-row {\n    grid-template-columns: auto minmax(0, 1fr);\n    gap: 6px 8px;",
+    ".category-app-row small {\n    grid-column: 2;\n    grid-row: 3;",
   ];
   const missing = requiredSnippets.filter((snippet) => !source.includes(snippet));
 

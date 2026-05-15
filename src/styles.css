@@ -1203,6 +1203,27 @@ body[data-transaction-view="month"] .transaction-view-month {
   color: var(--balance);
 }
 
+.category-panel {
+  overflow: hidden;
+}
+
+.category-panel-header {
+  align-items: center;
+}
+
+.month-chip {
+  min-height: 32px;
+  display: inline-grid;
+  place-items: center;
+  padding: 0 12px;
+  border-radius: var(--radius-pill);
+  background: #eef6ff;
+  color: #255b91;
+  font-size: 0.78rem;
+  font-weight: 900;
+  text-transform: lowercase;
+}
+
 .stack-list {
   display: grid;
   gap: 12px;
@@ -1220,22 +1241,52 @@ body[data-transaction-view="month"] .transaction-view-month {
 }
 
 .category-app-card {
+  position: relative;
   display: grid;
-  grid-template-columns: minmax(130px, 0.65fr) minmax(0, 1fr);
+  grid-template-columns: minmax(130px, 0.62fr) minmax(0, 1fr);
   gap: 18px;
   align-items: center;
+  padding: 16px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-md);
+  background:
+    linear-gradient(135deg, rgba(11, 114, 133, 0.07), transparent 42%),
+    #fbfcfe;
+}
+
+.category-app-copy {
+  grid-column: 1 / -1;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.category-app-copy span {
+  color: var(--muted);
+  font-size: 0.72rem;
+  font-weight: 900;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.category-app-copy strong {
+  color: var(--text);
+  font-size: 0.95rem;
 }
 
 .category-donut-wrap {
   display: grid;
   place-items: center;
-  min-height: 180px;
+  min-height: 170px;
 }
 
 .category-donut {
   position: relative;
   display: grid;
   place-items: center;
+  align-content: center;
+  gap: 4px;
   width: min(180px, 100%);
   aspect-ratio: 1;
   border-radius: 50%;
@@ -1255,6 +1306,7 @@ body[data-transaction-view="month"] .transaction-view-month {
 .category-donut strong {
   position: relative;
   z-index: 1;
+  display: block;
   text-align: center;
 }
 
@@ -1272,7 +1324,7 @@ body[data-transaction-view="month"] .transaction-view-month {
 
 .category-app-list {
   display: grid;
-  gap: 12px;
+  gap: 8px;
 }
 
 .category-app-row {
@@ -1280,6 +1332,11 @@ body[data-transaction-view="month"] .transaction-view-month {
   grid-template-columns: auto minmax(0, 1fr) auto auto;
   gap: 10px;
   align-items: center;
+  min-height: 42px;
+  padding: 9px 10px;
+  border-radius: var(--radius-sm);
+  background: #ffffff;
+  box-shadow: inset 0 0 0 1px rgba(217, 226, 236, 0.75);
 }
 
 .category-dot {
@@ -2413,6 +2470,18 @@ tbody tr:last-child td {
 
   .category-app-card {
     grid-template-columns: 1fr;
+    padding: 12px;
+    overflow: hidden;
+  }
+
+  .category-panel-header,
+  .category-app-copy {
+    display: grid;
+    grid-template-columns: 1fr;
+  }
+
+  .month-chip {
+    justify-self: start;
   }
 
   .category-donut-wrap {
@@ -2421,6 +2490,24 @@ tbody tr:last-child td {
 
   .category-donut {
     width: min(150px, 70vw);
+  }
+
+  .category-app-row {
+    grid-template-columns: auto minmax(0, 1fr);
+    gap: 6px 8px;
+    min-width: 0;
+  }
+
+  .category-app-row b {
+    grid-column: 2;
+    justify-self: start;
+  }
+
+  .category-app-row small {
+    grid-column: 2;
+    grid-row: 3;
+    min-width: 0;
+    text-align: left;
   }
 
   .budget-rule-form,

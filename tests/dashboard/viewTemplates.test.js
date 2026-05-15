@@ -90,6 +90,9 @@ test("maiores despesas usa distribuicao visual em estilo app", () => {
   ]);
 
   assert.match(html, /category-app-card/);
+  assert.match(html, /category-app-copy/);
+  assert.match(html, /Distribuicao por categoria/);
+  assert.match(html, /Onde o mes pesa mais/);
   assert.match(html, /category-donut/);
   assert.match(html, /Total gasto/);
   assert.match(html, /Alimentacao/);

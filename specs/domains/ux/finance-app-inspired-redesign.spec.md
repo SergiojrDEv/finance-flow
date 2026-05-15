@@ -81,6 +81,13 @@ Esta rodada evolui a fase anterior sem migrar o runtime para React, Angular ou o
 - Lancamentos do mes devem ter leitura de extrato em cartoes no mobile, sem perder a tabela no desktop.
 - As melhorias devem continuar limitadas a UX/visual, sem alterar auth, Supabase, schema ou sync.
 
+### Fase 8 - Visao geral mais consultiva
+
+- A distribuicao por categoria deve parecer um card de app financeiro, nao apenas uma lista tecnica.
+- O usuario deve entender rapidamente onde o dinheiro foi no mes selecionado.
+- O painel de categorias deve exibir o periodo em leitura compacta.
+- A mudanca deve continuar limitada a dashboard/UX, sem alterar auth, Supabase, schema ou sync.
+
 ## Fora de escopo neste corte
 
 - Alterar fluxo de autenticacao.
@@ -102,3 +109,4 @@ Esta rodada evolui a fase anterior sem migrar o runtime para React, Angular ou o
 - Fase 5 concluida: contratos puros de tela e shell app-first criados em application, preparando consumo por React, Angular ou app nativo.
 - Fase 6 concluida: topo e acoes principais do runtime atual passaram a refletir o contrato de tela; shell serializavel criado para futuras UIs.
 - Fase 7 concluida: home, carteira e lancamentos ganharam melhorias visuais perceptiveis, com extrato em cards no mobile e orientacao de uso mais clara.
+- Fase 8 concluida: painel de categorias da visao geral ganhou leitura consultiva em card de app, chip do periodo e distribuicao visual mais clara.
