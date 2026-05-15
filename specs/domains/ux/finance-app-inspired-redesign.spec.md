@@ -116,6 +116,13 @@ Esta rodada evolui a fase anterior sem migrar o runtime para React, Angular ou o
 - No mobile, a leitura deve continuar compacta e com affordance clara de toque.
 - A mudanca deve continuar limitada a estilos e testes, sem alterar auth, Supabase, schema ou sync.
 
+### Fase 13 - Lancamento como fluxo guiado
+
+- O formulario de lancamento deve comunicar uma sequencia simples de uso.
+- A interface deve mostrar etapas curtas para tipo, detalhes e revisao sem criar uma nova regra de negocio.
+- A leitura mobile deve ficar empilhada e tocavel, mantendo todos os campos atuais.
+- A mudanca deve continuar limitada a HTML, estilos e testes, sem alterar auth, Supabase, schema ou sync.
+
 ### Trilha futura - Mobile React Native/Expo
 
 - Iniciar somente depois de consolidar e aprovar a experiencia app-like no web atual.
@@ -148,3 +155,4 @@ Esta rodada evolui a fase anterior sem migrar o runtime para React, Angular ou o
 - Fase 10 concluida: historico diario ganhou leitura de linha do tempo com marcadores e rotulos Entrada, Saida e Aporte.
 - Fase 11 concluida: hero da visao geral ganhou mini-cards de receitas, despesas e investimentos inspirados no prototipo mobile.
 - Fase 12 concluida: atalhos da home ganharam indicador lateral por tipo e seta visual de acao, aproximando a home de um app sem mudar regras.
+- Fase 13 concluida: formulario de lancamento ganhou regua visual de etapas para tipo, detalhes e revisao, mantendo o fluxo atual.

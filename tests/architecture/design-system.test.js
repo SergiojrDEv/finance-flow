@@ -268,6 +268,23 @@ test("styles reduzem altura do formulario de lancamento", async () => {
     ".transaction-composer .segmented-control {\n  margin-bottom: 14px;",
     ".transaction-composer label {\n  gap: 6px;\n  margin-bottom: 12px;",
     ".transaction-composer input,\n.transaction-composer select {\n  min-height: 40px;",
+    ".transaction-flow-steps {\n  display: grid;\n  grid-template-columns: repeat(3, minmax(0, 1fr));",
+    ".transaction-flow-steps .is-active {\n  border-color: rgba(21, 34, 56, 0.2);",
+    ".transaction-flow-steps {\n    grid-template-columns: 1fr;",
+  ];
+  const missing = requiredSnippets.filter((snippet) => !source.includes(snippet));
+
+  assert.deepEqual(missing, []);
+});
+
+test("html mostra fluxo guiado no formulario de lancamento", async () => {
+  const source = await readFile(indexPath, "utf8");
+  const requiredSnippets = [
+    "transaction-flow-steps",
+    "Etapas do lancamento",
+    "1. Tipo",
+    "2. Detalhes",
+    "3. Revisar",
   ];
   const missing = requiredSnippets.filter((snippet) => !source.includes(snippet));
 
@@ -380,6 +397,7 @@ test("styles diferenciam tipo de lancamento com guia visual", async () => {
   const source = await readFile(stylesPath, "utf8");
   const requiredSnippets = [
     ".transaction-type-guide {\n  display: grid;\n  gap: 4px;\n  margin: -4px 0 14px;",
+    ".transaction-flow-steps span {\n  min-width: 0;",
     ".transaction-intent-card {\n  display: grid;\n  gap: 9px;",
     ".transaction-intent-card > div {\n  display: grid;\n  grid-template-columns: repeat(3, minmax(0, 1fr));",
     "border-left: 4px solid var(--expense);",
