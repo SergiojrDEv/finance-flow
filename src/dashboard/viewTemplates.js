@@ -168,17 +168,20 @@ export function renderBudgetOverviewHtml(rows) {
               </div>
               <div class="bar"><span style="--value:${item.pct.monthly}%;--color:${safeCssColor(item.color)}"></span></div>
             </div>
-            <form class="budget-rule-form compact" data-budget-key="${esc(item.key)}">
-              <label>
-                Semanal
-                <input type="number" min="0" step="0.01" name="weekly" value="${Number(item.rule.weekly || 0)}">
-              </label>
-              <label>
-                Mensal
-                <input type="number" min="0" step="0.01" name="monthly" value="${Number(item.rule.monthly || 0)}">
-              </label>
-              <button class="mini-btn" type="submit">Salvar regra</button>
-            </form>
+            <details class="budget-rule-details">
+              <summary>Editar limites</summary>
+              <form class="budget-rule-form compact" data-budget-key="${esc(item.key)}">
+                <label>
+                  Semanal
+                  <input type="number" min="0" step="0.01" name="weekly" value="${Number(item.rule.weekly || 0)}">
+                </label>
+                <label>
+                  Mensal
+                  <input type="number" min="0" step="0.01" name="monthly" value="${Number(item.rule.monthly || 0)}">
+                </label>
+                <button class="mini-btn" type="submit">Salvar regra</button>
+              </form>
+            </details>
           </article>
         `;
     })

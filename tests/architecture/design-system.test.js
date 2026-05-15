@@ -297,9 +297,12 @@ test("styles compactam orcamentos e metas sem mudar layout estrutural", async ()
     ".budget-card-danger::before {\n  background: var(--expense);",
     ".budget-rule-form {\n  display: grid;\n  grid-template-columns: repeat(3, minmax(0, 1fr));\n  gap: 8px;",
     "border: 1px solid var(--line);\n  border-radius: var(--radius-md);\n  padding: 10px;",
+    ".budget-rule-details {\n  margin-top: 2px;",
+    ".budget-rule-details summary {\n  min-height: 34px;",
     ".budget-rule-form input {\n  min-width: 0;\n  min-height: 36px;",
     ".goal-card {\n  position: relative;\n  overflow: hidden;\n  display: grid;",
     ".goal-progress-card {\n  padding-left: 18px;",
+    ".goal-plan-row {\n  display: flex;",
     ".goal-percent {\n  min-width: 44px;",
   ];
   const missing = requiredSnippets.filter((snippet) => !source.includes(snippet));

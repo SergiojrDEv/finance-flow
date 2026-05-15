@@ -88,6 +88,13 @@ Esta rodada evolui a fase anterior sem migrar o runtime para React, Angular ou o
 - O painel de categorias deve exibir o periodo em leitura compacta.
 - A mudanca deve continuar limitada a dashboard/UX, sem alterar auth, Supabase, schema ou sync.
 
+### Fase 9 - Planejamento menos poluido
+
+- Orcamentos devem mostrar consumo e status primeiro, deixando edicao de limites sob demanda.
+- Metas devem mostrar rapidamente quanto falta para concluir o objetivo.
+- A experiencia deve ficar mais proxima de app de planejamento, sem remover controles existentes.
+- A mudanca deve continuar limitada a templates e estilos, sem alterar auth, Supabase, schema ou sync.
+
 ## Fora de escopo neste corte
 
 - Alterar fluxo de autenticacao.
@@ -110,3 +117,4 @@ Esta rodada evolui a fase anterior sem migrar o runtime para React, Angular ou o
 - Fase 6 concluida: topo e acoes principais do runtime atual passaram a refletir o contrato de tela; shell serializavel criado para futuras UIs.
 - Fase 7 concluida: home, carteira e lancamentos ganharam melhorias visuais perceptiveis, com extrato em cards no mobile e orientacao de uso mais clara.
 - Fase 8 concluida: painel de categorias da visao geral ganhou leitura consultiva em card de app, chip do periodo e distribuicao visual mais clara.
+- Fase 9 concluida: orcamentos passaram a editar limites sob demanda e metas ganharam leitura objetiva de quanto falta para concluir.

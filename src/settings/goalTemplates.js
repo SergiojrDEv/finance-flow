@@ -38,7 +38,10 @@ export function renderGoalsHtml(goals) {
   }
 
   return goals
-    .map((goal, index) => `
+    .map((goal, index) => {
+      const remaining = Math.max(Number(goal.target || 0) - Number(goal.current || 0), 0);
+
+      return `
           <article class="goal-card goal-progress-card">
             <header>
               <div>
@@ -49,13 +52,18 @@ export function renderGoalsHtml(goals) {
             </header>
             <div class="bar"><span style="--value:${goal.percent}%;--color:var(--invest)"></span></div>
             <p><span class="money purple">${money(goal.current)}</span> de ${money(goal.target)}</p>
+            <div class="goal-plan-row">
+              <span>Falta para concluir</span>
+              <strong>${money(remaining)}</strong>
+            </div>
             <small class="goal-card-note">Categoria: ${esc(goal.categoryName)}</small>
             <div class="goal-card-actions">
               <button class="mini-btn" type="button" data-goal-contribute="${index}">Lancar aporte</button>
               <button class="mini-btn" type="button" data-goal-edit-card="${index}">Editar meta</button>
             </div>
           </article>
-        `)
+        `;
+    })
     .join("");
 }
 

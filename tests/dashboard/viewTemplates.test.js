@@ -81,6 +81,8 @@ test("orcamento mostra status de app por categoria", () => {
   assert.match(html, /Limite estourado/);
   assert.match(html, /Semana 90%/);
   assert.match(html, /Mes 120%/);
+  assert.match(html, /budget-rule-details/);
+  assert.match(html, /Editar limites/);
 });
 
 test("maiores despesas usa distribuicao visual em estilo app", () => {
