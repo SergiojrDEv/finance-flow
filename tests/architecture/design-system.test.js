@@ -254,6 +254,8 @@ test("styles deixam lancamentos mais compactos em desktop e mobile", async () =>
     ".view-tab {\n  min-height: 34px;",
     ".transaction-highlights {\n  display: grid;\n  grid-template-columns: repeat(3, minmax(0, 1fr));\n  gap: 10px;",
     ".mini-stat-card {\n  display: grid;\n  gap: 5px;\n  padding: 12px;",
+    ".transaction-highlights .mini-stat-card {\n  grid-template-columns: auto minmax(0, 1fr);",
+    ".transaction-highlights .mini-stat-card .stat-icon {\n  grid-row: 1 / span 4;",
     ".transaction-view-tabs {\n    width: 100%;\n    min-width: 0;",
   ];
   const missing = requiredSnippets.filter((snippet) => !source.includes(snippet));
@@ -285,6 +287,18 @@ test("html mostra fluxo guiado no formulario de lancamento", async () => {
     "1. Tipo",
     "2. Detalhes",
     "3. Revisar",
+  ];
+  const missing = requiredSnippets.filter((snippet) => !source.includes(snippet));
+
+  assert.deepEqual(missing, []);
+});
+
+test("html contextualiza lancamentos do mes como extrato", async () => {
+  const source = await readFile(indexPath, "utf8");
+  const requiredSnippets = [
+    "Acompanhe o extrato do periodo",
+    "filtre rapidamente",
+    "ajuste qualquer movimento",
   ];
   const missing = requiredSnippets.filter((snippet) => !source.includes(snippet));
 

@@ -123,6 +123,13 @@ Esta rodada evolui a fase anterior sem migrar o runtime para React, Angular ou o
 - A leitura mobile deve ficar empilhada e tocavel, mantendo todos os campos atuais.
 - A mudanca deve continuar limitada a HTML, estilos e testes, sem alterar auth, Supabase, schema ou sync.
 
+### Fase 14 - Extrato mensal mais app-like
+
+- Lancamentos do mes devem ser apresentados como extrato do periodo, nao apenas uma tabela operacional.
+- Os cards de resumo mensal devem ter marcadores visuais curtos para movimento, saldo e forma de pagamento.
+- O cabecalho deve orientar que a area serve para consultar, filtrar e ajustar movimentos.
+- A mudanca deve continuar limitada a HTML, templates, estilos e testes, sem alterar auth, Supabase, schema ou sync.
+
 ### Trilha futura - Mobile React Native/Expo
 
 - Iniciar somente depois de consolidar e aprovar a experiencia app-like no web atual.
@@ -156,3 +163,4 @@ Esta rodada evolui a fase anterior sem migrar o runtime para React, Angular ou o
 - Fase 11 concluida: hero da visao geral ganhou mini-cards de receitas, despesas e investimentos inspirados no prototipo mobile.
 - Fase 12 concluida: atalhos da home ganharam indicador lateral por tipo e seta visual de acao, aproximando a home de um app sem mudar regras.
 - Fase 13 concluida: formulario de lancamento ganhou regua visual de etapas para tipo, detalhes e revisao, mantendo o fluxo atual.
+- Fase 14 concluida: lancamentos do mes ganharam contexto de extrato e cards de resumo com marcadores visuais.

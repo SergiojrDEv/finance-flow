@@ -1253,6 +1253,39 @@ body[data-transaction-view="month"] .transaction-view-month {
   font-weight: 700;
 }
 
+.transaction-highlights .mini-stat-card {
+  grid-template-columns: auto minmax(0, 1fr);
+  align-items: start;
+}
+
+.transaction-highlights .mini-stat-card .stat-icon {
+  grid-row: 1 / span 4;
+  display: grid;
+  width: 34px;
+  height: 34px;
+  place-items: center;
+  border-radius: var(--radius-sm);
+  background: var(--surface-soft);
+  color: var(--text);
+  font-style: normal;
+  font-weight: 900;
+}
+
+.transaction-highlights .mini-stat-card.movement .stat-icon {
+  background: #eef6ff;
+  color: #255b91;
+}
+
+.transaction-highlights .mini-stat-card.balance .stat-icon {
+  background: #ecfeff;
+  color: var(--balance);
+}
+
+.transaction-highlights .mini-stat-card.payment .stat-icon {
+  background: #fff7ed;
+  color: #c66a12;
+}
+
 .panel {
   padding: 18px;
 }
@@ -3245,6 +3278,11 @@ tbody tr:last-child td {
   .mini-stat-card {
     min-height: 86px;
     padding: 10px;
+  }
+
+  .transaction-highlights .mini-stat-card .stat-icon {
+    width: 30px;
+    height: 30px;
   }
 
   .mini-stat-card span {

@@ -91,3 +91,4 @@ O typecheck esta configurado no CI por `.github/workflows/quality.yml`, mas nao 
 - Fase 11 app-first concluida: home do web absorveu mini-cards do prototipo mobile no hero principal, mantendo runtime Cloudflare e preparando a futura trilha React Native/Expo.
 - Fase 12 app-first concluida: atalhos da home foram refinados como acoes de app com indicador lateral por tipo e seta visual, mantendo escopo em CSS/testes.
 - Fase 13 app-first concluida: formulario de lancamento ganhou regua visual de etapas para tipo, detalhes e revisao, preservando campos, regras e persistencia.
+- Fase 14 app-first concluida: lancamentos do mes ganharam contexto de extrato e cards de resumo com marcadores visuais, sem alterar regras nem persistencia.
