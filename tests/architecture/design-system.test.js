@@ -99,6 +99,9 @@ test("html oferece base visual de carteira financeira", async () => {
     'id="carteira"',
     "wallet-hero",
     "wallet-balance-card",
+    "wallet-trust-card",
+    "Nada entra no historico antes da sua revisao",
+    "Mock local agora | Provider real depois",
     'id="wallet-account-cards"',
     'id="wallet-institution-list"',
     "wallet-review-list",
@@ -115,6 +118,8 @@ test("styles suportam tela carteira app-like", async () => {
     ".wallet-hero {\n  display: grid;\n  grid-template-columns: minmax(0, 1fr) minmax(280px, 0.42fr);",
     ".wallet-balance-card {\n  display: grid;",
     ".wallet-guide-strip {\n  display: grid;",
+    ".wallet-trust-card {\n  display: grid;\n  grid-template-columns: minmax(0, 1fr) auto;",
+    ".wallet-trust-card small {\n  grid-row: 1 / span 2;",
     ".wallet-grid {\n  display: grid;\n  grid-template-columns: repeat(3, minmax(0, 1fr));",
     ".wallet-account-card {\n  display: grid;\n  grid-template-columns: auto minmax(0, 1fr) auto;",
     ".wallet-panels {\n  display: grid;\n  grid-template-columns: minmax(0, 1.1fr) minmax(300px, 0.9fr);",
@@ -122,6 +127,7 @@ test("styles suportam tela carteira app-like", async () => {
     ".wallet-institution-row {\n  display: grid;",
     ".wallet-review-row {\n  display: grid;",
     ".wallet-hero,\n  .wallet-top-grid,\n  .wallet-grid,\n  .wallet-panels,\n  .wallet-bank-options,",
+    ".wallet-trust-card {\n    grid-template-columns: 1fr;",
   ];
   const missing = requiredSnippets.filter((snippet) => !source.includes(snippet));
 

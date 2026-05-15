@@ -95,3 +95,4 @@ O typecheck esta configurado no CI por `.github/workflows/quality.yml`, mas nao 
 - Fase 15 app-first concluida: metas ganharam fluxo didatico de objetivo, aporte e acompanhamento antes do formulario, preservando regras e persistencia.
 - Fase 16 app-first concluida: ajustes ganharam contexto de centro de organizacao e fluxo visual de criar, editar e desativar, preservando regras e persistencia.
 - Fase 17 app-first concluida: relatorios ganharam revisao guiada para conferir dias, revisar valores e exportar quando necessario, preservando regras e persistencia.
+- Fase 18 app-first concluida: carteira ganhou aviso de controle para revisar importacoes antes de transformar qualquer item em lancamento, preservando regras e persistencia.

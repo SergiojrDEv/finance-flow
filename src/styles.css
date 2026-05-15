@@ -782,6 +782,41 @@ h2 {
   font-weight: 800;
 }
 
+.wallet-trust-card {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 4px 12px;
+  align-items: center;
+  margin-bottom: 14px;
+  padding: 13px 14px;
+  border: 1px solid rgba(14, 125, 140, 0.18);
+  border-radius: var(--radius-md);
+  background: linear-gradient(135deg, rgba(14, 125, 140, 0.1), transparent 64%), #ffffff;
+}
+
+.wallet-trust-card strong,
+.wallet-trust-card span {
+  min-width: 0;
+}
+
+.wallet-trust-card span {
+  color: var(--muted);
+  font-size: 0.9rem;
+  font-weight: 700;
+}
+
+.wallet-trust-card small {
+  grid-row: 1 / span 2;
+  grid-column: 2;
+  padding: 7px 10px;
+  border-radius: var(--radius-pill);
+  background: var(--surface-soft);
+  color: var(--balance);
+  font-size: 0.76rem;
+  font-weight: 900;
+  white-space: nowrap;
+}
+
 .wallet-mini-card {
   display: grid;
   gap: 8px;
@@ -3064,6 +3099,17 @@ tbody tr:last-child td {
   .wallet-guide-strip span {
     min-height: 36px;
     font-size: 0.76rem;
+  }
+
+  .wallet-trust-card {
+    grid-template-columns: 1fr;
+  }
+
+  .wallet-trust-card small {
+    grid-row: auto;
+    grid-column: auto;
+    justify-self: start;
+    white-space: normal;
   }
 
   .wallet-account-card {

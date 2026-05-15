@@ -151,6 +151,13 @@ Esta rodada evolui a fase anterior sem migrar o runtime para React, Angular ou o
 - A experiencia deve reduzir a sensacao de relatorio tecnico e aproximar a area de uma revisao de app.
 - A mudanca deve continuar limitada a HTML, estilos e testes, sem alterar auth, Supabase, schema ou sync.
 
+### Fase 18 - Carteira com controle explicito
+
+- A carteira deve deixar claro que o usuario controla o que vira lancamento.
+- A experiencia deve explicar que transacoes importadas passam por revisao antes de entrar no historico.
+- A interface deve diferenciar o mock local atual de um provider real futuro.
+- A mudanca deve continuar limitada a HTML, estilos e testes, sem alterar auth, Supabase, schema, sync ou integracao real.
+
 ### Trilha futura - Mobile React Native/Expo
 
 - Iniciar somente depois de consolidar e aprovar a experiencia app-like no web atual.
@@ -188,3 +195,4 @@ Esta rodada evolui a fase anterior sem migrar o runtime para React, Angular ou o
 - Fase 15 concluida: metas ganharam fluxo didatico de objetivo, aporte e acompanhamento antes do formulario.
 - Fase 16 concluida: ajustes ganharam contexto de centro de organizacao e fluxo visual de criar, editar e desativar.
 - Fase 17 concluida: relatorios ganharam revisao guiada para conferir dias, revisar valores e exportar quando necessario.
+- Fase 18 concluida: carteira ganhou aviso de controle para revisar importacoes antes de transformar qualquer item em lancamento.
