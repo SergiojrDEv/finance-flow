@@ -100,8 +100,8 @@ export default function OnboardingScreen() {
               <View style={styles.bigMark}>
                 <Text style={styles.bigF}>F</Text>
               </View>
-              <Text style={styles.welcomeTitle}>Bem-vindo ao{"\n"}Finance Flow</Text>
-              <Text style={styles.welcomeSub}>
+              <Text style={styles.welcomeTitle} allowFontScaling={false}>Bem-vindo ao{"\n"}Finance Flow</Text>
+              <Text style={styles.welcomeSub} allowFontScaling={false}>
                 Controle total das suas finanças em um só lugar. Vamos configurar tudo em 2 minutos.
               </Text>
 
@@ -126,8 +126,8 @@ export default function OnboardingScreen() {
           <View style={[styles.slide, { width: W }]}>
             <View style={styles.slideInner}>
               <Text style={styles.stepEmoji}>🏦</Text>
-              <Text style={styles.stepTitle}>Sua conta principal</Text>
-              <Text style={styles.stepSub}>
+              <Text style={styles.stepTitle} allowFontScaling={false}>Sua conta principal</Text>
+              <Text style={styles.stepSub} allowFontScaling={false}>
                 Como você quer chamar sua conta principal? Pode ser o banco que mais usa.
               </Text>
 
@@ -172,8 +172,8 @@ export default function OnboardingScreen() {
               keyboardShouldPersistTaps="handled"
             >
               <Text style={styles.stepEmoji}>🎯</Text>
-              <Text style={styles.stepTitle}>Seu principal objetivo</Text>
-              <Text style={styles.stepSub}>
+              <Text style={styles.stepTitle} allowFontScaling={false}>Seu principal objetivo</Text>
+              <Text style={styles.stepSub} allowFontScaling={false}>
                 Escolha uma meta para começar. Você pode adicionar mais depois.
               </Text>
 
@@ -282,10 +282,10 @@ const styles = StyleSheet.create({
   },
 
   slidesWrap: { flex: 1, overflow: "hidden" },
-  slides: { flexDirection: "row", flex: 1 },
-  slide: { flex: 1 },
+  slides: { flexDirection: "row", width: W * 3 },
+  slide: { width: W },
   slideInner: {
-    flex: 1,
+    width: W,
     paddingHorizontal: 28,
     paddingTop: 20,
     paddingBottom: 16,
