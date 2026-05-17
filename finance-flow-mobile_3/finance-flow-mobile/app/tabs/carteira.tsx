@@ -69,8 +69,8 @@ export default function CarteiraScreen() {
     () => txList.filter((t) => t.type === "investment").reduce((s, t) => s + t.amount, 0),
     [txList]
   );
-  const available = income - expense - investment;
-  const movement = income + expense + investment;
+  const outflow = expense + investment;
+  const available = income - outflow;
 
   const grouped = useMemo(() => {
     let list = filter === "all" ? txList : txList.filter((t) => t.type === filter);
@@ -120,8 +120,10 @@ export default function CarteiraScreen() {
           {/* Totais */}
           <View style={styles.totalsRow}>
             <View style={styles.totalItem}>
-              <Text style={styles.totalLabel}>Movimentação</Text>
-              <Text style={styles.totalValue}>{brl(movement)}</Text>
+              <Text style={styles.totalLabel}>Saldo do mês</Text>
+              <Text style={[styles.totalValue, available < 0 && { color: "#ffd6dc" }]}>
+                {brl(available)}
+              </Text>
             </View>
             <View style={styles.totalDivider} />
             <View style={styles.totalItem}>
@@ -131,7 +133,7 @@ export default function CarteiraScreen() {
             <View style={styles.totalDivider} />
             <View style={styles.totalItem}>
               <Text style={[styles.totalLabel, { color: C.expense + "cc" }]}>Saídas</Text>
-              <Text style={[styles.totalValue, { color: C.expense }]}>{brl(expense)}</Text>
+              <Text style={[styles.totalValue, { color: C.expense }]}>{brl(outflow)}</Text>
             </View>
           </View>
         </View>

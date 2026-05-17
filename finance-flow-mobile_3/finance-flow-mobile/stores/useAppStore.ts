@@ -2,7 +2,13 @@ import { create } from "zustand";
 import { persist, createJSONStorage } from "zustand/middleware";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import type { Transaction, AppSettings, Goal, CategoryBudget, RecurringTransaction } from "../types";
-import { pushToCloud, pullFromCloud, mergeTransactions } from "../lib/sync";
+import {
+  mergeTransactions,
+  pullFromCloud,
+  pullLegacyUserData,
+  pushToCloud,
+  shouldBootstrapFromLegacy,
+} from "../lib/sync";
 import { useAuthStore } from "./useAuthStore";
 
 let syncTimer: ReturnType<typeof setTimeout> | null = null;
@@ -312,7 +318,13 @@ export const useAppStore = create<AppState>()(
       loadFromCloud: async (userId) => {
         set({ isSyncing: true });
         try {
-          const remote = await pullFromCloud(userId);
+          let remote = await pullFromCloud(userId);
+          if (shouldBootstrapFromLegacy(remote)) {
+            remote = await pullLegacyUserData(userId);
+            if (remote) {
+              await pushToCloud(userId, remote);
+            }
+          }
           if (!remote) {
             // First login — push local data to bootstrap the cloud row
             const s = get();
@@ -348,14 +360,36 @@ export const useAppStore = create<AppState>()(
         set({ isSyncing: true });
         try {
           const s = get();
-          await pushToCloud(userId, {
+          let payload = {
             transactions: s.transactions,
             goals: s.goals,
             settings: s.settings,
             recurringTransactions: s.recurringTransactions,
             budgets: s.budgets,
             hasOnboarded: s.hasOnboarded,
-          });
+          };
+
+          if (shouldBootstrapFromLegacy(payload)) {
+            const legacy = await pullLegacyUserData(userId);
+            if (legacy) {
+              payload = {
+                ...legacy,
+                settings: legacy.settings ?? s.settings,
+              };
+              set((current) => ({
+                transactions: mergeTransactions(current.transactions, legacy.transactions),
+                goals: legacy.goals.length > 0 ? legacy.goals : current.goals,
+                settings: legacy.settings ?? current.settings,
+                recurringTransactions: legacy.recurringTransactions.length > 0
+                  ? legacy.recurringTransactions
+                  : current.recurringTransactions,
+                budgets: legacy.budgets.length > 0 ? legacy.budgets : current.budgets,
+                hasOnboarded: legacy.hasOnboarded || current.hasOnboarded,
+              }));
+            }
+          }
+
+          await pushToCloud(userId, payload);
           set({ cloudReady: true, lastSyncAt: new Date().toISOString() });
         } catch {
           // ignore
