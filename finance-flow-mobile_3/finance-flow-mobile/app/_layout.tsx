@@ -97,6 +97,10 @@ export default function RootLayout() {
         <Stack.Screen name="gerenciar/cartoes" options={{ headerShown: false }} />
         <Stack.Screen name="gerenciar/recorrentes" options={{ headerShown: false }} />
         <Stack.Screen name="gerenciar/fatura" options={{ headerShown: false }} />
+        <Stack.Screen
+          name="modal/importar-extrato"
+          options={{ presentation: "modal", headerShown: false }}
+        />
       </Stack>
     </GestureHandlerRootView>
   );

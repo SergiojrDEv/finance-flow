@@ -8,7 +8,7 @@ import {
   TextInput,
 } from "react-native";
 import { useRouter } from "expo-router";
-import { Plus, Search, X, Send, ArrowDownLeft } from "lucide-react-native";
+import { Plus, Search, X, Send, ArrowDownLeft, FileUp } from "lucide-react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import { useAppStore, useCurrentMonthTransactions } from "../../stores/useAppStore";
@@ -183,6 +183,13 @@ export default function CarteiraScreen() {
                 >
                   <Send size={14} color={C.brand} strokeWidth={2.5} />
                   <Text style={styles.cardBtnText}>Enviar</Text>
+                </TouchableOpacity>
+                <TouchableOpacity
+                  style={styles.cardBtn}
+                  onPress={() => router.push("/modal/importar-extrato")}
+                >
+                  <FileUp size={14} color={C.brand} strokeWidth={2.5} />
+                  <Text style={styles.cardBtnText}>Importar</Text>
                 </TouchableOpacity>
               </View>
               <Text style={styles.cardCount}>
