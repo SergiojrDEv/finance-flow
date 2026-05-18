@@ -13,8 +13,15 @@ import { useAuthStore } from "../../stores/useAuthStore";
 import { useAppStore } from "../../stores/useAppStore";
 import { fintechTheme } from "../../components/ui";
 import { buildFinancialSummary } from "../../src/application/dashboard/buildFinancialSummary.js";
-import { setupNotifications, requestNotificationPermission } from "../../lib/notifications";
-import * as Notifications from "expo-notifications";
+
+let Notifications: any = null;
+let setupNotifications: any = async () => false;
+try {
+  Notifications = require("expo-notifications");
+  setupNotifications = require("../../lib/notifications").setupNotifications;
+} catch {
+  // notifications not available
+}
 
 const C = fintechTheme.colors;
 const R = fintechTheme.radius;
@@ -42,9 +49,13 @@ export default function AjustesScreen() {
 
   // Check current notification permission on mount
   useEffect(() => {
-    Notifications.getPermissionsAsync().then(({ status }) => {
-      setNotifEnabled(status === "granted");
-    });
+    try {
+      Notifications?.getPermissionsAsync?.()?.then?.(({ status }: any) => {
+        setNotifEnabled(status === "granted");
+      });
+    } catch {
+      // ignore
+    }
   }, []);
 
   async function handleNotifToggle(value: boolean) {
@@ -59,11 +70,14 @@ export default function AjustesScreen() {
     setNotifEnabled(value);
   }
 
-  const summary = useMemo(
-    () => buildFinancialSummary(transactions.slice(-100)),
-    [transactions]
-  );
-  const score = summary.health.score ?? 0;
+  const summary = useMemo(() => {
+    try {
+      return buildFinancialSummary(transactions.slice(-100));
+    } catch {
+      return { health: { score: 0, status: "empty", copy: "" }, totals: {}, counts: {}, rates: {} };
+    }
+  }, [transactions]);
+  const score = summary?.health?.score ?? 0;
   const band = scoreLabel(score);
 
   const name = user?.user_metadata?.full_name
